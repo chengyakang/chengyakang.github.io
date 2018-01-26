@@ -2,14 +2,14 @@
 <html style="height: 100%;">
 	<head>
 		<meta charset="UTF-8">
-		<title>和瑾瑾一起来聊天~</title>
+		<title>和DVA一起来聊天~</title>
 		<link rel="stylesheet" href="css/style.css" media="screen" type="text/css" />
 	</head>
 	<body>
-		<div class="title_div"><a class="title_left">〈 返回</a><a class="jin_name">瑾瑾</a><span class="title_right">好感度:<a class="number">0</a></span></div>
+		<div class="title_div"><a class="title_left">〈 返回</a><a class="jin_name">DVA</a><span class="title_right">好感度:<a class="number">0</a></span></div>
 		<div id="convo" data-from="Sonu Joshi">
 			<ul class="chat-thread">
-				<li class="jin">和瑾瑾一起来聊天吧~</li>
+				<li class="jin">和DVA一起来聊天吧~</li>
 			</ul>
 		</div>
 		<div style="text-align:center;clear:both">
@@ -40,7 +40,7 @@
 					data: parm,
 					dataType: "json",
 					success: function (data){
-						$('.jin_name').text('瑾瑾');
+						$('.jin_name').text('DVA');
 				        var text = data.text;
 				        $('.bttom_text').val('')
 				        var html = '<li class="jin">'+ text +'</li>';
@@ -49,7 +49,7 @@
 				        var number = Number($('.number').text());
 				        number += 5;
 				        $('.number').text(number);
-				        if (number == 100) {
+				        if (bttomtext == '她们恋爱了多久?') {
 				        	window.location.href = 'love.html';
 				        }
 				    },
