@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html style="height: 100%;">
+	<head>
+		<meta charset="UTF-8">
+		<title>和DVA一起来聊天~</title>
+		<link rel="stylesheet" href="css/style.css" media="screen" type="text/css" />
+	</head>
+	<body>
+		<div class="title_div"><a class="title_left">〈 返回</a><a class="jin_name">DVA</a><span class="title_right">好感度:<a class="number">0</a></span></div>
+		<div id="convo" data-from="Sonu Joshi">
+			<ul class="chat-thread">
+				<li class="jin">和DVA一起来聊天吧~</li>
+			</ul>
+		</div>
+		<div style="text-align:center;clear:both">
+		</div>
+		<div class="credits"></div>
+		<div class="bttom_div">
+			<input class="bttom_text" type="text" placeholder="请输入聊天内容"/>
+			<div class="button">
+				发送
+			</div>
+		</div>
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<script type="text/jscript">
+			$('.button').click(function(e) {
+				var bttomtext = $('.bttom_text').val();
+				var htmlme = '<li class="me">'+ bttomtext +'</li>';
+				$('.jin_name').text('对方正在输入...');
+				$('.chat-thread').append(htmlme);
+				var parm = {
+					key: '331b32d28c0643a8ac52c72bc56b57bf',
+					info: bttomtext,
+					loc: '深圳市宝安区',
+					userid: '1'
+				};
+				if (bttomtext == '她们恋爱了多久') {
+		        	window.location.href = 'love.html';
+		        }
+				$.ajax({
+					type:"post",
+					url:"http://www.tuling123.com/openapi/api",
+					data: parm,
+					dataType: "json",
+					success: function (data){
+						$('.jin_name').text('DVA');
+				        var text = data.text;
+				        $('.bttom_text').val('')
+				        var html = '<li class="jin">'+ text +'</li>';
+				        $('.chat-thread').append(html);
+				        $('body').scrollTop( $('body')[0].scrollHeight );
+				        var number = Number($('.number').text());
+				        number += 5;
+				        $('.number').text(number);
+				    },
+			        error:function (XMLHttpRequest, textStatus, errorThrown) {      
+			            alert("请求失败！");
+			        }
+				});
+			});
+		</script>
+	</body>
+</html>
