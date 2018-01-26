@@ -1,105 +1,63 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>傻坨坨</title>
-
-<style type="text/css">
-@font-face {
-	font-family: digit;
-	src: url('digital-7_mono.ttf') format("truetype");
-}
-</style>
-
-<link href="css/default.css" type="text/css" rel="stylesheet">
-<script type="text/javascript" src="js/jquery.js"></script>
-<script type="text/javascript" src="js/garden.js"></script>
-<script type="text/javascript" src="js/functions.js"></script>
-
-</head>
-
-<body>
-
-<div id="mainDiv">
-	<div id="content">
-		<div id="code">
-			<span class="comments">/**</span><br />
-			<span class="space"/><span class="comments">*1994-08-08,</span><br />
-			<span class="space"/><span class="comments">*1995-06-17.</span><br />
-			<span class="space"/><span class="comments">*/</span><br />
-			Boy name = <span class="keyword">Mr</span> CHENG<br />
-			Girl name = <span class="keyword">Mrs</span> LIU<br />
-			<span class="comments">// Fall in love river. </span><br />
-			The boy love the girl;<br />
-			<span class="comments">// They love each other.</span><br />
-			The girl loved the boy;<br />
-			<span class="comments">// AS time goes on.</span><br />
-			The boy can not be separated the girl;<br />
-			<span class="comments">// At the same time.</span><br />
-			The girl can not be separated the boy;<br />
-			<span class="comments">// Both wind and snow all over the sky.</span><br />
-			<span class="comments">// Whether on foot or 5 kilometers.</span><br />
-			<span class="keyword">The boy</span> very <span class="keyword">happy</span>;<br />
-			<span class="keyword">The girl</span> is also very <span class="keyword">happy</span>;<br />
-			<span class="placeholder"/><span class="comments">// Whether it is right now</span><br />
-			<span class="placeholder"/><span class="comments">// Still in the distant future.</span><br />
-			<span class="placeholder"/>The boy has but one dream;<br />
-			<span class="comments">// The boy wants the girl could well have been happy.</span><br />
-			<br>
-			<br>
-			I want to say:<br />
-			Baby, I love you forever;<br />
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>精美CSS3聊天窗口DEMO演示</title>
+		<link rel="stylesheet" href="css/style.css" media="screen" type="text/css" />
+	</head>
+	<body>
+		<div class="title_div"><a class="title_left">〈 返回</a><a class="jin_name">瑾瑾</a><span class="title_right">好感度:<a class="number">0</a></span></div>
+		<div id="convo" data-from="Sonu Joshi">
+			<ul class="chat-thread">
+				<li class="jin">和瑾瑾一起来聊天吧~</li>
+			</ul>
 		</div>
-		<div id="loveHeart">
-			<canvas id="garden"></canvas>
-			<div id="words">
-				<div id="messages">
-					亲爱的傻坨坨，这是我们相爱在一起的时光。
-					<div id="elapseClock"></div>
-				</div>
-				<div id="loveu">
-					爱你直到永永远远。<br/>
-					<div class="signature">- Mr.C</div>
-				</div>
+		<div style="text-align:center;clear:both">
+		</div>
+		<div class="credits"></div>
+		<div class="bttom_div">
+			<input class="bttom_text" type="text" placeholder="请输入聊天内容"/>
+			<div class="button">
+				发送
 			</div>
 		</div>
-	</div>
-</div>
-
-<script type="text/javascript">
-var offsetX = $("#loveHeart").width() / 2;
-var offsetY = $("#loveHeart").height() / 2 - 55;
-var together = new Date();
-together.setFullYear(2017, 10, 3);
-together.setHours(20);
-together.setMinutes(0);
-together.setSeconds(0);
-together.setMilliseconds(0);
-
-if (!document.createElement('canvas').getContext) {
-	var msg = document.createElement("div");
-	msg.id = "errorMsg";
-	msg.innerHTML = "Your browser doesn't support HTML5!<br/>Recommend use Chrome 14+/IE 9+/Firefox 7+/Safari 4+"; 
-	document.body.appendChild(msg);
-	$("#code").css("display", "none")
-	$("#copyright").css("position", "absolute");
-	$("#copyright").css("bottom", "10px");
-	document.execCommand("stop");
-} else {
-	setTimeout(function () {
-		startHeartAnimation();
-	}, 5000);
-
-	timeElapse(together);
-	setInterval(function () {
-		timeElapse(together);
-	}, 500);
-
-	adjustCodePosition();
-	$("#code").typewriter();
-}
-</script>
-<div style="text-align:center;clear:both">
-</div>
-</body>
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<script type="text/jscript">
+			$('.button').click(function(e) {
+				var bttomtext = $('.bttom_text').val();
+				var htmlme = '<li class="me">'+ bttomtext +'</li>';
+				$('.jin_name').text('对方正在输入...');
+				$('.chat-thread').append(htmlme);
+					var parm = {
+						key: '331b32d28c0643a8ac52c72bc56b57bf',
+						info: bttomtext,
+						loc: '深圳市宝安区',
+						userid: '1'
+					};
+				$.ajax({
+					type:"post",
+					url:"http://www.tuling123.com/openapi/api",
+					data: parm,
+					dataType: "json",
+					success: function (data){
+						$('.jin_name').text('瑾瑾');
+				        var text = data.text;
+				        $('.bttom_text').val('')
+				        var html = '<li class="jin">'+ text +'</li>';
+				        $('.chat-thread').append(html);
+				        $('body').scrollTop( $('body')[0].scrollHeight );
+				        var number = Number($('.number').text());
+				        number += 5;
+				        $('.number').text(number);
+				        if (number == 100) {
+				        	window.location.href = 'love.html';
+				        }
+				    },
+			        error:function (XMLHttpRequest, textStatus, errorThrown) {      
+			            alert("请求失败！");
+			        }
+				});
+			});
+		</script>
+	</body>
 </html>
