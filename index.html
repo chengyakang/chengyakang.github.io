@@ -28,12 +28,15 @@
 				var htmlme = '<li class="me">'+ bttomtext +'</li>';
 				$('.jin_name').text('对方正在输入...');
 				$('.chat-thread').append(htmlme);
-					var parm = {
-						key: '331b32d28c0643a8ac52c72bc56b57bf',
-						info: bttomtext,
-						loc: '深圳市宝安区',
-						userid: '1'
-					};
+				var parm = {
+					key: '331b32d28c0643a8ac52c72bc56b57bf',
+					info: bttomtext,
+					loc: '深圳市宝安区',
+					userid: '1'
+				};
+				if (bttomtext == '她们恋爱了多久') {
+		        	window.location.href = 'love.html';
+		        }
 				$.ajax({
 					type:"post",
 					url:"http://www.tuling123.com/openapi/api",
@@ -49,9 +52,6 @@
 				        var number = Number($('.number').text());
 				        number += 5;
 				        $('.number').text(number);
-				        if (bttomtext == '她们恋爱了多久?') {
-				        	window.location.href = 'love.html';
-				        }
 				    },
 			        error:function (XMLHttpRequest, textStatus, errorThrown) {      
 			            alert("请求失败！");
