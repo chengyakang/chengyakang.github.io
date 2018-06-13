@@ -8,7 +8,7 @@
     <title>Document</title>  
 </head>  
 <body>  
-    <canvas style="background:#fff;;" id="aa" width="680"height="800"></canvas>
+    <canvas style="background:#fff;;" id="aa" width="430"height="700"></canvas>
     <div><input class="bttom_text" type="text" placeholder="请输入聊天内容"/></div>
     <br />
 	<div class="button">
@@ -20,7 +20,7 @@
         var bb = aa.getContext('2d');  
   
         bb.fillStyle = '#fff';    //   填充颜色  
-        bb.fillRect(1,1,680,500);
+        bb.fillRect(1,1,430,500);
   
         var img = new Image;  
         var imgB = new Image;  
@@ -34,7 +34,7 @@
        
         bb.fillStyle = '#333333';   // 文字填充颜色  
         bb.font = '25px Adobe Ming Std';  
-        bb.fillText(localStorage.getItem("lastname") || '',50,450);  
+        bb.fillText(localStorage.getItem("lastname") || '',50,300);  
   
 //      bb.fillStyle = '#fff';  
 //      bb.font = '66px Adobe Ming Std';  
