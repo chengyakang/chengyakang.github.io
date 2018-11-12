@@ -1,5 +1,5 @@
 <!doctype html>  
-<html lang="en">  
+<html lang="en" style=" height: 100%;">
 <head>  
     <meta charset="UTF-8">  
     <meta name="viewport"  
@@ -7,45 +7,90 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">  
     <title>Document</title>  
 </head>  
-<body>  
-    <canvas style="background:#fff;;" id="aa" width="430"height="700"></canvas>
-    <div><input class="bttom_text" type="text" placeholder="请输入聊天内容"/></div>
-    <br />
-	<div class="button">
-		发送
-	</div>
+<body style="margin: 0px;height: 100%;color:#fff;text-align: center;    overflow: hidden;">
+
+<div id="zhuyeA" style="background: url('2.png');height: 100%; width: 100%;">
+    <div class="title">第一题</div>
+    <div class="titleB" style="    margin-top: 20px; ">你最欣赏一下哪一位人物?</div>
+    <div class="button buttonA">马云</div><div class="button buttonA">罗永浩</div><div class="button buttonA">高晓松</div>
+</div>
+
+<div id="zhuyeB" style="background: url('2.png');height: 100%; width: 100%;">
+    <div class="title">第二题</div>
+    <div class="titleB" style="    margin-top: 20px;">想买瓶新的泡泡沐浴乳，你直觉会买以下哪种香气的呢？</div>
+    <div class="button buttonB">粉樱花</div><div class="button buttonB">海洋风</div><div class="button buttonB">绿草香</div>
+</div>
+
+<div id="zhuyeC" style="background: url('2.png');height: 100%; width: 100%;">
+    <div class="title">第三题</div>
+    <div class="titleB" style="    margin-top: 20px;">你忽然发现自己的眼睛可以透视了，你的心情是？</div>
+    <div class="button buttonC">开心</div><div class="button buttonC">兴奋</div><div class="button buttonC">担忧</div>
+</div>
+
+<div id="zhuyeD" style="background: url('2.png');height: 100%; width: 100%;">
+    <div class="title">第四题</div>
+    <div class="titleB" style="    margin-top: 20px;">你正试图向一位朋友解释一个重要问题，他不赞成或是不理解。你会？</div>
+    <div class="button buttonD">继续解释</div><div class="button buttonD">不再说话</div><div class="button buttonD">回避问题</div>
+</div>
+
+<div id="zhuyeE" style="background: url('2.png');height: 100%; width: 100%;">
+    <div class="title">调查完毕</div>
+    <div class="titleB" style="    margin-top: 20px;"> </div>
+    <div class="button buttonE">点击获取结果</div>
+</div>
+
+<div id="zhuyeF" style="background: url('2.png');height: 100%; width: 100%;">
+    <div class="title">海报字：样例模板，文字可替换</div>
+</div>
+    <link href="css/index.css" type="text/css" rel="stylesheet">
     <script type="text/javascript" src="js/jquery.js"></script>
-    <script>  
-        var aa = document.getElementById('aa');  
-        var bb = aa.getContext('2d');  
-  
-        bb.fillStyle = '#fff';    //   填充颜色  
-        bb.fillRect(1,1,430,500);
-  
-        var img = new Image;  
-        var imgB = new Image;  
-        img.src = '1.png';  
-        imgB.src = '2.png';  
-//
-        img.onload = function () {  
-            bb.drawImage(img, 0,0);  
-            bb.drawImage(imgB, 0,500);  
-        }  
-       
-        bb.fillStyle = '#333333';   // 文字填充颜色  
-        bb.font = '25px Adobe Ming Std';  
-        bb.fillText(localStorage.getItem("lastname") || '',50,300);  
-  
-//      bb.fillStyle = '#fff';  
-//      bb.font = '66px Adobe Ming Std';  
-//      bb.fillText('让自己配得上!',390,200);  
-  
-        bb.stroke();
-        $('.button').click(function(e) {
-				var bttomtext = $('.bttom_text').val();
-				localStorage.setItem("lastname", bttomtext);
-		        location.reload()
-		});
+    <script>
+      $(document).ready(function(){
+        $(".buttonA").click(function(){
+          $("#zhuyeA").animate({
+            opacity:'0',
+            height:'0px',
+            width: '0px',
+            display: 'none'
+          });
+        });
+
+        $(".buttonB").click(function(){
+          $("#zhuyeB").animate({
+            opacity:'0',
+            height:'0px',
+            width: '0px',
+            display: 'none'
+          });
+        });
+
+        $(".buttonC").click(function(){
+          $("#zhuyeC").animate({
+            opacity:'0',
+            height:'0px',
+            width: '0px',
+            display: 'none'
+          });
+        });
+
+        $(".buttonD").click(function(){
+          $("#zhuyeD").animate({
+            opacity:'0',
+            height:'0px',
+            width: '0px',
+            display: 'none'
+          });
+        });
+        
+        $('.buttonE').click(function () {
+          $("#zhuyeE").animate({
+            opacity:'0',
+            height:'0px',
+            width: '0px',
+            display: 'none'
+          });
+        });
+      });
     </script>  
 </body>  
 </html>  
