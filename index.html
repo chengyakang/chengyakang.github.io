@@ -1,96 +1,105 @@
-<!doctype html>  
-<html lang="en" style=" height: 100%;">
-<head>  
-    <meta charset="UTF-8">  
-    <meta name="viewport"  
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">  
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">  
-    <title>Document</title>  
-</head>  
-<body style="margin: 0px;height: 100%;color:#fff;text-align: center;    overflow: hidden;">
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>傻坨坨</title>
 
-<div id="zhuyeA" style="background: url('2.png');height: 100%; width: 100%;">
-    <div class="title">第一题</div>
-    <div class="titleB" style="    margin-top: 20px; ">你最欣赏一下哪一位人物?</div>
-    <div class="button buttonA">马云</div><div class="button buttonA">罗永浩</div><div class="button buttonA">高晓松</div>
+<style type="text/css">
+@font-face {
+	font-family: digit;
+	src: url('digital-7_mono.ttf') format("truetype");
+}
+</style>
+
+<link href="css/default.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/garden.js"></script>
+<script type="text/javascript" src="js/functions.js"></script>
+
+</head>
+
+<body>
+
+<div id="mainDiv">
+	<div id="content">
+		<div id="code">
+			<span class="comments">/**</span><br />
+			<span class="space"/><span class="comments">*1994-08-08,</span><br />
+			<span class="space"/><span class="comments">*1995-06-17.</span><br />
+			<span class="space"/><span class="comments">*/</span><br />
+			Boy name = <span class="keyword">Mr</span> CHENG<br />
+			Girl name = <span class="keyword">Mrs</span> LIU<br />
+			<span class="comments">// Fall in love river. </span><br />
+			The boy love the girl;<br />
+			<span class="comments">// They love each other.</span><br />
+			The girl loved the boy;<br />
+			<span class="comments">// AS time goes on.</span><br />
+			The boy can not be separated the girl;<br />
+			<span class="comments">// At the same time.</span><br />
+			The girl can not be separated the boy;<br />
+			<span class="comments">// Both wind and snow all over the sky.</span><br />
+			<span class="comments">// Whether on foot or 5 kilometers.</span><br />
+			<span class="keyword">The boy</span> very <span class="keyword">happy</span>;<br />
+			<span class="keyword">The girl</span> is also very <span class="keyword">happy</span>;<br />
+			<span class="placeholder"/><span class="comments">// Whether it is right now</span><br />
+			<span class="placeholder"/><span class="comments">// Still in the distant future.</span><br />
+			<span class="placeholder"/>The boy has but one dream;<br />
+			<span class="comments">// The boy wants the girl could well have been happy.</span><br />
+			<br>
+			<br>
+			I want to say:<br />
+			Baby, I love you forever;<br />
+		</div>
+		<div id="loveHeart">
+			<canvas id="garden"></canvas>
+			<div id="words">
+				<div id="messages">
+					亲爱的傻坨坨，这是我们相爱在一起的时光。
+					<div id="elapseClock"></div>
+				</div>
+				<div id="loveu">
+					爱你直到永永远远。<br/>
+					<div class="signature">- Mr.C</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 
-<div id="zhuyeB" style="background: url('2.png');height: 100%; width: 100%;">
-    <div class="title">第二题</div>
-    <div class="titleB" style="    margin-top: 20px;">想买瓶新的泡泡沐浴乳，你直觉会买以下哪种香气的呢？</div>
-    <div class="button buttonB">粉樱花</div><div class="button buttonB">海洋风</div><div class="button buttonB">绿草香</div>
+<script type="text/javascript">
+var offsetX = $("#loveHeart").width() / 2;
+var offsetY = $("#loveHeart").height() / 2 - 55;
+var together = new Date();
+together.setFullYear(2017, 10, 3);
+together.setHours(20);
+together.setMinutes(0);
+together.setSeconds(0);
+together.setMilliseconds(0);
+
+if (!document.createElement('canvas').getContext) {
+	var msg = document.createElement("div");
+	msg.id = "errorMsg";
+	msg.innerHTML = "Your browser doesn't support HTML5!<br/>Recommend use Chrome 14+/IE 9+/Firefox 7+/Safari 4+"; 
+	document.body.appendChild(msg);
+	$("#code").css("display", "none")
+	$("#copyright").css("position", "absolute");
+	$("#copyright").css("bottom", "10px");
+	document.execCommand("stop");
+} else {
+	setTimeout(function () {
+		startHeartAnimation();
+	}, 5000);
+
+	timeElapse(together);
+	setInterval(function () {
+		timeElapse(together);
+	}, 500);
+
+	adjustCodePosition();
+	$("#code").typewriter();
+}
+</script>
+<div style="text-align:center;clear:both">
 </div>
-
-<div id="zhuyeC" style="background: url('2.png');height: 100%; width: 100%;">
-    <div class="title">第三题</div>
-    <div class="titleB" style="    margin-top: 20px;">你忽然发现自己的眼睛可以透视了，你的心情是？</div>
-    <div class="button buttonC">开心</div><div class="button buttonC">兴奋</div><div class="button buttonC">担忧</div>
-</div>
-
-<div id="zhuyeD" style="background: url('2.png');height: 100%; width: 100%;">
-    <div class="title">第四题</div>
-    <div class="titleB" style="    margin-top: 20px;">你正试图向一位朋友解释一个重要问题，他不赞成或是不理解。你会？</div>
-    <div class="button buttonD">继续解释</div><div class="button buttonD">不再说话</div><div class="button buttonD">回避问题</div>
-</div>
-
-<div id="zhuyeE" style="background: url('2.png');height: 100%; width: 100%;">
-    <div class="title">调查完毕</div>
-    <div class="titleB" style="    margin-top: 20px;"> </div>
-    <div class="button buttonE">点击获取结果</div>
-</div>
-
-<div id="zhuyeF" style="background: url('2.png');height: 100%; width: 100%;">
-    <div class="title">海报字：样例模板，文字可替换</div>
-</div>
-    <link href="css/index.css" type="text/css" rel="stylesheet">
-    <script type="text/javascript" src="js/jquery.js"></script>
-    <script>
-      $(document).ready(function(){
-        $(".buttonA").click(function(){
-          $("#zhuyeA").animate({
-            opacity:'0',
-            height:'0px',
-            width: '0px',
-            display: 'none'
-          });
-        });
-
-        $(".buttonB").click(function(){
-          $("#zhuyeB").animate({
-            opacity:'0',
-            height:'0px',
-            width: '0px',
-            display: 'none'
-          });
-        });
-
-        $(".buttonC").click(function(){
-          $("#zhuyeC").animate({
-            opacity:'0',
-            height:'0px',
-            width: '0px',
-            display: 'none'
-          });
-        });
-
-        $(".buttonD").click(function(){
-          $("#zhuyeD").animate({
-            opacity:'0',
-            height:'0px',
-            width: '0px',
-            display: 'none'
-          });
-        });
-        
-        $('.buttonE').click(function () {
-          $("#zhuyeE").animate({
-            opacity:'0',
-            height:'0px',
-            width: '0px',
-            display: 'none'
-          });
-        });
-      });
-    </script>  
-</body>  
-</html>  
+</body>
+</html>
