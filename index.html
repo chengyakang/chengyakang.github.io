@@ -328,9 +328,9 @@
         <button id="equip-button" class="flex-1 bg-accent hover:bg-accent/80 text-dark font-bold py-2 px-6 rounded-full transition-all card-hover">
           装备物品
         </button>
-        <button id="discard-button" class="flex-1 bg-gray-600 hover:bg-gray-500 text-light font-bold py-2 px-6 rounded-full transition-all card-hover">
-          丢弃
-        </button>
+        <button id="discard-button" class="flex-1 bg-purple-700 hover:bg-purple-600 text-light font-bold py-2 px-6 rounded-full transition-all card-hover"> 
+           强化 
+         </button>
       </div>
     </div>
   </div>
@@ -1312,14 +1312,35 @@
     function initGame() {
       // 添加到initGame()函数中
       document.getElementById('discard-button').addEventListener('click', () => {
-        elements.lootModal.classList.add('hidden');
-        gameState.currentLoot = null;
+        if (!gameState.currentLoot) return;
         
-        if (gameState.player.exp >= gameState.player.nextLevelExp) {
-          checkLevelUp();
-        } else {
-          setTimeout(spawnNewEnemy, 1000);
+        // 获取当前战利品
+        const loot = gameState.currentLoot;
+        
+        // 检查玩家是否已有该类型的装备
+        if (!gameState.player.equipment[loot.type]) {
+          showToast('你还没有装备该类型的装备！请先装备后再强化。');
+          return;
         }
+        
+        // 执行强化逻辑
+        const success = upgradeEquipment(loot);
+        
+        // 无论成功失败，都关闭模态框并继续游戏
+        setTimeout(() => {
+          elements.lootModal.classList.add('hidden');
+          gameState.currentLoot = null;
+          
+          // 重新渲染装备和玩家状态
+          renderEquipment();
+          renderPlayerStats();
+          
+          if (gameState.player.exp >= gameState.player.nextLevelExp) {
+            checkLevelUp();
+          } else {
+            setTimeout(spawnNewEnemy, 1000);
+          }
+        }, 1000); // 延迟关闭，让玩家看到强化结果
       });
       // 初始化玩家卡牌
       gameState.player.cards = [
@@ -2156,17 +2177,15 @@
     }
     
     // 处理敌人死亡
-    function handleEnemyDeath() {
+    function handleEnemyDeath(enemy = gameState.enemy) {
       gameState.isBattleActive = false;
-      elements.battleMessage.textContent = `你击败了${gameState.enemy.displayName}！获得了${gameState.enemy.expReward}点经验值！`;
+      elements.battleMessage.textContent = `你击败了${enemy.displayName}！获得了${enemy.expReward}点经验值！`;
       
       // 奖励经验
-      gameState.player.exp += gameState.enemy.expReward;
+      gameState.player.exp += enemy.expReward;
       
-      // 检查是否掉落装备
-      if (Math.random() * 100 < gameState.enemy.lootChance) {
-        generateLoot();
-      }
+      // 必定掉落装备
+      generateLoot();
       
       // 重新渲染
       renderPlayerStats();
@@ -2177,6 +2196,75 @@
       // 如果没有升级也没有掉落，直接生成新敌人
       if (gameState.player.exp < gameState.player.nextLevelExp && !gameState.currentLoot) {
         setTimeout(spawnNewEnemy, 2000);
+      }
+    }
+    
+    // 强化装备函数
+    function upgradeEquipment(upgradeItem) {
+      if (!gameState.player.equipment[upgradeItem.type]) {
+        showToast('你还没有装备该部位的装备！');
+        return false;
+      }
+      
+      // 根据装备品级确定强化成功率
+      let successRate;
+      switch(upgradeItem.rarity) {
+        case 'common':
+          successRate = 0.8; // 80%成功率
+          break;
+        case 'rare':
+          successRate = 0.6; // 60%成功率
+          break;
+        case 'epic':
+          successRate = 0.4; // 40%成功率
+          break;
+        default:
+          successRate = 0.5; // 默认50%
+      }
+      
+      // 执行强化
+      if (Math.random() < successRate) {
+        // 强化成功
+        const equipment = gameState.player.equipment[upgradeItem.type];
+        
+        // 移除旧的装备加成
+        applyEquipmentBonuses(equipment, false);
+        
+        // 更新装备属性
+        if (!equipment.bonus) equipment.bonus = {};
+        
+        // 为每个属性增加对应的强化值
+        let upgradeText = '';
+        for (const [key, value] of Object.entries(upgradeItem.bonus)) {
+          if (!equipment.bonus[key]) equipment.bonus[key] = 0;
+          const randomBonus = Math.floor(Math.random() * 3); // 随机1-3点额外加成
+          const totalBonus = value + randomBonus;
+          equipment.bonus[key] += totalBonus;
+          
+          // 构建提示文本
+          const keyText = key === 'attack' ? '攻击力' : 
+                         key === 'defense' ? '防御力' : 
+                         key === 'maxHp' ? '最大生命值' : 
+                         key === 'critChance' ? '暴击率' : '';
+          upgradeText += `${keyText}+${totalBonus} `;
+        }
+        
+        if (!equipment.upgrades) equipment.upgrades = 0;
+        equipment.upgrades++;
+        
+        // 保存原始名称用于升级显示
+        if (!equipment.baseName) equipment.baseName = equipment.name;
+        equipment.name = `${equipment.baseName} +${equipment.upgrades}`;
+        
+        // 重新应用装备加成
+        applyEquipmentBonuses(equipment, true);
+        
+        showToast(`${equipment.baseName}强化成功！${upgradeText}`);
+        return true;
+      } else {
+        // 强化失败，无惩罚
+        showToast('强化失败，但没有损失！');
+        return false;
       }
     }
     
@@ -2244,24 +2332,21 @@
       elements.lootModal.classList.remove('hidden');
     }
     
-    // 装备战利品
+    // 装备战利品（现在改为强化装备）
     function equipLoot() {
       if (!gameState.currentLoot) return;
       
       const equipment = gameState.currentLoot;
-      // 卸下当前装备（如果有）
-      const oldEquipment = gameState.player.equipment[equipment.type];
       
-      // 应用新装备属性
-      applyEquipmentBonuses(equipment, true);
-      
-      // 如果有旧装备，移除其属性
-      if (oldEquipment) {
-        applyEquipmentBonuses(oldEquipment, false);
+      // 如果已有该部位的装备，使用新装备来强化现有装备
+      if (gameState.player.equipment[equipment.type]) {
+        upgradeEquipment(equipment);
+      } else {
+        // 首次装备该部位，直接装备
+        applyEquipmentBonuses(equipment, true);
+        gameState.player.equipment[equipment.type] = equipment;
+        showToast(`装备了 ${equipment.name}！`);
       }
-      
-      // 装备新物品
-      gameState.player.equipment[equipment.type] = equipment;
       
       // 隐藏模态框
       elements.lootModal.classList.add('hidden');
@@ -2397,20 +2482,29 @@
     
     // 生成新敌人
     function spawnNewEnemy() {
-      // 根据难度选择适合的敌人类型组
+      // 检查是否应该生成头目（首次7级，之后每5级一次）
+      let isBossFight = false;
       let suitableEnemies;
-      if (gameState.difficulty < 2) {
-        // 难度1：只有低威胁敌人
-        suitableEnemies = enemyTypes.filter(enemy => enemy.threat === '低');
-      } else if (gameState.difficulty < 4) {
-        // 难度2-3：低威胁和中威胁敌人
-        suitableEnemies = enemyTypes.filter(enemy => enemy.threat === '低' || enemy.threat === '中');
-      } else if (gameState.difficulty < 6) {
-        // 难度4-5：中威胁和高威胁敌人
-        suitableEnemies = enemyTypes.filter(enemy => enemy.threat === '中' || enemy.threat === '高');
+      
+      if (gameState.player.level === 7 || (gameState.player.level > 7 && (gameState.player.level - 7) % 5 === 0)) {
+        isBossFight = true;
+        // 头目战时只选择极高威胁敌人
+        suitableEnemies = enemyTypes.filter(enemy => enemy.threat === '极高');
       } else {
-        // 难度6+：高威胁和极高威胁敌人
-        suitableEnemies = enemyTypes.filter(enemy => enemy.threat === '高' || enemy.threat === '极高');
+        // 根据难度选择适合的敌人类型组
+        if (gameState.difficulty < 2) {
+          // 难度1：只有低威胁敌人
+          suitableEnemies = enemyTypes.filter(enemy => enemy.threat === '低');
+        } else if (gameState.difficulty < 4) {
+          // 难度2-3：低威胁和中威胁敌人
+          suitableEnemies = enemyTypes.filter(enemy => enemy.threat === '低' || enemy.threat === '中');
+        } else if (gameState.difficulty < 6) {
+          // 难度4-5：中威胁和高威胁敌人
+          suitableEnemies = enemyTypes.filter(enemy => enemy.threat === '中' || enemy.threat === '高');
+        } else {
+          // 难度6+：高威胁和极高威胁敌人
+          suitableEnemies = enemyTypes.filter(enemy => enemy.threat === '高' || enemy.threat === '极高');
+        }
       }
       
       // 随机选择一个敌人类型
@@ -2432,10 +2526,10 @@
         maxHp: Math.round(baseEnemy.baseHp * difficultyMultiplier),
         attack: Math.round(baseEnemy.baseAttack * difficultyMultiplier),
         defense: baseEnemy.defense ? Math.round(baseEnemy.defense * difficultyMultiplier) : Math.floor(baseEnemy.baseAttack * difficultyMultiplier * 0.3),
-        expReward: Math.round(baseEnemy.exp * difficultyMultiplier),
+        expReward: Math.round(baseEnemy.exp * difficultyMultiplier * 1.5), // 提升怪物经验
         threat: baseEnemy.threat,
         sprite: baseEnemy.sprite,
-        lootChance: Math.min(70, 30 + gameState.difficulty * 5),
+        lootChance: 100, // 确保每只怪都必定掉落装备
         poison: null,
         burn: null,
         stunned: false,
@@ -2443,6 +2537,7 @@
         ability: baseEnemy.ability,
         passive: baseEnemy.passive,
         turnCount: 0, // 用于追踪敌人的回合数
+        isBoss: isBossFight, // 标记是否为头目
         // 复制敌人特有的能力参数
         vampirismRate: baseEnemy.vampirismRate,
         isMagicDamage: baseEnemy.isMagicDamage,
@@ -2454,6 +2549,47 @@
         shieldStrength: baseEnemy.shieldStrength ? Math.round(baseEnemy.shieldStrength * difficultyMultiplier) : null
       };
       
+      // 检查是否生成第二只小怪（30%概率，非头目战时）
+      if (!isBossFight && Math.random() < 0.3) {
+        // 随机选择第二个敌人类型（只能是低威胁或中威胁）
+        const secondaryEnemyTypes = enemyTypes.filter(enemy => enemy.threat === '低' || enemy.threat === '中');
+        const secondaryIndex = Math.floor(Math.random() * secondaryEnemyTypes.length);
+        const secondaryBaseEnemy = secondaryEnemyTypes[secondaryIndex];
+        const secondaryNameIndex = Math.floor(Math.random() * secondaryBaseEnemy.names.length);
+        const secondaryEnemyName = secondaryBaseEnemy.names[secondaryNameIndex];
+        
+        gameState.secondEnemy = {
+          name: secondaryEnemyName,
+          displayName: secondaryEnemyName,
+          hp: Math.round(secondaryBaseEnemy.baseHp * difficultyMultiplier * 0.7), // 第二只怪血量减少30%
+          maxHp: Math.round(secondaryBaseEnemy.baseHp * difficultyMultiplier * 0.7),
+          attack: Math.round(secondaryBaseEnemy.baseAttack * difficultyMultiplier * 0.7), // 攻击减少30%
+          defense: secondaryBaseEnemy.defense ? Math.round(secondaryBaseEnemy.defense * difficultyMultiplier * 0.7) : Math.floor(secondaryBaseEnemy.baseAttack * difficultyMultiplier * 0.3 * 0.7),
+          expReward: Math.round(secondaryBaseEnemy.exp * difficultyMultiplier * 1.5 * 0.7), // 经验减少30%
+          threat: secondaryBaseEnemy.threat,
+          sprite: secondaryBaseEnemy.sprite,
+          lootChance: 100, // 确保每只怪都必定掉落装备
+          poison: null,
+          burn: null,
+          stunned: false,
+          type: secondaryBaseEnemy.type,
+          ability: secondaryBaseEnemy.ability,
+          passive: secondaryBaseEnemy.passive,
+          turnCount: 0,
+          // 复制敌人特有的能力参数
+          vampirismRate: secondaryBaseEnemy.vampirismRate,
+          isMagicDamage: secondaryBaseEnemy.isMagicDamage,
+          critChance: secondaryBaseEnemy.critChance,
+          healAmount: secondaryBaseEnemy.healAmount,
+          healFrequency: secondaryBaseEnemy.healFrequency,
+          damageReturnRate: secondaryBaseEnemy.damageReturnRate,
+          auraDamage: secondaryBaseEnemy.auraDamage,
+          shieldStrength: secondaryBaseEnemy.shieldStrength ? Math.round(secondaryBaseEnemy.shieldStrength * difficultyMultiplier * 0.7) : null
+        };
+      } else {
+        gameState.secondEnemy = null;
+      }
+      
       // 抽新牌
       drawNewCards();
       
@@ -2462,7 +2598,17 @@
       gameState.isPlayerTurn = true;
       
       // 添加敌人特性描述
-      let enemyDescription = `新的敌人${gameState.enemy.displayName}出现了！`;
+      let enemyDescription = '';
+      if (isBossFight) {
+        enemyDescription = `强大的头目 ${gameState.enemy.displayName} 出现了！`;
+      } else {
+        enemyDescription = `新的敌人 ${gameState.enemy.displayName} 出现了！`;
+      }
+      
+      // 如果有第二只敌人，添加到描述中
+      if (gameState.secondEnemy) {
+        enemyDescription += ` 同时，${gameState.secondEnemy.displayName} 也加入了战斗！`;
+      }
       if (gameState.enemy.ability === 'highDefense') {
         enemyDescription += ' 它拥有坚硬的护甲！';
       } else if (gameState.enemy.ability === 'vampirism') {
@@ -2522,6 +2668,9 @@
           ring: null
         }
       };
+      
+      // 初始化第二敌人状态
+      gameState.secondEnemy = null;
       
       gameState.enemy = {
         name: '初级魔物',
