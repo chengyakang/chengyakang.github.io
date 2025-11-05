@@ -505,13 +505,16 @@
         maxHp: 100,
         exp: 0,
         nextLevelExp: 100,
-        attack: 10,
+        attack: 10,        // 物理攻击力（物理流）
+        magicAttack: 0,    // 魔法攻击力（法师流）
         defense: 0,
-        critChance: 5, // 百分比
+        critChance: 5,     // 暴击几率（刺客流）
+        critDamage: 1.5,   // 暴击伤害倍率（刺客流）
+        class: null,       // 玩家选择的流派：'warrior', 'assassin', 'mage'
         cards: [],
         cardCounts: {}, // 用于跟踪各类卡牌数量，实现升级
         skills: [
-          { id: 'basic_attack', name: '基础攻击', description: '造成10点伤害' }
+           { id: 'basic_attack', name: '基础攻击', description: '造成10点伤害' }
         ],
         equipment: {
           weapon: null,
@@ -915,64 +918,15 @@
       }
     ];
     
-    // 技能数据库
+    // 技能数据库 - 按流派分类
     const skillDatabase = [
-      { 
-        id: 'strong_attack', 
-        name: '强化攻击', 
-        description: '攻击力提升5点',
-        effect: (player) => { player.attack += 5; }
-      },
+      // 通用技能
       { 
         id: 'toughness', 
         name: '坚韧', 
         description: '最大生命值提升20点',
         effect: (player) => { 
           player.maxHp += 20;
-        }
-      },
-      { 
-        id: 'critical_strike', 
-        name: '暴击精通', 
-        description: '暴击几率提升5%，暴击伤害为1.5倍',
-        effect: (player) => { player.critChance += 5; }
-      },
-      { 
-        id: 'shield', 
-        name: '防御姿态', 
-        description: '获得5点防御力，减少受到的伤害',
-        effect: (player) => { player.defense += 5; }
-      },
-      { 
-        id: 'vampirism', 
-        name: '吸血', 
-        description: '攻击时恢复5点生命值',
-        effect: (player) => { 
-          if (!player.skills.some(s => s.id === 'vampirism_active')) {
-            player.skills.push({ 
-              id: 'vampirism_active', 
-              name: '吸血', 
-              description: '攻击时恢复5点生命值' 
-            });
-          }
-        }
-      },
-      { 
-        id: 'second_wind', 
-        name: '二次攻击', 
-        description: '获得一张"二次打击"卡牌',
-        effect: (player) => { 
-          addCardToPlayer({
-            id: 'second_strike',
-            name: '二次打击',
-            description: '对敌人造成1.2倍普通攻击伤害',
-            damageMultiplier: 1.2,
-            color: 'bg-accent/20',
-            borderColor: 'border-accent',
-            icon: 'fa-repeat',
-            type: 'attack',
-            upgradeTo: null
-          });
         }
       },
       { 
@@ -996,15 +950,160 @@
           });
         }
       },
+      
+      // 物理流（战士）专属技能
+      { 
+        id: 'strong_attack', 
+        name: '强化攻击', 
+        description: '攻击力提升5点',
+        classType: 'warrior',
+        effect: (player) => { player.attack += 5; }
+      },
+      { 
+        id: 'battle_fury', 
+        name: '战斗狂怒', 
+        description: '生命值低于30%时，攻击力提升30%',
+        classType: 'warrior',
+        effect: (player) => { 
+          addSkillToPlayer({
+            id: 'battle_fury_active',
+            name: '战斗狂怒',
+            description: '生命值低于30%时，攻击力提升30%'
+          });
+        }
+      },
+      { 
+        id: 'shield', 
+        name: '防御姿态', 
+        description: '获得5点防御力，减少受到的伤害',
+        classType: 'warrior',
+        effect: (player) => { player.defense += 5; }
+      },
+      { 
+        id: 'weapon_mastery', 
+        name: '武器精通', 
+        description: '装备的武器攻击力提升20%',
+        classType: 'warrior',
+        effect: (player) => { 
+          addSkillToPlayer({
+            id: 'weapon_mastery_active',
+            name: '武器精通',
+            description: '装备的武器攻击力提升20%'
+          });
+        }
+      },
+      
+      // 刺客流专属技能
+      { 
+        id: 'critical_strike', 
+        name: '暴击精通', 
+        description: '暴击几率提升5%，暴击伤害提升20%',
+        classType: 'assassin',
+        effect: (player) => { 
+          player.critChance += 5; 
+          player.critDamage += 0.2;
+        }
+      },
+      { 
+        id: 'assassinate', 
+        name: '暗杀精通', 
+        description: '对生命值高于70%的敌人，暴击几率翻倍',
+        classType: 'assassin',
+        effect: (player) => { 
+          addSkillToPlayer({
+            id: 'assassinate_active',
+            name: '暗杀精通',
+            description: '对生命值高于70%的敌人，暴击几率翻倍'
+          });
+        }
+      },
+      { 
+        id: 'deadly_strike', 
+        name: '致命打击', 
+        description: '暴击伤害额外提升30%',
+        classType: 'assassin',
+        effect: (player) => { player.critDamage += 0.3; }
+      },
+      { 
+        id: 'vampirism', 
+        name: '吸血', 
+        description: '攻击时恢复5点生命值',
+        classType: 'assassin',
+        effect: (player) => { 
+          if (!player.skills.some(s => s.id === 'vampirism_active')) {
+            player.skills.push({ 
+              id: 'vampirism_active', 
+              name: '吸血', 
+              description: '攻击时恢复5点生命值' 
+            });
+          }
+        }
+      },
+      
+      // 法师流专属技能
+      { 
+        id: 'magic_attack', 
+        name: '魔法强化', 
+        description: '魔法攻击力提升8点',
+        classType: 'mage',
+        effect: (player) => { player.magicAttack += 8; }
+      },
       { 
         id: 'magic_affinity', 
         name: '魔法亲和', 
         description: '魔法卡牌效果提升20%',
+        classType: 'mage',
         effect: (player) => { 
           addSkillToPlayer({
             id: 'magic_affinity_active',
             name: '魔法亲和',
             description: '魔法卡牌效果提升20%'
+          });
+        }
+      },
+      { 
+        id: 'spell_efficiency', 
+        name: '法术效能', 
+        description: '减少魔法卡牌的消耗，增加10%魔法伤害',
+        classType: 'mage',
+        effect: (player) => { 
+          addSkillToPlayer({
+            id: 'spell_efficiency_active',
+            name: '法术效能',
+            description: '魔法伤害提升10%'
+          });
+        }
+      },
+      { 
+        id: 'elemental_mastery', 
+        name: '元素精通', 
+        description: '装备的魔法装备效果提升25%',
+        classType: 'mage',
+        effect: (player) => { 
+          addSkillToPlayer({
+            id: 'elemental_mastery_active',
+            name: '元素精通',
+            description: '装备的魔法装备效果提升25%'
+          });
+        }
+      },
+      
+      // 其他辅助技能
+      { 
+        id: 'second_wind', 
+        name: '二次攻击', 
+        description: '获得一张"二次打击"卡牌',
+        effect: (player) => { 
+          addCardToPlayer({
+            id: 'second_strike',
+            name: '二次打击',
+            description: '对敌人造成1.2倍普通攻击伤害',
+            damageMultiplier: 1.2,
+            color: 'bg-accent/20',
+            borderColor: 'border-accent',
+            icon: 'fa-repeat',
+            type: 'attack',
+            upgradeTo: null
           });
         }
       },
@@ -1088,37 +1187,40 @@
     
     // 装备数据库
     const equipmentDatabase = [
-      // 武器 - 增加攻击力
-      // 传奇装备 - 龙骑士套装
+      // ===== 物理流（战士）装备 =====
+      // 传奇装备 - 龙骑士套装（物理流）
       {  
         id: 'legendary_dragon_slayer',
         name: '屠龙剑',
         type: 'weapon',
-        bonus: { attack: 30, critChance: 12 },
+        bonus: { attack: 40, defense: 5 },
         rarity: 'legendary',
-        description: '传说中屠过龙的神剑',
+        description: '传说中屠过龙的神剑，物理伤害极高',
         set: 'dragon_knight',
-        setEffect: '龙骑士套装'  
+        setEffect: '龙骑士套装',
+        classType: 'warrior'  
       },
       {  
         id: 'legendary_dragon_armor',
         name: '龙血铠甲',
         type: 'armor',
-        bonus: { defense: 20, maxHp: 120 },
+        bonus: { defense: 25, maxHp: 150 },
         rarity: 'legendary',
-        description: '汲取龙血精华的神秘铠甲',
+        description: '汲取龙血精华的神秘铠甲，提供强大防御',
         set: 'dragon_knight',
-        setEffect: '龙骑士套装'  
+        setEffect: '龙骑士套装',
+        classType: 'warrior'  
       },
       {  
         id: 'legendary_dragon_amulet',
         name: '龙之护符',
         type: 'trinket',
-        bonus: { maxHp: 70, critChance: 8 },
+        bonus: { attack: 20, maxHp: 100 },
         rarity: 'legendary',
-        description: '封印着巨龙灵魂的护符',
+        description: '封印着巨龙灵魂的护符，大幅提升攻击力',
         set: 'dragon_knight',
-        setEffect: '龙骑士套装'  
+        setEffect: '龙骑士套装',
+        classType: 'warrior'  
       },
       {  
         id: 'legendary_dragon_ring',
@@ -1128,101 +1230,112 @@
         rarity: 'legendary',
         description: '用龙鳞打造的神秘指环',
         set: 'dragon_knight',
-        setEffect: '龙骑士套装'  
+        setEffect: '龙骑士套装',
+        classType: 'warrior'  
       },
       
-      // 元素套装
+      // ===== 法师流装备 =====
+      // 传奇装备 - 元素套装（法师流）
       {  
-        id: 'legendary_elemental_blade',
-        name: '元素之剑',
+        id: 'legendary_elemental_staff',
+        name: '元素法杖',
         type: 'weapon',
-        bonus: { attack: 28, critChance: 10 },
+        bonus: { magicAttack: 45 },
         rarity: 'legendary',
-        description: '掌控四种元素力量的魔剑',
+        description: '掌控四种元素力量的法杖，魔法伤害极高',
         set: 'elemental',
-        setEffect: '元素套装'  
+        setEffect: '元素套装',
+        classType: 'mage'  
       },
       {  
         id: 'legendary_elemental_robe',
         name: '元素法袍',
         type: 'armor',
-        bonus: { defense: 15, maxHp: 80, critChance: 5 },
+        bonus: { magicAttack: 15, maxHp: 80 },
         rarity: 'legendary',
-        description: '吸收元素能量的神秘法袍',
+        description: '吸收元素能量的神秘法袍，提升魔法攻击',
         set: 'elemental',
-        setEffect: '元素套装'  
+        setEffect: '元素套装',
+        classType: 'mage'  
       },
       {  
         id: 'legendary_elemental_orb',
         name: '元素核心',
         type: 'trinket',
-        bonus: { attack: 10, maxHp: 60, critChance: 10 },
+        bonus: { magicAttack: 25 },
         rarity: 'legendary',
-        description: '蕴含原始元素之力的核心',
+        description: '蕴含原始元素之力的核心，大幅提升魔法攻击',
         set: 'elemental',
-        setEffect: '元素套装'  
+        setEffect: '元素套装',
+        classType: 'mage'  
       },
       {  
         id: 'legendary_elemental_ring',
         name: '元素指环',
         type: 'ring',
-        bonus: { attack: 12, defense: 12, critChance: 8 },
+        bonus: { magicAttack: 20, defense: 8 },
         rarity: 'legendary',
         description: '平衡元素力量的神奇指环',
         set: 'elemental',
-        setEffect: '元素套装'  
+        setEffect: '元素套装',
+        classType: 'mage'  
       },
       
-      // 暗影套装
+      // ===== 刺客流装备 =====
+      // 传奇装备 - 暗影套装（刺客流）
       {  
         id: 'legendary_shadow_dagger',
         name: '暗影匕首',
         type: 'weapon',
-        bonus: { attack: 25, critChance: 20 },
+        bonus: { attack: 22, critChance: 25, critDamage: 0.5 },
         rarity: 'legendary',
-        description: '能切开影子的致命匕首',
+        description: '能切开影子的致命匕首，暴击率极高',
         set: 'shadow',
-        setEffect: '暗影套装'  
+        setEffect: '暗影套装',
+        classType: 'assassin'  
       },
       {  
         id: 'legendary_shadow_cloak',
         name: '暗影斗篷',
         type: 'armor',
-        bonus: { defense: 18, maxHp: 70 },
+        bonus: { defense: 15, critChance: 8 },
         rarity: 'legendary',
-        description: '能融入黑暗的神秘斗篷',
+        description: '能融入黑暗的神秘斗篷，提升暴击率',
         set: 'shadow',
-        setEffect: '暗影套装'  
+        setEffect: '暗影套装',
+        classType: 'assassin'  
       },
       {  
         id: 'legendary_shadow_amulet',
         name: '暗影之心',
         type: 'trinket',
-        bonus: { critChance: 15, attack: 8 },
+        bonus: { critChance: 20, critDamage: 0.3 },
         rarity: 'legendary',
-        description: '跳动着暗影能量的护符',
+        description: '跳动着暗影能量的护符，大幅提升暴击伤害',
         set: 'shadow',
-        setEffect: '暗影套装'  
+        setEffect: '暗影套装',
+        classType: 'assassin'  
       },
       {  
         id: 'legendary_shadow_ring',
         name: '阴影指环',
         type: 'ring',
-        bonus: { attack: 10, defense: 10, critChance: 12 },
+        bonus: { attack: 10, critChance: 15, critDamage: 0.2 },
         rarity: 'legendary',
         description: '能操控阴影的神奇指环',
         set: 'shadow',
-        setEffect: '暗影套装'  
+        setEffect: '暗影套装',
+        classType: 'assassin'  
       },
       
-      // 光明套装
+      // 通用传奇装备 - 光明套装
       {  
         id: 'legendary_light_sword',
         name: '光明圣剑',
         type: 'weapon',
-        bonus: { attack: 27, defense: 5, critChance: 10 },
+        bonus: { attack: 25, magicAttack: 20, critChance: 8 },
         rarity: 'legendary',
-        description: '散发神圣光芒的圣剑',
+        description: '散发神圣光芒的圣剑，同时提升物理和魔法攻击',
         set: 'light',
         setEffect: '光明套装'  
       },
@@ -1250,128 +1363,142 @@
         id: 'legendary_light_ring',
         name: '圣光指环',
         type: 'ring',
-        bonus: { attack: 12, defense: 18, maxHp: 20 },
+        bonus: { attack: 10, magicAttack: 10, defense: 18, maxHp: 20 },
         rarity: 'legendary',
         description: '蕴含圣光之力的指环',
         set: 'light',
         setEffect: '光明套装'  
       },
-      // 普通装备
+      // 物理流普通装备
       {
         id: 'sword_1',
         name: '铁剑',
         type: 'weapon',
         bonus: { attack: 5 },
         rarity: 'common',
-        description: '一把普通的铁剑，增加5点攻击力'
-      },
-      {
-        id: 'axe_1',
-        name: '战斧',
-        type: 'weapon',
-        bonus: { attack: 7, critChance: 2 },
-        rarity: 'common',
-        description: '沉重的战斧，增加7点攻击力和2%暴击率'
+        description: '一把普通的铁剑，增加5点攻击力',
+        classType: 'warrior'
       },
       {
         id: 'dagger_1',
-        name: '匕首',
+        name: '锋利匕首',
         type: 'weapon',
-        bonus: { attack: 3, critChance: 5 },
+        bonus: { attack: 4, critChance: 8, critDamage: 0.1 },
         rarity: 'common',
-        description: '锋利的匕首，增加3点攻击力和5%暴击率'
+        description: '轻便锋利的匕首，增加4点攻击力和8%暴击率',
+        classType: 'assassin'
+      },
+      {
+        id: 'magic_wand_1',
+        name: '初级魔杖',
+        type: 'weapon',
+        bonus: { magicAttack: 6 },
+        rarity: 'common',
+        description: '简单的魔法魔杖，增加6点魔法攻击力',
+        classType: 'mage'
       },
       {
         id: 'sword_2',
         name: '钢剑',
         type: 'weapon',
-        bonus: { attack: 10 },
+        bonus: { attack: 10, defense: 2 },
         rarity: 'rare',
-        description: '精良的钢剑，增加10点攻击力'
+        description: '精良的钢剑，增加10点攻击力和2点防御力',
+        classType: 'warrior'
       },
       {
-        id: 'sword_3',
-        name: '圣剑',
+        id: 'fire_wand',
+        name: '火焰魔杖',
         type: 'weapon',
-        bonus: { attack: 15, critChance: 5 },
-        rarity: 'epic',
-        description: '神圣的剑，增加15点攻击力和5%暴击率'
+        bonus: { magicAttack: 12 },
+        rarity: 'rare',
+        description: '能够释放火焰的魔法魔杖，增加12点魔法攻击力',
+        classType: 'mage'
       },
       
-      //  armor - 增加防御力和生命值
+      // 物理流防具装备
       {
-        id: 'cloth_1',
-        name: '布衣',
-        type: 'armor',
-        bonus: { defense: 2, maxHp: 10 },
-        rarity: 'common',
-        description: '简单的布衣，增加2点防御力和10点生命值'
-      },
-      {
-        id: 'leather_1',
-        name: '皮甲',
-        type: 'armor',
-        bonus: { defense: 4, maxHp: 20 },
-        rarity: 'common',
-        description: '坚韧的皮甲，增加4点防御力和20点生命值'
-      },
-      {
-        id: 'iron_1',
-        name: '铁甲',
-        type: 'armor',
-        bonus: { defense: 7, maxHp: 30 },
-        rarity: 'rare',
-        description: '坚固的铁甲，增加7点防御力和30点生命值'
-      },
-      {
-        id: 'steel_1',
-        name: '钢甲',
-        type: 'armor',
-        bonus: { defense: 10, maxHp: 50 },
+        id: 'greatsword',
+        name: '双手大剑',
+        type: 'weapon',
+        bonus: { attack: 20, maxHp: 30 },
         rarity: 'epic',
-        description: '精良的钢甲，增加10点防御力和50点生命值'
+        description: '强大的双手大剑，增加20点攻击力和30点最大生命值',
+        classType: 'warrior'
+      },
+      {
+        id: 'plate_armor_1',
+        name: '半身铁甲',
+        type: 'armor',
+        bonus: { defense: 5, maxHp: 25 },
+        rarity: 'common',
+        description: '坚固的半身铁甲，增加5点防御力和25点生命值',
+        classType: 'warrior'
+      },
+      {
+        id: 'assassin_leather',
+        name: '刺客皮衣',
+        type: 'armor',
+        bonus: { defense: 3, critChance: 6 },
+        rarity: 'common',
+        description: '轻便的刺客专用皮衣，增加3点防御力和6%暴击率',
+        classType: 'assassin'
+      },
+      {
+        id: 'mage_robe',
+        name: '魔法长袍',
+        type: 'armor',
+        bonus: { magicAttack: 5, defense: 1 },
+        rarity: 'common',
+        description: '轻便的魔法长袍，增加5点魔法攻击力和1点防御力',
+        classType: 'mage'
       },
       
-      // 饰品 - 增加各种属性
+      // 物理流饰品装备
       {
-        id: 'amulet_1',
-        name: '铜项链',
-        type: 'trinket',
-        bonus: { maxHp: 15, critChance: 2 },
-        rarity: 'common',
-        description: '普通的铜项链，增加15点生命值和2%暴击率'
-      },
-      {
-        id: 'amulet_2',
-        name: '银项链',
-        type: 'trinket',
-        bonus: { maxHp: 30, critChance: 4 },
+        id: 'full_plate',
+        name: '全身板甲',
+        type: 'armor',
+        bonus: { defense: 9, maxHp: 40 },
         rarity: 'rare',
-        description: '精致的银项链，增加30点生命值和4%暴击率'
+        description: '厚重的全身板甲，增加9点防御力和40点生命值',
+        classType: 'warrior'
       },
       {
-        id: 'ring_1',
-        name: '铁戒指',
-        type: 'ring',
-        bonus: { attack: 2, defense: 2 },
+        id: 'assassin_dagger',
+        name: '精钢匕首',
+        type: 'trinket',
+        bonus: { attack: 5, critChance: 8 },
         rarity: 'common',
-        description: '普通的铁戒指，增加2点攻击力和2点防御力'
+        description: '锋利的精钢匕首作为饰品佩戴，增加5点攻击力和8%暴击率',
+        classType: 'assassin'
       },
       {
-        id: 'ring_2',
-        name: '银戒指',
+        id: 'strength_ring',
+        name: '力量指环',
         type: 'ring',
-        bonus: { attack: 4, defense: 4, critChance: 2 },
+        bonus: { attack: 6 },
+        rarity: 'common',
+        description: '增加力量的指环，提升6点攻击力',
+        classType: 'warrior'
+      },
+      {
+        id: 'magic_ring',
+        name: '魔法指环',
+        type: 'ring',
+        bonus: { magicAttack: 8 },
+        rarity: 'common',
+        description: '蕴含魔法能量的指环，增加8点魔法攻击力',
+        classType: 'mage'
+      },
+      {
+        id: 'assassin_ring',
+        name: '刺客指环',
+        type: 'ring',
+        bonus: { critChance: 10, critDamage: 0.2 },
         rarity: 'rare',
-        description: '精致的银戒指，增加4点攻击力、4点防御力和2%暴击率'
-      },
-      {
-        id: 'ring_3',
-        name: '钻石戒指',
-        type: 'ring',
-        bonus: { attack: 7, defense: 7, critChance: 5 },
-        rarity: 'epic',
-        description: '华丽的钻石戒指，增加7点攻击力、7点防御力和5%暴击率'
+        description: '专为刺客打造的指环，增加10%暴击率和20%暴击伤害',
+        classType: 'assassin'
       }
     ];
     
@@ -1638,6 +1765,85 @@
     
     // 初始化游戏
     function initGame() {
+      // 流派选择模态框
+      const classSelectionModal = document.createElement('div');
+      classSelectionModal.id = 'class-selection-modal';
+      classSelectionModal.className = 'fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50';
+      classSelectionModal.innerHTML = `
+        <div class="bg-dark border-2 border-primary rounded-xl p-5 max-w-md w-full mx-4">
+          <h2 class="text-xl md:text-2xl font-bold text-center mb-5">选择你的职业</h2>
+          <div class="space-y-4">
+            <div id="warrior-option" class="border border-primary/50 rounded-lg p-4 cursor-pointer hover:bg-primary/10 transition-all">
+              <div class="flex items-center">
+                <i class="fa fa-shield text-orange-500 text-2xl mr-3"></i>
+                <div>
+                  <h3 class="font-bold text-lg">战士 - 物理流</h3>
+                  <p class="text-sm text-light/70">擅长高攻击力，通过纯粹的力量击败敌人</p>
+                </div>
+              </div>
+            </div>
+            <div id="assassin-option" class="border border-primary/50 rounded-lg p-4 cursor-pointer hover:bg-primary/10 transition-all">
+              <div class="flex items-center">
+                <i class="fa fa-bolt text-purple-500 text-2xl mr-3"></i>
+                <div>
+                  <h3 class="font-bold text-lg">刺客 - 暴击流</h3>
+                  <p class="text-sm text-light/70">高暴击率和暴击伤害，追求一击必杀</p>
+                </div>
+              </div>
+            </div>
+            <div id="mage-option" class="border border-primary/50 rounded-lg p-4 cursor-pointer hover:bg-primary/10 transition-all">
+              <div class="flex items-center">
+                <i class="fa fa-fire text-blue-500 text-2xl mr-3"></i>
+                <div>
+                  <h3 class="font-bold text-lg">法师 - 法术流</h3>
+                  <p class="text-sm text-light/70">精通魔法攻击，用强大的法术摧毁敌人</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(classSelectionModal);
+      
+      // 选择流派
+      function selectClass(classType) {
+        gameState.player.class = classType;
+        
+        // 给予初始职业加成
+        switch(classType) {
+          case 'warrior':
+            gameState.player.attack += 5;
+            gameState.player.maxHp += 20;
+            break;
+          case 'assassin':
+            gameState.player.attack += 2;
+            gameState.player.critChance += 10;
+            gameState.player.critDamage += 0.3; // 增加到1.8倍
+            break;
+          case 'mage':
+            gameState.player.magicAttack = 15; // 法师初始有魔法攻击力
+            gameState.player.maxHp -= 10; // 法师生命值较低
+            break;
+        }
+        
+        // 更新当前生命值
+        gameState.player.hp = gameState.player.maxHp;
+        
+        // 隐藏选择模态框
+        classSelectionModal.classList.add('hidden');
+        
+        // 显示初始剧情
+        setTimeout(() => {
+          showStoryScene(1);
+          gameState.isBattleActive = false;
+        }, 500);
+      }
+      
+      // 绑定流派选择事件
+      document.getElementById('warrior-option').addEventListener('click', () => selectClass('warrior'));
+      document.getElementById('assassin-option').addEventListener('click', () => selectClass('assassin'));
+      document.getElementById('mage-option').addEventListener('click', () => selectClass('mage'));
+      
       // 添加到initGame()函数中
       document.getElementById('discard-button').addEventListener('click', () => {
         if (!gameState.currentLoot) return;
@@ -1720,6 +1926,8 @@
       // 剧情系统事件监听
       elements.storyContinue.addEventListener('click', continueAfterStory);
       elements.restartAfterEnding.addEventListener('click', restartGameAfterEnding);
+      
+      // 游戏初始化后会在选择流派后显示剧情
     }
     
     // 渲染游戏
@@ -1853,29 +2061,76 @@
         hasUsedCard = true;
         // 计算基础攻击力（包括装备加成）
         let baseAttack = gameState.player.attack;
+        let weaponAttackBonus = 0;
         if (gameState.player.equipment.weapon && gameState.player.equipment.weapon.bonus.attack) {
-          baseAttack += gameState.player.equipment.weapon.bonus.attack;
+          weaponAttackBonus = gameState.player.equipment.weapon.bonus.attack;
+          baseAttack += weaponAttackBonus;
         }
         if (gameState.player.equipment.ring && gameState.player.equipment.ring.bonus.attack) {
           baseAttack += gameState.player.equipment.ring.bonus.attack;
         }
         
-        // 狂怒效果
-        const hasFrenzy = gameState.player.skills.some(skill => skill.id === 'frenzy_active');
-        if (hasFrenzy && gameState.player.hp / gameState.player.maxHp < 0.3) {
-          baseAttack = Math.round(baseAttack * 1.2);
-          message += '狂怒激活！攻击力提升！';
+        // 计算魔法攻击力（用于魔法卡牌）
+        let magicAttack = gameState.player.magicAttack;
+        let magicEquipmentBonus = 0;
+        if (gameState.player.equipment.weapon && gameState.player.equipment.weapon.bonus.magicAttack) {
+          magicEquipmentBonus = gameState.player.equipment.weapon.bonus.magicAttack;
+          magicAttack += magicEquipmentBonus;
+        }
+        if (gameState.player.equipment.ring && gameState.player.equipment.ring.bonus.magicAttack) {
+          magicEquipmentBonus += gameState.player.equipment.ring.bonus.magicAttack;
+          magicAttack += gameState.player.equipment.ring.bonus.magicAttack;
+        }
+        
+        // 战斗狂怒效果（物理流）
+        const hasBattleFury = gameState.player.skills.some(skill => skill.id === 'battle_fury_active');
+        if (hasBattleFury && gameState.player.hp / gameState.player.maxHp < 0.3) {
+          baseAttack = Math.round(baseAttack * 1.3);
+          message += '战斗狂怒激活！攻击力提升30%！';
+        }
+        
+        // 武器精通效果（物理流）
+        const hasWeaponMastery = gameState.player.skills.some(skill => skill.id === 'weapon_mastery_active');
+        if (hasWeaponMastery && weaponAttackBonus > 0) {
+          const masteryBonus = Math.round(weaponAttackBonus * 0.2);
+          baseAttack += masteryBonus;
+          message += `武器精通！额外攻击+${masteryBonus}！`;
+        }
+        
+        // 法术效能效果（法师流）
+        const hasSpellEfficiency = gameState.player.skills.some(skill => skill.id === 'spell_efficiency_active');
+        if (hasSpellEfficiency) {
+          magicAttack = Math.round(magicAttack * 1.1);
+          message += '法术效能！魔法伤害提升10%！';
+        }
+        
+        // 元素精通效果（法师流）
+        const hasElementalMastery = gameState.player.skills.some(skill => skill.id === 'elemental_mastery_active');
+        if (hasElementalMastery && magicEquipmentBonus > 0) {
+          const elementalBonus = Math.round(magicEquipmentBonus * 0.25);
+          magicAttack += elementalBonus;
+          message += `元素精通！额外魔法攻击+${elementalBonus}！`;
         }
         
         // 魔法亲和效果
         const hasMagicAffinity = gameState.player.skills.some(skill => skill.id === 'magic_affinity_active');
         if (hasMagicAffinity && card.type === 'magic') {
-          baseAttack = Math.round(baseAttack * 1.2);
+          if (card.type === 'magic') {
+            magicAttack = Math.round(magicAttack * 1.2);
+          } else {
+            baseAttack = Math.round(baseAttack * 1.2);
+          }
           message += '魔法亲和增强了效果！';
         }
         
         // 计算伤害
-        let damage = card.damage || Math.round(baseAttack * (card.damageMultiplier || 1));
+        // 魔法卡牌使用魔法攻击力，普通攻击卡牌使用物理攻击力
+        let damage;
+        if (card.type === 'magic') {
+          damage = card.damage || Math.round(magicAttack * (card.damageMultiplier || 1));
+        } else {
+          damage = card.damage || Math.round(baseAttack * (card.damageMultiplier || 1));
+        }
         
         // 处理破甲效果和敌人防御特性
         let effectiveDefense = gameState.enemy.defense || 0;
@@ -1915,9 +2170,28 @@
           critChance += gameState.player.equipment.ring.bonus.critChance;
         }
         
+        // 暗杀精通效果（刺客流）- 对高生命值敌人暴击率翻倍
+        const hasAssassinate = gameState.player.skills.some(skill => skill.id === 'assassinate_active');
+        if (hasAssassinate && gameState.enemy.hp / gameState.enemy.maxHp > 0.7) {
+          critChance *= 2;
+          message += '暗杀精通激活！暴击率翻倍！';
+        }
+        
+        // 暴击伤害倍率（包括装备加成）
+        let critDamage = gameState.player.critDamage;
+        if (gameState.player.equipment.weapon && gameState.player.equipment.weapon.bonus.critDamage) {
+          critDamage += gameState.player.equipment.weapon.bonus.critDamage;
+        }
+        if (gameState.player.equipment.trinket && gameState.player.equipment.trinket.bonus.critDamage) {
+          critDamage += gameState.player.equipment.trinket.bonus.critDamage;
+        }
+        if (gameState.player.equipment.ring && gameState.player.equipment.ring.bonus.critDamage) {
+          critDamage += gameState.player.equipment.ring.bonus.critDamage;
+        }
+        
         const isCrit = Math.random() * 100 < critChance;
         if (isCrit) {
-          damage = Math.round(damage * 1.5);
+          damage = Math.round(damage * critDamage);
           message += `你使用了${card.name}，造成了${damage}点暴击伤害！`;
         } else {
           message += `你使用了${card.name}，造成了${damage}点伤害！`;
@@ -2283,18 +2557,17 @@
       
       // 处理暴击（刺客特性）
       if (gameState.enemy.ability === 'highCrit' && gameState.enemy.critChance && Math.random() * 100 < gameState.enemy.critChance) {
-        damage = Math.round(damage * 1.5); // 50%暴击伤害加成
+        const enemyCritDamage = gameState.enemy.critDamage || 1.5;
+        damage = Math.round(damage * enemyCritDamage);
         elements.battleMessage.textContent = `${gameState.enemy.displayName}对你发动了暴击！`;
       }
       
       // 处理魔法伤害（法师特性）
       if (gameState.enemy.ability === 'spellDamage' && gameState.enemy.isMagicDamage) {
         // 魔法伤害无视防御，但仍然可以被临时防御减免
-        elements.battleMessage.textContent = `${gameState.enemy.displayName}对你造成了${damage}点魔法伤害！`;
       } else {
         // 物理伤害考虑防御
         damage = damage - totalDefense;
-        elements.battleMessage.textContent = `${gameState.enemy.displayName}对你造成了${damage}点伤害！`;
       }
       
       // 应用临时防御
@@ -2305,6 +2578,13 @@
       
       // 确保伤害不为负
       damage = Math.max(1, damage);
+      
+      // 设置战斗消息
+      if (gameState.enemy.ability === 'spellDamage' && gameState.enemy.isMagicDamage) {
+        elements.battleMessage.textContent = `${gameState.enemy.displayName}对你造成了${damage}点魔法伤害！`;
+      } else {
+        elements.battleMessage.textContent = `${gameState.enemy.displayName}对你造成了${damage}点伤害！`;
+      }
       
       // 应用伤害
       gameState.player.hp -= damage;
@@ -2519,8 +2799,19 @@
       // 奖励经验
       gameState.player.exp += enemy.expReward;
       
-      // 必定掉落装备
-      generateLoot();
+      // 50%概率掉落装备
+      if (Math.random() < 0.5) {
+        generateLoot();
+      } else {
+        // 如果没有掉落装备，直接生成新敌人
+        setTimeout(() => {
+          if (gameState.player.exp >= gameState.player.nextLevelExp) {
+            checkLevelUp();
+          } else {
+            spawnNewEnemy();
+          }
+        }, 2000);
+      }
       
       // 重新渲染
       renderPlayerStats();
@@ -2541,24 +2832,8 @@
         return false;
       }
       
-      // 根据装备品级确定强化成功率
-      let successRate;
-      switch(upgradeItem.rarity) {
-        case 'common':
-          successRate = 0.8; // 80%成功率
-          break;
-        case 'rare':
-          successRate = 0.6; // 60%成功率
-          break;
-        case 'epic':
-          successRate = 0.4; // 40%成功率
-          break;
-        case 'legendary':
-          successRate = 0.3; // 30%成功率，但强化收益更高
-          break;
-        default:
-          successRate = 0.5; // 默认50%
-      }
+      // 统一设置强化成功率为50%
+      let successRate = 0.5; // 所有装备类型都是50%成功率
       
       // 执行强化
       if (Math.random() < successRate) {
@@ -2888,6 +3163,10 @@
         gameState.player.attack += equipment.bonus.attack * multiplier;
       }
       
+      if (equipment.bonus.magicAttack) {
+        gameState.player.magicAttack += equipment.bonus.magicAttack * multiplier;
+      }
+      
       if (equipment.bonus.defense) {
         gameState.player.defense += equipment.bonus.defense * multiplier;
       }
@@ -2901,6 +3180,10 @@
       
       if (equipment.bonus.critChance) {
         gameState.player.critChance += equipment.bonus.critChance * multiplier;
+      }
+      
+      if (equipment.bonus.critDamage) {
+        gameState.player.critDamage += equipment.bonus.critDamage * multiplier;
       }
       
       // 如果是应用装备，延迟检查套装效果以确保所有装备操作完成
@@ -3002,8 +3285,11 @@
         exp: 0,
         nextLevelExp: 100,
         attack: 10,
+        magicAttack: 0,
         defense: 0,
         critChance: 5,
+        critDamage: 1.5,
+        class: null,
         cards: [],
         cardCounts: {},
         skills: [
@@ -3031,8 +3317,16 @@
     
     // 显示升级选择
     function showLevelUpOptions() {
+      const playerClass = gameState.player.class;
+      
+      // 根据玩家流派筛选可用技能（通用技能+本流派专属技能）
+      const availableSkills = skillDatabase.filter(skill => {
+        // 通用技能没有classType或者本流派专属技能
+        return !skill.classType || skill.classType === playerClass;
+      });
+      
       // 随机选择2个固定技能和1个随机生成的技能
-      const shuffledSkills = [...skillDatabase].sort(() => 0.5 - Math.random());
+      const shuffledSkills = [...availableSkills].sort(() => 0.5 - Math.random());
       const fixedSkills = shuffledSkills.slice(0, 2);
       const randomSkill = generateRandomSkill();
       const selectedSkills = [...fixedSkills, randomSkill].sort(() => 0.5 - Math.random());
@@ -3122,6 +3416,9 @@
       // 随难度增强敌人属性
       const difficultyMultiplier = 1 + (gameState.difficulty - 1) * 0.2;
       
+      // 添加等级乘数 - 怪物属性随玩家等级提升而增强
+      const levelMultiplier = 1 + (gameState.player.level - 1) * 0.3;
+      
       // 加强BOSS属性
       const bossLevel = isBossFight ? Math.floor((gameState.player.level - 7) / 5) + 1 : 0;
       const bossMultiplier = isBossFight ? 2 + bossLevel * 0.5 : 1;
@@ -3134,11 +3431,11 @@
       gameState.enemy = {
         name: enemyName,
         displayName: isBossFight ? `${enemyName} (BOSS)` : enemyName,
-        hp: Math.round(baseEnemy.baseHp * difficultyMultiplier * bossMultiplier),
-        maxHp: Math.round(baseEnemy.baseHp * difficultyMultiplier * bossMultiplier),
-        attack: Math.round(baseEnemy.baseAttack * difficultyMultiplier * bossMultiplier),
-        defense: baseEnemy.defense ? Math.round(baseEnemy.defense * difficultyMultiplier * bossMultiplier) : Math.floor(baseEnemy.baseAttack * difficultyMultiplier * bossMultiplier * 0.3),
-        expReward: Math.round(baseEnemy.exp * difficultyMultiplier * bossMultiplier * 2), // BOSS提供更多经验值
+        hp: Math.round(baseEnemy.baseHp * difficultyMultiplier * levelMultiplier * bossMultiplier),
+        maxHp: Math.round(baseEnemy.baseHp * difficultyMultiplier * levelMultiplier * bossMultiplier),
+        attack: Math.round(baseEnemy.baseAttack * difficultyMultiplier * levelMultiplier * bossMultiplier),
+        defense: baseEnemy.defense ? Math.round(baseEnemy.defense * difficultyMultiplier * levelMultiplier * bossMultiplier) : Math.floor(baseEnemy.baseAttack * difficultyMultiplier * levelMultiplier * bossMultiplier * 0.3),
+        expReward: Math.round(baseEnemy.exp * difficultyMultiplier * levelMultiplier * bossMultiplier * 2), // BOSS提供更多经验值
         threat: baseEnemy.threat,
         sprite: baseEnemy.sprite,
         lootChance: 100, // 确保每只怪都必定掉落装备
@@ -3158,7 +3455,7 @@
         healFrequency: baseEnemy.healFrequency,
         damageReturnRate: baseEnemy.damageReturnRate,
         auraDamage: baseEnemy.auraDamage,
-        shieldStrength: baseEnemy.shieldStrength ? Math.round(baseEnemy.shieldStrength * difficultyMultiplier) : null
+        shieldStrength: baseEnemy.shieldStrength ? Math.round(baseEnemy.shieldStrength * difficultyMultiplier * levelMultiplier) : null
       };
       
       // 检查是否生成第二只小怪（30%概率，非头目战时）
@@ -3173,11 +3470,11 @@
         gameState.secondEnemy = {
           name: secondaryEnemyName,
           displayName: secondaryEnemyName,
-          hp: Math.round(secondaryBaseEnemy.baseHp * difficultyMultiplier * 0.7), // 第二只怪血量减少30%
-          maxHp: Math.round(secondaryBaseEnemy.baseHp * difficultyMultiplier * 0.7),
-          attack: Math.round(secondaryBaseEnemy.baseAttack * difficultyMultiplier * 0.7), // 攻击减少30%
-          defense: secondaryBaseEnemy.defense ? Math.round(secondaryBaseEnemy.defense * difficultyMultiplier * 0.7) : Math.floor(secondaryBaseEnemy.baseAttack * difficultyMultiplier * 0.3 * 0.7),
-          expReward: Math.round(secondaryBaseEnemy.exp * difficultyMultiplier * 1.5 * 0.7), // 经验减少30%
+          hp: Math.round(secondaryBaseEnemy.baseHp * difficultyMultiplier * levelMultiplier * 0.7), // 第二只怪血量减少30%
+          maxHp: Math.round(secondaryBaseEnemy.baseHp * difficultyMultiplier * levelMultiplier * 0.7),
+          attack: Math.round(secondaryBaseEnemy.baseAttack * difficultyMultiplier * levelMultiplier * 0.7), // 攻击减少30%
+          defense: secondaryBaseEnemy.defense ? Math.round(secondaryBaseEnemy.defense * difficultyMultiplier * levelMultiplier * 0.7) : Math.floor(secondaryBaseEnemy.baseAttack * difficultyMultiplier * levelMultiplier * 0.3 * 0.7),
+          expReward: Math.round(secondaryBaseEnemy.exp * difficultyMultiplier * levelMultiplier * 1.5 * 0.7), // 经验减少30%
           threat: secondaryBaseEnemy.threat,
           sprite: secondaryBaseEnemy.sprite,
           lootChance: 100, // 确保每只怪都必定掉落装备
@@ -3196,7 +3493,7 @@
           healFrequency: secondaryBaseEnemy.healFrequency,
           damageReturnRate: secondaryBaseEnemy.damageReturnRate,
           auraDamage: secondaryBaseEnemy.auraDamage,
-          shieldStrength: secondaryBaseEnemy.shieldStrength ? Math.round(secondaryBaseEnemy.shieldStrength * difficultyMultiplier * 0.7) : null
+          shieldStrength: secondaryBaseEnemy.shieldStrength ? Math.round(secondaryBaseEnemy.shieldStrength * difficultyMultiplier * levelMultiplier * 0.7) : null
         };
       } else {
         gameState.secondEnemy = null;
@@ -3266,8 +3563,11 @@
         exp: 0,
         nextLevelExp: 100,
         attack: 10,
+        magicAttack: 0,
         defense: 0,
         critChance: 5,
+        critDamage: 1.5,
+        class: null,
         cards: [],
         cardCounts: {},
         skills: [
