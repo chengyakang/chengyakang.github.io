@@ -484,18 +484,18 @@
         upgradeTo: 'assassinate'
       },
       
-      // 防御类
-      {
-        id: 'defend',
-        name: '防御',
-        description: '本回合减少50%受到的伤害',
-        color: 'bg-blue-500/20',
-        borderColor: 'border-blue-500',
-        icon: 'fa-shield',
-        defend: 0.5,
-        type: 'defense',
-        upgradeTo: 'fortify'
-      },
+      // // 防御类
+      // {
+      //   id: 'defend',
+      //   name: '防御',
+      //   description: '本回合减少50%受到的伤害',
+      //   color: 'bg-blue-500/20',
+      //   borderColor: 'border-blue-500',
+      //   icon: 'fa-shield',
+      //   defend: 0.5,
+      //   type: 'defense',
+      //   upgradeTo: 'fortify'
+      // },
       {
         id: 'parry',
         name: '格挡',
@@ -1078,12 +1078,172 @@
       ]
     };
     
-    // 敌人类型数据库
+    // 敌人类型数据库 - 增加独特特性
     const enemyTypes = [
-      { baseHp: 50, baseAttack: 8, exp: 50, threat: '低', sprite: 'fa-asterisk', names: enemyNameDatabase.low },
-      { baseHp: 80, baseAttack: 12, exp: 80, threat: '中', sprite: 'fa-moon-o', names: enemyNameDatabase.medium },
-      { baseHp: 120, baseAttack: 16, exp: 120, threat: '高', sprite: 'fa-shield', names: enemyNameDatabase.high },
-      { baseHp: 200, baseAttack: 25, exp: 200, threat: '极高', sprite: 'fa-fire', names: enemyNameDatabase.extreme }
+      // 低威胁敌人
+      { 
+        baseHp: 50, 
+        baseAttack: 8, 
+        exp: 50, 
+        threat: '低', 
+        sprite: 'fa-asterisk', 
+        names: enemyNameDatabase.low,
+        type: 'basic',
+        ability: null
+      },
+      { 
+        baseHp: 60, 
+        baseAttack: 6, 
+        exp: 55, 
+        threat: '低', 
+        sprite: 'fa-shield', 
+        names: ['小石魔', '岩石守卫', '石肤怪', '地元素'],
+        type: 'stone',
+        ability: 'highDefense', // 高防御
+        defense: 4 // 额外防御
+      },
+      { 
+        baseHp: 40, 
+        baseAttack: 10, 
+        exp: 55, 
+        threat: '低', 
+        sprite: 'fa-heartbeat', 
+        names: ['小吸血鬼', '吸血蝙蝠', '血虫'],
+        type: 'vampire',
+        ability: 'vampirism', // 吸血
+        vampirismRate: 0.3 // 吸血比例
+      },
+      
+      // 中威胁敌人
+      { 
+        baseHp: 80, 
+        baseAttack: 12, 
+        exp: 80, 
+        threat: '中', 
+        sprite: 'fa-moon-o', 
+        names: enemyNameDatabase.medium,
+        type: 'medium',
+        ability: null
+      },
+      { 
+        baseHp: 100, 
+        baseAttack: 10, 
+        exp: 85, 
+        threat: '中', 
+        sprite: 'fa-paw', 
+        names: ['森林狼人', '血月狼人', '狼人战士'],
+        type: 'werewolf',
+        ability: 'vampirism', // 吸血
+        vampirismRate: 0.4 // 吸血比例
+      },
+      { 
+        baseHp: 70, 
+        baseAttack: 15, 
+        exp: 85, 
+        threat: '中', 
+        sprite: 'fa-bolt', 
+        names: ['闪电法师', '风暴巫师', '雷霆术士'],
+        type: 'mage',
+        ability: 'spellDamage', // 魔法伤害，无视防御
+        isMagicDamage: true
+      },
+      
+      // 高威胁敌人
+      { 
+        baseHp: 120, 
+        baseAttack: 16, 
+        exp: 120, 
+        threat: '高', 
+        sprite: 'fa-shield', 
+        names: enemyNameDatabase.high,
+        type: 'high',
+        ability: null
+      },
+      { 
+        baseHp: 150, 
+        baseAttack: 12, 
+        exp: 130, 
+        threat: '高', 
+        sprite: 'fa-shield', 
+        names: ['石巨人', '熔岩守卫', '泰坦石像'],
+        type: 'stoneGiant',
+        ability: 'highDefense', // 高防御
+        defense: 8 // 额外防御
+      },
+      { 
+        baseHp: 100, 
+        baseAttack: 20, 
+        exp: 130, 
+        threat: '高', 
+        sprite: 'fa-dagger', 
+        names: ['影刺客', '暗夜杀手', '致命盗贼'],
+        type: 'assassin',
+        ability: 'highCrit', // 高暴击
+        critChance: 30 // 暴击率
+      },
+      { 
+        baseHp: 120, 
+        baseAttack: 15, 
+        exp: 130, 
+        threat: '高', 
+        sprite: 'fa-plus-circle', 
+        names: ['生命祭司', '神圣医师', '治疗恶魔'],
+        type: 'healer',
+        ability: 'selfHeal', // 自我治疗
+        healAmount: 15, // 每次治疗量
+        healFrequency: 3 // 每3回合治疗一次
+      },
+      
+      // 极高威胁敌人（BOSS）
+      { 
+        baseHp: 200, 
+        baseAttack: 25, 
+        exp: 200, 
+        threat: '极高', 
+        sprite: 'fa-fire', 
+        names: enemyNameDatabase.extreme,
+        type: 'extreme',
+        ability: null
+      },
+      { 
+        baseHp: 250, 
+        baseAttack: 20, 
+        exp: 220, 
+        threat: '极高', 
+        sprite: 'fa-shield', 
+        names: ['远古石魔', '大地守护者', '岩石泰坦'],
+        type: 'ancientStone',
+        ability: 'highDefense', // 高防御
+        defense: 12, // 额外防御
+        passive: 'damageReturn', // 反弹伤害
+        damageReturnRate: 0.2 // 反弹20%伤害
+      },
+      { 
+        baseHp: 180, 
+        baseAttack: 30, 
+        exp: 220, 
+        threat: '极高', 
+        sprite: 'fa-heartbeat', 
+        names: ['吸血鬼伯爵', '血之领主', '不朽吸血鬼'],
+        type: 'vampireLord',
+        ability: 'vampirism', // 吸血
+        vampirismRate: 0.5, // 吸血比例
+        passive: 'lifeStealAura', // 生命偷取光环
+        auraDamage: 5 // 每回合对玩家造成固定伤害并吸血
+      },
+      { 
+        baseHp: 220, 
+        baseAttack: 25, 
+        exp: 220, 
+        threat: '极高', 
+        sprite: 'fa-star', 
+        names: ['元素掌控者', '魔法之王', '奥术主宰'],
+        type: 'archMage',
+        ability: 'spellDamage', // 魔法伤害
+        isMagicDamage: true,
+        passive: 'manaShield', // 魔法护盾
+        shieldStrength: 20 // 护盾值
+      }
     ];
     
     // DOM元素 - 新增移动端血条元素
@@ -1166,12 +1326,14 @@
         cardDatabase.find(card => card.id === 'basic_attack'),
         cardDatabase.find(card => card.id === 'basic_attack'),
         cardDatabase.find(card => card.id === 'defend')
-      ];
+      ].filter(Boolean); // 过滤掉undefined的卡牌
       
       // 初始化卡牌计数
       gameState.player.cardCounts = {};
       gameState.player.cards.forEach(card => {
-        incrementCardCount(card.id);
+        if (card && card.id) { // 安全检查
+          incrementCardCount(card.id);
+        }
       });
       
       // 初始化装备为空
@@ -1359,11 +1521,20 @@
         // 计算伤害
         let damage = card.damage || Math.round(baseAttack * (card.damageMultiplier || 1));
         
-        // 处理破甲效果
+        // 处理破甲效果和敌人防御特性
         let effectiveDefense = gameState.enemy.defense || 0;
+        
+        // 检查敌人是否有特殊防御能力
+        if (gameState.enemy.ability === 'highDefense' && gameState.enemy.defenseMultiplier) {
+          effectiveDefense = Math.round(effectiveDefense * gameState.enemy.defenseMultiplier);
+        }
+        
+        // 处理破甲效果
         if (card.ignoreDefense) {
           effectiveDefense = Math.max(0, effectiveDefense - card.ignoreDefense);
         }
+        
+        // 计算伤害（考虑防御）
         damage = Math.max(1, damage - effectiveDefense);
         
         // 检查条件伤害（如背刺）
@@ -1403,9 +1574,37 @@
           message = message.replace(`造成了${damage/hitCount}`, `造成了${hitCount}次${damage/hitCount}，总计${damage}`);
         }
         
-        // 应用伤害
-        gameState.enemy.hp -= damage;
-        if (gameState.enemy.hp < 0) gameState.enemy.hp = 0;
+        // 处理魔法护盾
+        let damageToEnemy = damage;
+        let damageToShield = 0;
+        
+        if (gameState.enemy.passive === 'manaShield' && gameState.enemy.shieldStrength > 0) {
+          damageToShield = Math.min(damage, gameState.enemy.shieldStrength);
+          gameState.enemy.shieldStrength -= damageToShield;
+          damageToEnemy -= damageToShield;
+          message += ` 魔法护盾吸收了${damageToShield}点伤害！`;
+        }
+        
+        // 应用剩余伤害到敌人
+        if (damageToEnemy > 0) {
+          gameState.enemy.hp -= damageToEnemy;
+          if (gameState.enemy.hp < 0) gameState.enemy.hp = 0;
+        }
+        
+        // 处理反弹伤害（荆棘光环）
+        if (gameState.enemy.passive === 'thorns' && damageToEnemy > 0 && gameState.enemy.thornsDamage > 0) {
+          const thornsDamage = Math.round(damageToEnemy * gameState.enemy.thornsDamage);
+          gameState.player.hp = Math.max(0, gameState.player.hp - thornsDamage);
+          message += ` ${gameState.enemy.displayName}的荆棘光环对你造成了${thornsDamage}点伤害！`;
+          
+          // 检查玩家是否死亡
+          if (gameState.player.hp <= 0) {
+            gameState.player.hp = 0;
+            renderPlayerStats();
+            handleGameOver();
+            return;
+          }
+        }
         
         // 处理击晕效果
         if (card.stunChance && Math.random() * 100 < card.stunChance) {
@@ -1534,6 +1733,9 @@
     function enemyTurn() {
       if (gameState.isPlayerTurn || !gameState.isBattleActive) return;
       
+      // 增加敌人回合计数
+      gameState.enemy.turnCount = (gameState.enemy.turnCount || 0) + 1;
+      
       // 检查是否被击晕
       if (gameState.enemy.stunned) {
         elements.battleMessage.textContent = `${gameState.enemy.displayName}被击晕了，无法行动！`;
@@ -1544,6 +1746,49 @@
         
         // 切换回玩家回合
         gameState.isPlayerTurn = true;
+        return;
+      }
+      
+      // 处理生命偷取光环（被动）
+      if (gameState.enemy.passive === 'lifeStealAura' && gameState.enemy.auraDamage > 0) {
+        const auraDamage = gameState.enemy.auraDamage;
+        gameState.player.hp = Math.max(0, gameState.player.hp - auraDamage);
+        gameState.enemy.hp = Math.min(gameState.enemy.hp + auraDamage, gameState.enemy.maxHp);
+        elements.battleMessage.textContent = 
+          `${gameState.enemy.displayName}的生命吸取光环对你造成了${auraDamage}点伤害，并恢复了${auraDamage}点生命值！`;
+        
+        renderPlayerStats();
+        renderEnemyStats();
+        
+        // 检查玩家是否死亡
+        if (gameState.player.hp <= 0) {
+          gameState.player.hp = 0;
+          renderPlayerStats();
+          handleGameOver();
+          return;
+        }
+        
+        setTimeout(() => {
+          processNextEnemyAction();
+        }, 1000);
+        return;
+      }
+      
+      // 处理自我治疗能力
+      if (gameState.enemy.ability === 'selfHeal' && 
+          gameState.enemy.healAmount > 0 && 
+          gameState.enemy.healFrequency && 
+          gameState.enemy.turnCount % gameState.enemy.healFrequency === 0) {
+        const healAmount = gameState.enemy.healAmount;
+        gameState.enemy.hp = Math.min(gameState.enemy.hp + healAmount, gameState.enemy.maxHp);
+        elements.battleMessage.textContent = 
+          `${gameState.enemy.displayName}使用了自我治疗，恢复了${healAmount}点生命值！`;
+        
+        renderEnemyStats();
+        
+        setTimeout(() => {
+          processNextEnemyAction();
+        }, 1000);
         return;
       }
       
@@ -1563,7 +1808,7 @@
         
         renderEnemyStats();
         setTimeout(() => {
-          continueEnemyTurn();
+          processNextEnemyAction();
         }, 1000);
         return;
       }
@@ -1584,11 +1829,17 @@
         
         renderEnemyStats();
         setTimeout(() => {
-          continueEnemyTurn();
+          processNextEnemyAction();
         }, 1000);
         return;
       }
       
+      processNextEnemyAction();
+    }
+    
+    // 处理敌人下一个动作（攻击前的逻辑）
+    function processNextEnemyAction() {
+      // 继续处理敌人的主要攻击
       continueEnemyTurn();
     }
     
@@ -1620,11 +1871,23 @@
       if (gameState.player.parryChance && Math.random() * 100 < gameState.player.parryChance) {
         let message = `你成功格挡了${gameState.enemy.displayName}的攻击！`;
         
-        // 处理反击伤害
+        // 处理反击伤害（考虑魔法护盾）
         if (gameState.player.counterDamage > 0) {
-          const counterDamage = Math.round(gameState.player.attack * gameState.player.counterDamage);
-          gameState.enemy.hp = Math.max(0, gameState.enemy.hp - counterDamage);
-          message += ` 反击造成了${counterDamage}点伤害！`;
+          let counterDamage = Math.round(gameState.player.attack * gameState.player.counterDamage);
+          
+          // 检查魔法护盾
+          if (gameState.enemy.passive === 'manaShield' && gameState.enemy.shieldStrength > 0) {
+            const damageToShield = Math.min(counterDamage, gameState.enemy.shieldStrength);
+            gameState.enemy.shieldStrength -= damageToShield;
+            counterDamage -= damageToShield;
+            message += ` 魔法护盾吸收了${damageToShield}点伤害！`;
+          }
+          
+          // 对敌人造成剩余伤害
+          if (counterDamage > 0) {
+            gameState.enemy.hp = Math.max(0, gameState.enemy.hp - counterDamage);
+            message += ` 反击造成了${counterDamage}点伤害！`;
+          }
           
           // 检查敌人是否因反击死亡
           if (gameState.enemy.hp <= 0) {
@@ -1659,8 +1922,24 @@
         totalDefense += gameState.player.equipment.ring.bonus.defense;
       }
       
-      // 计算伤害（考虑玩家防御和临时防御）
-      let damage = gameState.enemy.attack - totalDefense;
+      // 计算基础伤害
+      let damage = gameState.enemy.attack;
+      
+      // 处理暴击（刺客特性）
+      if (gameState.enemy.ability === 'highCrit' && gameState.enemy.critChance && Math.random() * 100 < gameState.enemy.critChance) {
+        damage = Math.round(damage * 1.5); // 50%暴击伤害加成
+        elements.battleMessage.textContent = `${gameState.enemy.displayName}对你发动了暴击！`;
+      }
+      
+      // 处理魔法伤害（法师特性）
+      if (gameState.enemy.ability === 'spellDamage' && gameState.enemy.isMagicDamage) {
+        // 魔法伤害无视防御，但仍然可以被临时防御减免
+        elements.battleMessage.textContent = `${gameState.enemy.displayName}对你造成了${damage}点魔法伤害！`;
+      } else {
+        // 物理伤害考虑防御
+        damage = damage - totalDefense;
+        elements.battleMessage.textContent = `${gameState.enemy.displayName}对你造成了${damage}点伤害！`;
+      }
       
       // 应用临时防御
       if (gameState.player.tempDefense) {
@@ -1674,15 +1953,32 @@
       // 应用伤害
       gameState.player.hp -= damage;
       
-      // 更新战斗信息
-      elements.battleMessage.textContent = `${gameState.enemy.displayName}对你造成了${damage}点伤害！`;
+      // 处理吸血特性
+      if (gameState.enemy.ability === 'vampirism' && gameState.enemy.vampirismRate) {
+        const healAmount = Math.round(damage * gameState.enemy.vampirismRate);
+        gameState.enemy.hp = Math.min(gameState.enemy.hp + healAmount, gameState.enemy.maxHp);
+        elements.battleMessage.textContent += ` ${gameState.enemy.displayName}吸取了${healAmount}点生命值！`;
+        renderEnemyStats();
+      }
       
       // 检查反击效果
       const hasCounterAttack = gameState.player.skills.some(skill => skill.id === 'counter_attack_active');
       if (hasCounterAttack && Math.random() * 100 < 30) {
-        const counterDamage = Math.round(gameState.player.attack * 0.5);
-        gameState.enemy.hp = Math.max(0, gameState.enemy.hp - counterDamage);
-        elements.battleMessage.textContent += ` 你反击造成了${counterDamage}点伤害！`;
+        let counterDamage = Math.round(gameState.player.attack * 0.5);
+        
+        // 检查魔法护盾
+        if (gameState.enemy.passive === 'manaShield' && gameState.enemy.shieldStrength > 0) {
+          const damageToShield = Math.min(counterDamage, gameState.enemy.shieldStrength);
+          gameState.enemy.shieldStrength -= damageToShield;
+          counterDamage -= damageToShield;
+          elements.battleMessage.textContent += ` 魔法护盾吸收了${damageToShield}点伤害！`;
+        }
+        
+        // 对敌人造成剩余伤害
+        if (counterDamage > 0) {
+          gameState.enemy.hp = Math.max(0, gameState.enemy.hp - counterDamage);
+          elements.battleMessage.textContent += ` 你反击造成了${counterDamage}点伤害！`;
+        }
         
         // 检查敌人是否因反击死亡
         if (gameState.enemy.hp <= 0) {
@@ -2101,9 +2397,25 @@
     
     // 生成新敌人
     function spawnNewEnemy() {
-      // 根据难度生成敌人
-      const enemyIndex = Math.min(Math.floor(gameState.difficulty / 2), enemyTypes.length - 1);
-      const baseEnemy = enemyTypes[enemyIndex];
+      // 根据难度选择适合的敌人类型组
+      let suitableEnemies;
+      if (gameState.difficulty < 2) {
+        // 难度1：只有低威胁敌人
+        suitableEnemies = enemyTypes.filter(enemy => enemy.threat === '低');
+      } else if (gameState.difficulty < 4) {
+        // 难度2-3：低威胁和中威胁敌人
+        suitableEnemies = enemyTypes.filter(enemy => enemy.threat === '低' || enemy.threat === '中');
+      } else if (gameState.difficulty < 6) {
+        // 难度4-5：中威胁和高威胁敌人
+        suitableEnemies = enemyTypes.filter(enemy => enemy.threat === '中' || enemy.threat === '高');
+      } else {
+        // 难度6+：高威胁和极高威胁敌人
+        suitableEnemies = enemyTypes.filter(enemy => enemy.threat === '高' || enemy.threat === '极高');
+      }
+      
+      // 随机选择一个敌人类型
+      const randomIndex = Math.floor(Math.random() * suitableEnemies.length);
+      const baseEnemy = suitableEnemies[randomIndex];
       
       // 随难度增强敌人属性
       const difficultyMultiplier = 1 + (gameState.difficulty - 1) * 0.2;
@@ -2112,20 +2424,34 @@
       const randomNameIndex = Math.floor(Math.random() * baseEnemy.names.length);
       const enemyName = baseEnemy.names[randomNameIndex];
       
+      // 创建敌人对象，包含特性
       gameState.enemy = {
         name: enemyName,
         displayName: enemyName,
         hp: Math.round(baseEnemy.baseHp * difficultyMultiplier),
         maxHp: Math.round(baseEnemy.baseHp * difficultyMultiplier),
         attack: Math.round(baseEnemy.baseAttack * difficultyMultiplier),
-        defense: Math.floor(baseEnemy.baseAttack * difficultyMultiplier * 0.3), // 敌人防御
+        defense: baseEnemy.defense ? Math.round(baseEnemy.defense * difficultyMultiplier) : Math.floor(baseEnemy.baseAttack * difficultyMultiplier * 0.3),
         expReward: Math.round(baseEnemy.exp * difficultyMultiplier),
         threat: baseEnemy.threat,
         sprite: baseEnemy.sprite,
         lootChance: Math.min(70, 30 + gameState.difficulty * 5),
         poison: null,
         burn: null,
-        stunned: false
+        stunned: false,
+        type: baseEnemy.type,
+        ability: baseEnemy.ability,
+        passive: baseEnemy.passive,
+        turnCount: 0, // 用于追踪敌人的回合数
+        // 复制敌人特有的能力参数
+        vampirismRate: baseEnemy.vampirismRate,
+        isMagicDamage: baseEnemy.isMagicDamage,
+        critChance: baseEnemy.critChance,
+        healAmount: baseEnemy.healAmount,
+        healFrequency: baseEnemy.healFrequency,
+        damageReturnRate: baseEnemy.damageReturnRate,
+        auraDamage: baseEnemy.auraDamage,
+        shieldStrength: baseEnemy.shieldStrength ? Math.round(baseEnemy.shieldStrength * difficultyMultiplier) : null
       };
       
       // 抽新牌
@@ -2134,7 +2460,32 @@
       // 恢复战斗状态
       gameState.isBattleActive = true;
       gameState.isPlayerTurn = true;
-      elements.battleMessage.textContent = `新的敌人${gameState.enemy.displayName}出现了！`;
+      
+      // 添加敌人特性描述
+      let enemyDescription = `新的敌人${gameState.enemy.displayName}出现了！`;
+      if (gameState.enemy.ability === 'highDefense') {
+        enemyDescription += ' 它拥有坚硬的护甲！';
+      } else if (gameState.enemy.ability === 'vampirism') {
+        enemyDescription += ' 它能从攻击中吸取生命！';
+      } else if (gameState.enemy.ability === 'spellDamage') {
+        enemyDescription += ' 它的攻击无视防御！';
+      } else if (gameState.enemy.ability === 'highCrit') {
+        enemyDescription += ' 它经常暴击！';
+      } else if (gameState.enemy.ability === 'selfHeal') {
+        enemyDescription += ' 它能自我治疗！';
+      }
+      
+      if (gameState.enemy.passive) {
+        if (gameState.enemy.passive === 'damageReturn') {
+          enemyDescription += ' 它会反弹伤害！';
+        } else if (gameState.enemy.passive === 'lifeStealAura') {
+          enemyDescription += ' 它周围环绕着生命吸取光环！';
+        } else if (gameState.enemy.passive === 'manaShield') {
+          enemyDescription += ' 它拥有魔法护盾！';
+        }
+      }
+      
+      elements.battleMessage.textContent = enemyDescription;
       
       // 重新渲染
       renderEnemyStats();
