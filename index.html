@@ -1,105 +1,764 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>傻坨坨</title>
-
-<style type="text/css">
-@font-face {
-	font-family: digit;
-	src: url('digital-7_mono.ttf') format("truetype");
-}
-</style>
-
-<link href="css/default.css" type="text/css" rel="stylesheet">
-<script type="text/javascript" src="js/jquery.js"></script>
-<script type="text/javascript" src="js/garden.js"></script>
-<script type="text/javascript" src="js/functions.js"></script>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>深渊卡牌 - 肉鸽卡牌游戏</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#6D28D9', // 主色调：深紫色
+            secondary: '#EC4899', // 辅助色：粉色
+            accent: '#F59E0B', // 强调色：金色
+            dark: '#1E1B4B', // 深色背景
+            light: '#E0E7FF', // 浅色文本
+          },
+          fontFamily: {
+            game: ['Segoe UI', 'Roboto', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .card-hover {
+        @apply transition-all duration-300 hover:scale-105 hover:shadow-lg;
+      }
+      .text-shadow {
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .animate-float {
+        animation: float 3s ease-in-out infinite;
+      }
+      .animate-pulse-slow {
+        animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+      .bg-game {
+        background-image: radial-gradient(circle at center, #2D1B69 0%, #111827 100%);
+      }
+    }
+    
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+  </style>
 </head>
-
-<body>
-
-<div id="mainDiv">
-	<div id="content">
-		<div id="code">
-			<span class="comments">/**</span><br />
-			<span class="space"/><span class="comments">*1994-08-08,</span><br />
-			<span class="space"/><span class="comments">*1995-06-17.</span><br />
-			<span class="space"/><span class="comments">*/</span><br />
-			Boy name = <span class="keyword">Mr</span> CHENG<br />
-			Girl name = <span class="keyword">Mrs</span> LIU<br />
-			<span class="comments">// Fall in love river. </span><br />
-			The boy love the girl;<br />
-			<span class="comments">// They love each other.</span><br />
-			The girl loved the boy;<br />
-			<span class="comments">// AS time goes on.</span><br />
-			The boy can not be separated the girl;<br />
-			<span class="comments">// At the same time.</span><br />
-			The girl can not be separated the boy;<br />
-			<span class="comments">// Both wind and snow all over the sky.</span><br />
-			<span class="comments">// Whether on foot or 5 kilometers.</span><br />
-			<span class="keyword">The boy</span> very <span class="keyword">happy</span>;<br />
-			<span class="keyword">The girl</span> is also very <span class="keyword">happy</span>;<br />
-			<span class="placeholder"/><span class="comments">// Whether it is right now</span><br />
-			<span class="placeholder"/><span class="comments">// Still in the distant future.</span><br />
-			<span class="placeholder"/>The boy has but one dream;<br />
-			<span class="comments">// The boy wants the girl could well have been happy.</span><br />
-			<br>
-			<br>
-			I want to say:<br />
-			Baby, I love you forever;<br />
-		</div>
-		<div id="loveHeart">
-			<canvas id="garden"></canvas>
-			<div id="words">
-				<div id="messages">
-					亲爱的傻坨坨，这是我们相爱在一起的时光。
-					<div id="elapseClock"></div>
-				</div>
-				<div id="loveu">
-					爱你直到永永远远。<br/>
-					<div class="signature">- Mr.C</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-
-<script type="text/javascript">
-var offsetX = $("#loveHeart").width() / 2;
-var offsetY = $("#loveHeart").height() / 2 - 55;
-var together = new Date();
-together.setFullYear(2017, 10, 3);
-together.setHours(20);
-together.setMinutes(0);
-together.setSeconds(0);
-together.setMilliseconds(0);
-
-if (!document.createElement('canvas').getContext) {
-	var msg = document.createElement("div");
-	msg.id = "errorMsg";
-	msg.innerHTML = "Your browser doesn't support HTML5!<br/>Recommend use Chrome 14+/IE 9+/Firefox 7+/Safari 4+"; 
-	document.body.appendChild(msg);
-	$("#code").css("display", "none")
-	$("#copyright").css("position", "absolute");
-	$("#copyright").css("bottom", "10px");
-	document.execCommand("stop");
-} else {
-	setTimeout(function () {
-		startHeartAnimation();
-	}, 5000);
-
-	timeElapse(together);
-	setInterval(function () {
-		timeElapse(together);
-	}, 500);
-
-	adjustCodePosition();
-	$("#code").typewriter();
-}
-</script>
-<div style="text-align:center;clear:both">
-</div>
+<body class="bg-game font-game text-light min-h-screen flex flex-col overflow-x-hidden">
+  <!-- 游戏容器 -->
+  <div id="game-container" class="container mx-auto px-4 py-6 flex-grow flex flex-col">
+    
+    <!-- 游戏标题 -->
+    <header class="text-center mb-6">
+      <h1 class="text-[clamp(2rem,5vw,3rem)] font-bold text-accent text-shadow mb-2">深渊卡牌</h1>
+      <p class="text-light/70">无限挑战 · 每一次都是新的冒险</p>
+    </header>
+    
+    <!-- 状态面板 -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+      <!-- 玩家状态 -->
+      <div class="bg-dark/50 rounded-xl p-4 border border-primary/30 backdrop-blur-sm">
+        <div class="flex justify-between items-center mb-2">
+          <h2 class="text-xl font-bold flex items-center">
+            <i class="fa fa-user-circle mr-2 text-secondary"></i>玩家
+          </h2>
+          <span class="bg-primary/20 px-2 py-1 rounded-full text-sm">等级 <span id="player-level">1</span></span>
+        </div>
+        
+        <div class="flex gap-4">
+          <div class="flex-1">
+            <div class="text-sm text-light/70 mb-1">生命值</div>
+            <div class="h-3 bg-gray-700 rounded-full overflow-hidden">
+              <div id="player-hp-bar" class="h-full bg-green-500 rounded-full transition-all duration-500" style="width: 100%"></div>
+            </div>
+            <div class="text-right mt-1 text-sm">
+              <span id="player-hp">100</span> / <span id="player-max-hp">100</span>
+            </div>
+          </div>
+          
+          <div class="flex-1">
+            <div class="text-sm text-light/70 mb-1">经验值</div>
+            <div class="h-3 bg-gray-700 rounded-full overflow-hidden">
+              <div id="player-exp-bar" class="h-full bg-accent rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <div class="text-right mt-1 text-sm">
+              <span id="player-exp">0</span> / <span id="player-next-level">100</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 敌人状态 -->
+      <div class="bg-dark/50 rounded-xl p-4 border border-primary/30 backdrop-blur-sm">
+        <div class="flex justify-between items-center mb-2">
+          <h2 class="text-xl font-bold flex items-center">
+            <i class="fa fa-skull mr-2 text-red-500"></i><span id="enemy-name">初级魔物</span>
+          </h2>
+          <span class="bg-red-500/20 px-2 py-1 rounded-full text-sm">威胁度 <span id="enemy-threat">低</span></span>
+        </div>
+        
+        <div>
+          <div class="text-sm text-light/70 mb-1">生命值</div>
+          <div class="h-3 bg-gray-700 rounded-full overflow-hidden">
+            <div id="enemy-hp-bar" class="h-full bg-red-500 rounded-full transition-all duration-500" style="width: 100%"></div>
+          </div>
+          <div class="text-right mt-1 text-sm">
+            <span id="enemy-hp">50</span> / <span id="enemy-max-hp">50</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 战斗区域 -->
+    <div class="flex-grow mb-6 relative">
+      <div id="battle-area" class="bg-dark/30 rounded-xl p-4 h-full min-h-[200px] flex flex-col items-center justify-center border border-primary/20">
+        <div id="battle-message" class="text-center mb-6 text-lg">准备战斗！点击下方卡牌进行攻击</div>
+        
+        <!-- 角色形象 -->
+        <div class="flex justify-around items-center w-full max-w-md mb-6">
+          <div class="text-center animate-float">
+            <div class="w-20 h-20 bg-secondary/20 rounded-full flex items-center justify-center mb-2 border-2 border-secondary">
+              <i class="fa fa-user text-4xl text-secondary"></i>
+            </div>
+            <div class="text-sm font-medium">玩家</div>
+          </div>
+          
+          <div class="text-2xl">
+            <i class="fa fa-exchange text-accent/70"></i>
+          </div>
+          
+          <div class="text-center animate-float" style="animation-delay: 0.5s">
+            <div id="enemy-sprite" class="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mb-2 border-2 border-red-500">
+              <i class="fa fa-asterisk text-4xl text-red-500"></i>
+            </div>
+            <div class="text-sm font-medium" id="enemy-display-name">初级魔物</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 卡牌区域 -->
+    <div class="mb-6">
+      <h2 class="text-xl font-bold mb-3 flex items-center">
+        <i class="fa fa-th-large mr-2 text-accent"></i>你的卡牌
+      </h2>
+      <div id="card-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <!-- 卡牌将通过JS动态生成 -->
+      </div>
+    </div>
+    
+    <!-- 技能列表 -->
+    <div class="mb-6">
+      <h2 class="text-xl font-bold mb-3 flex items-center">
+        <i class="fa fa-star mr-2 text-secondary"></i>已学技能
+      </h2>
+      <div id="skills-container" class="flex flex-wrap gap-2">
+        <div class="bg-gray-700/30 px-3 py-1 rounded-full text-sm">
+          初始技能: 基础攻击
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 升级选择模态框 -->
+  <div id="level-up-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+    <div class="bg-dark border-2 border-accent rounded-xl p-6 max-w-md w-full mx-4">
+      <h2 class="text-2xl font-bold text-accent text-center mb-4">升级了！</h2>
+      <p class="text-center mb-6">选择一项技能提升：</p>
+      
+      <div class="grid grid-cols-1 gap-4">
+        <div id="skill-option-1" class="skill-option bg-primary/20 hover:bg-primary/40 p-4 rounded-lg cursor-pointer transition-all card-hover border border-primary/30">
+          <h3 class="font-bold mb-2">技能名称</h3>
+          <p class="text-sm text-light/80">技能描述</p>
+        </div>
+        
+        <div id="skill-option-2" class="skill-option bg-primary/20 hover:bg-primary/40 p-4 rounded-lg cursor-pointer transition-all card-hover border border-primary/30">
+          <h3 class="font-bold mb-2">技能名称</h3>
+          <p class="text-sm text-light/80">技能描述</p>
+        </div>
+        
+        <div id="skill-option-3" class="skill-option bg-primary/20 hover:bg-primary/40 p-4 rounded-lg cursor-pointer transition-all card-hover border border-primary/30">
+          <h3 class="font-bold mb-2">技能名称</h3>
+          <p class="text-sm text-light/80">技能描述</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 游戏结束模态框 -->
+  <div id="game-over-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+    <div class="bg-dark border-2 border-red-500 rounded-xl p-6 max-w-md w-full mx-4 text-center">
+      <h2 class="text-2xl font-bold text-red-500 mb-4">游戏结束</h2>
+      <p class="mb-2">你的冒险结束了</p>
+      <p class="text-xl font-bold mb-6">最终等级: <span id="final-level">1</span></p>
+      <button id="restart-button" class="bg-accent hover:bg-accent/80 text-dark font-bold py-2 px-6 rounded-full transition-all card-hover">
+        重新开始
+      </button>
+    </div>
+  </div>
+  
+  <script>
+    // 游戏状态
+    const gameState = {
+      player: {
+        level: 1,
+        hp: 100,
+        maxHp: 100,
+        exp: 0,
+        nextLevelExp: 100,
+        attack: 10,
+        defense: 0,
+        critChance: 5, // 百分比
+        cards: [],
+        skills: [
+          { id: 'basic_attack', name: '基础攻击', description: '造成10点伤害' }
+        ]
+      },
+      enemy: {
+        name: '初级魔物',
+        displayName: '初级魔物',
+        hp: 50,
+        maxHp: 50,
+        attack: 8,
+        threat: '低',
+        expReward: 50,
+        sprite: 'fa-asterisk'
+      },
+      isPlayerTurn: true,
+      isBattleActive: true,
+      difficulty: 1
+    };
+    
+    // 技能数据库
+    const skillDatabase = [
+      { 
+        id: 'strong_attack', 
+        name: '强化攻击', 
+        description: '攻击力提升5点',
+        effect: (player) => { player.attack += 5; }
+      },
+      { 
+        id: 'toughness', 
+        name: '坚韧', 
+        description: '最大生命值提升20点，并恢复全部生命',
+        effect: (player) => { 
+          player.maxHp += 20;
+          player.hp = player.maxHp;
+        }
+      },
+      { 
+        id: 'critical_strike', 
+        name: '暴击精通', 
+        description: '暴击几率提升5%，暴击伤害为1.5倍',
+        effect: (player) => { player.critChance += 5; }
+      },
+      { 
+        id: 'shield', 
+        name: '防御姿态', 
+        description: '获得5点防御力，减少受到的伤害',
+        effect: (player) => { player.defense += 5; }
+      },
+      { 
+        id: 'vampirism', 
+        name: '吸血', 
+        description: '攻击时恢复5点生命值',
+        effect: (player) => { 
+          player.skills.push({ 
+            id: 'vampirism_active', 
+            name: '吸血', 
+            description: '攻击时恢复5点生命值' 
+          });
+        }
+      },
+      { 
+        id: 'second_wind', 
+        name: '二次攻击', 
+        description: '获得一张"二次打击"卡牌',
+        effect: (player) => { 
+          addCardToPlayer({
+            id: 'second_strike',
+            name: '二次打击',
+            description: '对敌人造成1.2倍普通攻击伤害',
+            damageMultiplier: 1.2,
+            cost: 0
+          });
+        }
+      },
+      { 
+        id: 'fireball', 
+        name: '火球术', 
+        description: '获得一张"火球术"卡牌，造成15点伤害',
+        effect: (player) => { 
+          addCardToPlayer({
+            id: 'fireball',
+            name: '火球术',
+            description: '造成15点伤害',
+            damage: 15,
+            cost: 0
+          });
+        }
+      },
+      { 
+        id: 'heal', 
+        name: '治愈', 
+        description: '获得一张"治愈"卡牌，恢复20点生命值',
+        effect: (player) => { 
+          addCardToPlayer({
+            id: 'heal',
+            name: '治愈',
+            description: '恢复20点生命值',
+            heal: 20,
+            cost: 0
+          });
+        }
+      }
+    ];
+    
+    // 卡牌数据库
+    const cardDatabase = [
+      {
+        id: 'basic_attack',
+        name: '基础攻击',
+        description: '对敌人造成基础伤害',
+        color: 'bg-secondary/20',
+        borderColor: 'border-secondary',
+        icon: 'fa-hand-paper-o',
+        damageMultiplier: 1
+      },
+      {
+        id: 'power_attack',
+        name: '强力攻击',
+        description: '对敌人造成1.5倍基础伤害',
+        color: 'bg-accent/20',
+        borderColor: 'border-accent',
+        icon: 'fa-hand-rock-o',
+        damageMultiplier: 1.5
+      },
+      {
+        id: 'defend',
+        name: '防御',
+        description: '本回合减少50%受到的伤害',
+        color: 'bg-blue-500/20',
+        borderColor: 'border-blue-500',
+        icon: 'fa-shield',
+        defend: 0.5
+      }
+    ];
+    
+    // DOM元素
+    const elements = {
+      playerLevel: document.getElementById('player-level'),
+      playerHp: document.getElementById('player-hp'),
+      playerMaxHp: document.getElementById('player-max-hp'),
+      playerHpBar: document.getElementById('player-hp-bar'),
+      playerExp: document.getElementById('player-exp'),
+      playerNextLevel: document.getElementById('player-next-level'),
+      playerExpBar: document.getElementById('player-exp-bar'),
+      
+      enemyName: document.getElementById('enemy-name'),
+      enemyDisplayName: document.getElementById('enemy-display-name'),
+      enemyHp: document.getElementById('enemy-hp'),
+      enemyMaxHp: document.getElementById('enemy-max-hp'),
+      enemyHpBar: document.getElementById('enemy-hp-bar'),
+      enemyThreat: document.getElementById('enemy-threat'),
+      enemySprite: document.getElementById('enemy-sprite'),
+      
+      battleMessage: document.getElementById('battle-message'),
+      cardContainer: document.getElementById('card-container'),
+      skillsContainer: document.getElementById('skills-container'),
+      
+      levelUpModal: document.getElementById('level-up-modal'),
+      skillOptions: [
+        document.getElementById('skill-option-1'),
+        document.getElementById('skill-option-2'),
+        document.getElementById('skill-option-3')
+      ],
+      
+      gameOverModal: document.getElementById('game-over-modal'),
+      finalLevel: document.getElementById('final-level'),
+      restartButton: document.getElementById('restart-button')
+    };
+    
+    // 初始化游戏
+    function initGame() {
+      // 初始化玩家卡牌
+      gameState.player.cards = [
+        cardDatabase.find(card => card.id === 'basic_attack'),
+        cardDatabase.find(card => card.id === 'basic_attack'),
+        cardDatabase.find(card => card.id === 'defend')
+      ];
+      
+      // 渲染游戏状态
+      renderGame();
+      
+      // 添加事件监听
+      elements.restartButton.addEventListener('click', restartGame);
+    }
+    
+    // 渲染游戏
+    function renderGame() {
+      renderPlayerStats();
+      renderEnemyStats();
+      renderCards();
+      renderSkills();
+    }
+    
+    // 渲染玩家状态
+    function renderPlayerStats() {
+      elements.playerLevel.textContent = gameState.player.level;
+      elements.playerHp.textContent = gameState.player.hp;
+      elements.playerMaxHp.textContent = gameState.player.maxHp;
+      elements.playerHpBar.style.width = `${(gameState.player.hp / gameState.player.maxHp) * 100}%`;
+      
+      elements.playerExp.textContent = gameState.player.exp;
+      elements.playerNextLevel.textContent = gameState.player.nextLevelExp;
+      elements.playerExpBar.style.width = `${(gameState.player.exp / gameState.player.nextLevelExp) * 100}%`;
+    }
+    
+    // 渲染敌人状态
+    function renderEnemyStats() {
+      elements.enemyName.textContent = gameState.enemy.name;
+      elements.enemyDisplayName.textContent = gameState.enemy.displayName;
+      elements.enemyHp.textContent = gameState.enemy.hp;
+      elements.enemyMaxHp.textContent = gameState.enemy.maxHp;
+      elements.enemyHpBar.style.width = `${(gameState.enemy.hp / gameState.enemy.maxHp) * 100}%`;
+      elements.enemyThreat.textContent = gameState.enemy.threat;
+      
+      // 更新敌人图标
+      elements.enemySprite.innerHTML = `<i class="fa ${gameState.enemy.sprite} text-4xl text-red-500"></i>`;
+    }
+    
+    // 渲染卡牌
+    function renderCards() {
+      elements.cardContainer.innerHTML = '';
+      
+      gameState.player.cards.forEach((card, index) => {
+        const cardElement = document.createElement('div');
+        cardElement.className = `${card.color} ${card.borderColor} border rounded-xl p-4 card-hover cursor-pointer`;
+        cardElement.innerHTML = `
+          <div class="flex justify-between items-start mb-3">
+            <h3 class="font-bold text-lg">${card.name}</h3>
+            <i class="fa ${card.icon} text-xl"></i>
+          </div>
+          <p class="text-sm text-light/80">${card.description}</p>
+        `;
+        
+        cardElement.addEventListener('click', () => useCard(index));
+        elements.cardContainer.appendChild(cardElement);
+      });
+    }
+    
+    // 渲染技能
+    function renderSkills() {
+      elements.skillsContainer.innerHTML = '';
+      
+      gameState.player.skills.forEach(skill => {
+        const skillElement = document.createElement('div');
+        skillElement.className = 'bg-primary/20 px-3 py-1 rounded-full text-sm';
+        skillElement.textContent = `${skill.name}: ${skill.description}`;
+        elements.skillsContainer.appendChild(skillElement);
+      });
+    }
+    
+    // 使用卡牌
+    function useCard(index) {
+      if (!gameState.isPlayerTurn || !gameState.isBattleActive) return;
+      
+      const card = gameState.player.cards[index];
+      let message = '';
+      
+      // 处理卡牌效果
+      if (card.damage || card.damageMultiplier) {
+        // 计算伤害
+        let damage = card.damage || Math.round(gameState.player.attack * (card.damageMultiplier || 1));
+        
+        // 检查暴击
+        const isCrit = Math.random() * 100 < gameState.player.critChance;
+        if (isCrit) {
+          damage = Math.round(damage * 1.5);
+          message = `你使用了${card.name}，造成了${damage}点暴击伤害！`;
+        } else {
+          message = `你使用了${card.name}，造成了${damage}点伤害！`;
+        }
+        
+        // 应用伤害
+        gameState.enemy.hp -= damage;
+        if (gameState.enemy.hp < 0) gameState.enemy.hp = 0;
+        
+        // 检查吸血效果
+        const hasVampirism = gameState.player.skills.some(skill => skill.id === 'vampirism_active');
+        if (hasVampirism) {
+          gameState.player.hp = Math.min(gameState.player.hp + 5, gameState.player.maxHp);
+          message += ' 你吸取了5点生命值！';
+        }
+      } else if (card.heal) {
+        // 治疗效果
+        gameState.player.hp = Math.min(gameState.player.hp + card.heal, gameState.player.maxHp);
+        message = `你使用了${card.name}，恢复了${card.heal}点生命值！`;
+      } else if (card.defend) {
+        // 防御效果
+        gameState.player.tempDefense = (gameState.player.defense * card.defend) || card.defend;
+        message = `你使用了${card.name}，本回合减少受到的伤害！`;
+      }
+      
+      // 更新战斗信息
+      elements.battleMessage.textContent = message;
+      
+      // 重新渲染
+      renderPlayerStats();
+      renderEnemyStats();
+      
+      // 检查敌人是否死亡
+      if (gameState.enemy.hp <= 0) {
+        handleEnemyDeath();
+        return;
+      }
+      
+      // 切换到敌人回合
+      gameState.isPlayerTurn = false;
+      setTimeout(enemyTurn, 1500);
+    }
+    
+    // 敌人回合
+    function enemyTurn() {
+      if (gameState.isPlayerTurn || !gameState.isBattleActive) return;
+      
+      // 计算伤害（考虑玩家防御）
+      let damage = gameState.enemy.attack - gameState.player.defense;
+      
+      // 应用临时防御
+      if (gameState.player.tempDefense) {
+        damage = Math.round(damage * gameState.player.tempDefense);
+        gameState.player.tempDefense = 0; // 重置临时防御
+      }
+      
+      // 确保伤害不为负
+      damage = Math.max(1, damage);
+      
+      // 应用伤害
+      gameState.player.hp -= damage;
+      
+      // 更新战斗信息
+      elements.battleMessage.textContent = `${gameState.enemy.displayName}对你造成了${damage}点伤害！`;
+      
+      // 重新渲染
+      renderPlayerStats();
+      
+      // 检查玩家是否死亡
+      if (gameState.player.hp <= 0) {
+        gameState.player.hp = 0;
+        renderPlayerStats();
+        handleGameOver();
+        return;
+      }
+      
+      // 切换回玩家回合
+      gameState.isPlayerTurn = true;
+    }
+    
+    // 处理敌人死亡
+    function handleEnemyDeath() {
+      gameState.isBattleActive = false;
+      elements.battleMessage.textContent = `你击败了${gameState.enemy.displayName}！获得了${gameState.enemy.expReward}点经验值！`;
+      
+      // 奖励经验
+      gameState.player.exp += gameState.enemy.expReward;
+      
+      // 检查是否升级
+      checkLevelUp();
+      
+      // 重新渲染
+      renderPlayerStats();
+      
+      // 生成新敌人
+      setTimeout(spawnNewEnemy, 2000);
+    }
+    
+    // 检查升级
+    function checkLevelUp() {
+      while (gameState.player.exp >= gameState.player.nextLevelExp) {
+        // 升级
+        gameState.player.level += 1;
+        gameState.player.exp -= gameState.player.nextLevelExp;
+        
+        // 计算下一级所需经验（递增）
+        gameState.player.nextLevelExp = Math.round(gameState.player.nextLevelExp * 1.5);
+        
+        // 显示升级选择
+        showLevelUpOptions();
+        
+        // 提高难度
+        gameState.difficulty += 0.3;
+        
+        // 暂停游戏直到选择技能
+        gameState.isBattleActive = false;
+        return; // 一次只处理一级升级，等待玩家选择技能后继续
+      }
+    }
+    
+    // 显示升级选择
+    function showLevelUpOptions() {
+      // 随机选择3个不同的技能
+      const shuffledSkills = [...skillDatabase].sort(() => 0.5 - Math.random());
+      const selectedSkills = shuffledSkills.slice(0, 3);
+      
+      // 更新模态框中的技能选项
+      elements.skillOptions.forEach((option, index) => {
+        const skill = selectedSkills[index];
+        option.innerHTML = `
+          <h3 class="font-bold mb-2">${skill.name}</h3>
+          <p class="text-sm text-light/80">${skill.description}</p>
+        `;
+        
+        // 添加选择事件
+        option.onclick = () => {
+          // 应用技能效果
+          skill.effect(gameState.player);
+          
+          // 添加技能到玩家技能列表
+          gameState.player.skills.push({
+            id: skill.id,
+            name: skill.name,
+            description: skill.description
+          });
+          
+          // 隐藏模态框
+          elements.levelUpModal.classList.add('hidden');
+          
+          // 恢复游戏
+          gameState.isBattleActive = true;
+          
+          // 继续检查是否可以升级
+          checkLevelUp();
+          
+          // 如果没有更多升级，生成新敌人
+          if (gameState.player.exp < gameState.player.nextLevelExp) {
+            setTimeout(spawnNewEnemy, 1000);
+          }
+          
+          // 重新渲染
+          renderGame();
+        };
+      });
+      
+      // 显示模态框
+      elements.levelUpModal.classList.remove('hidden');
+    }
+    
+    // 生成新敌人
+    function spawnNewEnemy() {
+      // 根据难度生成敌人
+      const enemyTypes = [
+        { name: '初级魔物', displayName: '初级魔物', baseHp: 50, baseAttack: 8, exp: 50, threat: '低', sprite: 'fa-asterisk' },
+        { name: '暗影生物', displayName: '暗影生物', baseHp: 80, baseAttack: 12, exp: 80, threat: '中', sprite: 'fa-moon-o' },
+        { name: '深渊守卫', displayName: '深渊守卫', baseHp: 120, baseAttack: 16, exp: 120, threat: '高', sprite: 'fa-shield' },
+        { name: '恶魔领主', displayName: '恶魔领主', baseHp: 200, baseAttack: 25, exp: 200, threat: '极高', sprite: 'fa-fire' }
+      ];
+      
+      // 根据难度选择敌人类型并增强
+      const enemyIndex = Math.min(Math.floor(gameState.difficulty / 2), enemyTypes.length - 1);
+      const baseEnemy = enemyTypes[enemyIndex];
+      
+      // 随难度增强敌人属性
+      const difficultyMultiplier = 1 + (gameState.difficulty - 1) * 0.2;
+      
+      gameState.enemy = {
+        name: baseEnemy.name,
+        displayName: baseEnemy.displayName,
+        hp: Math.round(baseEnemy.baseHp * difficultyMultiplier),
+        maxHp: Math.round(baseEnemy.baseHp * difficultyMultiplier),
+        attack: Math.round(baseEnemy.baseAttack * difficultyMultiplier),
+        expReward: Math.round(baseEnemy.exp * difficultyMultiplier),
+        threat: baseEnemy.threat,
+        sprite: baseEnemy.sprite
+      };
+      
+      // 恢复战斗状态
+      gameState.isBattleActive = true;
+      gameState.isPlayerTurn = true;
+      elements.battleMessage.textContent = `新的敌人${gameState.enemy.displayName}出现了！`;
+      
+      // 重新渲染
+      renderEnemyStats();
+    }
+    
+    // 添加卡牌给玩家
+    function addCardToPlayer(card) {
+      gameState.player.cards.push(card);
+      
+      // 如果卡牌太多，移除一张基础攻击
+      if (gameState.player.cards.length > 5) {
+        const basicAttackIndex = gameState.player.cards.findIndex(c => c.id === 'basic_attack');
+        if (basicAttackIndex !== -1) {
+          gameState.player.cards.splice(basicAttackIndex, 1);
+        } else {
+          gameState.player.cards.shift();
+        }
+      }
+    }
+    
+    // 处理游戏结束
+    function handleGameOver() {
+      gameState.isBattleActive = false;
+      elements.finalLevel.textContent = gameState.player.level;
+      elements.gameOverModal.classList.remove('hidden');
+    }
+    
+    // 重新开始游戏
+    function restartGame() {
+      // 重置游戏状态
+      gameState.player = {
+        level: 1,
+        hp: 100,
+        maxHp: 100,
+        exp: 0,
+        nextLevelExp: 100,
+        attack: 10,
+        defense: 0,
+        critChance: 5,
+        cards: [],
+        skills: [
+          { id: 'basic_attack', name: '基础攻击', description: '造成10点伤害' }
+        ]
+      };
+      
+      gameState.enemy = {
+        name: '初级魔物',
+        displayName: '初级魔物',
+        hp: 50,
+        maxHp: 50,
+        attack: 8,
+        threat: '低',
+        expReward: 50,
+        sprite: 'fa-asterisk'
+      };
+      
+      gameState.isPlayerTurn = true;
+      gameState.isBattleActive = true;
+      gameState.difficulty = 1;
+      
+      // 隐藏模态框
+      elements.gameOverModal.classList.add('hidden');
+      elements.levelUpModal.classList.add('hidden');
+      
+      // 重新初始化
+      initGame();
+    }
+    
+    // 启动游戏
+    window.addEventListener('DOMContentLoaded', initGame);
+  </script>
 </body>
 </html>
