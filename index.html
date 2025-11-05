@@ -109,8 +109,16 @@
     
     <!-- 游戏标题 - 移动端缩小 -->
     <header class="text-center mb-4 md:mb-6">
-      <h1 class="text-[clamp(1.5rem,5vw,3rem)] font-bold text-accent text-shadow mb-1">深渊卡牌</h1>
-      <p class="text-light/70 text-sm md:text-base">无限挑战 · 每一次都是新的冒险</p>
+      <div class="flex justify-center gap-2 mb-4">
+        <button onclick="saveGame()" class="bg-primary/30 hover:bg-primary/50 px-3 py-1 rounded text-sm">
+          <i class="fa fa-save mr-1"></i>保存
+        </button>
+        <button onclick="loadGame()" class="bg-secondary/30 hover:bg-secondary/50 px-3 py-1 rounded text-sm">
+          <i class="fa fa-load mr-1"></i>加载
+        </button>
+      </div>
+      <!-- <h1 class="text-[clamp(1.5rem,5vw,3rem)] font-bold text-accent text-shadow mb-1">深渊卡牌</h1>
+      <p class="text-light/70 text-sm md:text-base">无限挑战 · 每一次都是新的冒险</p> -->
     </header>
     
     <!-- 状态面板 - 仅在桌面显示 -->
@@ -316,9 +324,14 @@
       <div id="loot-content" class="mb-4 md:mb-6">
         <!-- 战利品内容将动态生成 -->
       </div>
-      <button id="equip-button" class="w-full bg-accent hover:bg-accent/80 text-dark font-bold py-2 px-6 rounded-full transition-all card-hover">
-        装备物品
-      </button>
+      <div class="flex gap-2">
+        <button id="equip-button" class="flex-1 bg-accent hover:bg-accent/80 text-dark font-bold py-2 px-6 rounded-full transition-all card-hover">
+          装备物品
+        </button>
+        <button id="discard-button" class="flex-1 bg-gray-600 hover:bg-gray-500 text-light font-bold py-2 px-6 rounded-full transition-all card-hover">
+          丢弃
+        </button>
+      </div>
     </div>
   </div>
   
@@ -379,7 +392,36 @@
         shownHint: false // 是否已显示合成提示
       }
     };
-    
+    // 存档功能
+    function saveGame() {
+      try {
+        localStorage.setItem('abyssCardsSave', JSON.stringify(gameState));
+        showToast('游戏已保存');
+      } catch (e) {
+        showToast('保存失败');
+      }
+    }
+
+    function loadGame() {
+      const saved = localStorage.getItem('abyssCardsSave');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        Object.assign(gameState, parsed);
+        renderGame();
+        showToast('已加载存档');
+        return true;
+      }
+      showToast('无存档数据');
+      return false;
+    }
+
+    function showToast(message) {
+      const toast = document.createElement('div');
+      toast.className = 'fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-dark/80 text-light px-4 py-2 rounded-full backdrop-blur-sm z-50';
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2000);
+    }
     // 扩展卡牌数据库 - 新增多种类型卡牌
     const cardDatabase = [
       // 基础攻击类
@@ -1108,6 +1150,17 @@
     
     // 初始化游戏
     function initGame() {
+      // 添加到initGame()函数中
+      document.getElementById('discard-button').addEventListener('click', () => {
+        elements.lootModal.classList.add('hidden');
+        gameState.currentLoot = null;
+        
+        if (gameState.player.exp >= gameState.player.nextLevelExp) {
+          checkLevelUp();
+        } else {
+          setTimeout(spawnNewEnemy, 1000);
+        }
+      });
       // 初始化玩家卡牌
       gameState.player.cards = [
         cardDatabase.find(card => card.id === 'basic_attack'),
