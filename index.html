@@ -54,6 +54,22 @@
         border: 2px solid #F59E0B !important;
         box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
       }
+      /* 套装效果样式 */
+      .set-bonus-active {
+        background-color: rgba(250, 204, 21, 0.2);
+        border-color: rgb(250, 204, 21);
+        box-shadow: 0 0 10px rgba(250, 204, 21, 0.3);
+      }
+      .set-bonus-inactive {
+        opacity: 0.5;
+      }
+      .set-bonus-item {
+        margin-bottom: 5px;
+        padding: 5px;
+        border-radius: 4px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+      }
       .scrollbar-hide::-webkit-scrollbar {
         display: none;
       }
@@ -67,6 +83,18 @@
       0% { transform: translateY(0px); }
       50% { transform: translateY(-10px); }
       100% { transform: translateY(0px); }
+    }
+    
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.4);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(250, 204, 21, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(250, 204, 21, 0);
+      }
     }
   </style>
 </head>
@@ -203,6 +231,11 @@
           <div id="ring-slot" class="text-xs md:text-sm">无</div>
         </div>
       </div>
+      
+      <!-- 套装效果显示区域 -->
+      <div id="set-effects-container" class="mt-3">
+        <div class="text-xs text-light/50 italic">装备相同套装的装备可获得额外加成</div>
+      </div>
     </div>
     
     <!-- 战斗区域 - 压缩高度适应移动设备 -->
@@ -300,6 +333,38 @@
     </div>
   </div>
   
+  <!-- 剧情叙事模态框 -->
+  <div id="story-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+    <div class="bg-dark border-2 border-accent rounded-xl p-5 max-w-md w-full mx-4">
+      <div class="flex items-center justify-center mb-4">
+        <i class="fa fa-book text-3xl text-accent mr-3"></i>
+        <h2 class="text-xl md:text-2xl font-bold text-accent">冒险日志</h2>
+      </div>
+      <div id="story-content" class="text-center mb-6 leading-relaxed text-light/90">
+        <!-- 剧情内容将动态生成 -->
+      </div>
+      <button id="story-continue" class="bg-accent hover:bg-accent/80 text-dark font-bold py-2 px-6 rounded-full transition-all card-hover w-full">
+        继续冒险
+      </button>
+    </div>
+  </div>
+  
+  <!-- 大结局模态框 -->
+  <div id="ending-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+    <div class="bg-dark border-2 border-yellow-500 rounded-xl p-5 max-w-md w-full mx-4 text-center">
+      <div class="mb-4">
+        <i class="fa fa-trophy text-4xl text-yellow-500"></i>
+      </div>
+      <h2 class="text-2xl md:text-3xl font-bold text-yellow-500 mb-4">🎉 冒险完成！</h2>
+      <div id="ending-content" class="mb-6 leading-relaxed text-light/90">
+        <!-- 大结局内容将动态生成 -->
+      </div>
+      <button id="restart-after-ending" class="bg-yellow-500 hover:bg-yellow-400 text-dark font-bold py-2 px-6 rounded-full transition-all card-hover w-full">
+        重新开始冒险
+      </button>
+    </div>
+  </div>
+  
   <!-- 卡牌升级提示 - 三合一功能 -->
   <div id="card-upgrade-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
     <div class="bg-dark border-2 border-accent rounded-xl p-5 max-w-md w-full mx-4 text-center">
@@ -348,6 +413,90 @@
   </div>
   
   <script>
+    // 剧情数据库 - 勇者救公主的王道剧情（20级）
+    const storyDatabase = {
+      1: {
+        title: "冒险的开始",
+        content: "作为村里最勇敢的年轻人，你接到了一个紧急任务。王国的公主被邪恶的黑龙绑架了，国王许诺将把公主许配给能救回她的勇者。你收拾行囊，踏上了这段充满未知的旅程..."
+      },
+      2: {
+        title: "首个试炼",
+        content: "你来到了王国边境的森林。森林里的野兽对你来说是第一个挑战，但你凭借着勇气和基础的战斗技巧成功通过，证明了自己的实力。"
+      },
+      3: {
+        title: "遇到导师",
+        content: "在森林深处，你遇到了一位隐居的老战士。他看出了你的潜力，传授了你一些基本的战斗技巧，使你的实力得到了提升。"
+      },
+      4: {
+        title: "神秘洞穴",
+        content: "离开森林后，你来到了一座神秘的洞穴。据说这里藏着古代战士留下的宝藏，但也有危险的生物守护着它们。"
+      },
+      5: {
+        title: "获得装备",
+        content: "在洞穴中，你发现了一套古老的盔甲和武器。这些装备虽然有些陈旧，但依然坚固耐用，能够帮助你更好地应对未来的挑战。"
+      },
+      6: {
+        title: "穿越山脉",
+        content: "翻过险峻的山脉，你看到了黑龙所在的方向。路途越来越艰难，但你的决心也越来越坚定。"
+      },
+      7: {
+        title: "第一个BOSS",
+        content: "在山路的顶端，你遇到了一只巨大的山怪。这是你迄今为止遇到的最强大的敌人，但你凭借学到的技巧和装备的力量，成功击败了它！"
+      },
+      8: {
+        title: "来到湖畔",
+        content: "越过山脉后，你来到了一片宁静的湖泊。湖面上波光粼粼，似乎隐藏着什么秘密。湖边的村民告诉你，湖底可能有通往黑龙巢穴的秘密通道。"
+      },
+      9: {
+        title: "湖中试炼",
+        content: "你潜入湖中探索，发现了一个古老的水下神殿。在这里，你接受了水元素的试炼，获得了新的力量。"
+      },
+      10: {
+        title: "沙漠之旅",
+        content: "离开湖畔后，你进入了一片广阔的沙漠。烈日炎炎，但你没有退缩，继续向黑龙的巢穴前进。"
+      },
+      11: {
+        title: "沙漠绿洲",
+        content: "在沙漠中，你发现了一片绿洲。在这里休息时，你遇到了一位商队的向导，他告诉了你一些关于黑龙的情报。"
+      },
+      12: {
+        title: "遭遇强盗",
+        content: "继续前进的路上，你遭遇了一群沙漠强盗。他们觊觎你的装备，但你轻松击败了他们，展示了自己日益增长的实力。"
+      },
+      13: {
+        title: "火山地带",
+        content: "穿过沙漠，你来到了火山地带。这里是黑龙巢穴的所在地，空气中弥漫着硫磺的味道，地面滚烫。"
+      },
+      14: {
+        title: "熔岩试炼",
+        content: "在火山口附近，你遇到了一只火元素守卫。它测试了你的勇气和实力，在确认你足够强大后，为你指引了通往黑龙巢穴的正确道路。"
+      },
+      15: {
+        title: "巢穴入口",
+        content: "终于，你来到了黑龙巢穴的入口。洞穴深邃黑暗，但你能感受到里面传来的强大气息。这是最后的挑战，你深吸一口气，走了进去。"
+      },
+      16: {
+        title: "内部陷阱",
+        content: "巢穴内部布满了各种陷阱和守卫。但经过重重考验的你已经今非昔比，轻松化解了这些危险。"
+      },
+      17: {
+        title: "接近公主",
+        content: "深入巢穴后，你终于听到了公主的呼救声。她被囚禁在巢穴深处的一个华丽房间里，黑龙就在附近守护着她。"
+      },
+      18: {
+        title: "最后的准备",
+        content: "在与黑龙决战前，你整理了自己的装备和状态，回想起这段旅程中的点点滴滴。你已经从一个普通的年轻人成长为真正的勇者，现在是时候证明这一点了。"
+      },
+      19: {
+        title: "决战前夕",
+        content: "你站在黑龙的面前。这只巨大的黑色巨龙散发着令人恐惧的气息，但你毫不畏惧。公主的命运和王国的和平都掌握在你的手中，你必须胜利！"
+      },
+      20: {
+        title: "最终胜利",
+        content: "经过一场惊心动魄的战斗，你终于击败了邪恶的黑龙！公主得救了，你成功完成了使命。当你带着公主返回王国时，全城的人民都为你欢呼喝彩，国王兑现了他的承诺..."
+      }
+    };
+    
     // 游戏状态
     const gameState = {
       player: {
@@ -940,6 +1089,174 @@
     // 装备数据库
     const equipmentDatabase = [
       // 武器 - 增加攻击力
+      // 传奇装备 - 龙骑士套装
+      {  
+        id: 'legendary_dragon_slayer',
+        name: '屠龙剑',
+        type: 'weapon',
+        bonus: { attack: 30, critChance: 12 },
+        rarity: 'legendary',
+        description: '传说中屠过龙的神剑',
+        set: 'dragon_knight',
+        setEffect: '龙骑士套装'  
+      },
+      {  
+        id: 'legendary_dragon_armor',
+        name: '龙血铠甲',
+        type: 'armor',
+        bonus: { defense: 20, maxHp: 120 },
+        rarity: 'legendary',
+        description: '汲取龙血精华的神秘铠甲',
+        set: 'dragon_knight',
+        setEffect: '龙骑士套装'  
+      },
+      {  
+        id: 'legendary_dragon_amulet',
+        name: '龙之护符',
+        type: 'trinket',
+        bonus: { maxHp: 70, critChance: 8 },
+        rarity: 'legendary',
+        description: '封印着巨龙灵魂的护符',
+        set: 'dragon_knight',
+        setEffect: '龙骑士套装'  
+      },
+      {  
+        id: 'legendary_dragon_ring',
+        name: '龙鳞指环',
+        type: 'ring',
+        bonus: { attack: 15, defense: 15, maxHp: 30 },
+        rarity: 'legendary',
+        description: '用龙鳞打造的神秘指环',
+        set: 'dragon_knight',
+        setEffect: '龙骑士套装'  
+      },
+      
+      // 元素套装
+      {  
+        id: 'legendary_elemental_blade',
+        name: '元素之剑',
+        type: 'weapon',
+        bonus: { attack: 28, critChance: 10 },
+        rarity: 'legendary',
+        description: '掌控四种元素力量的魔剑',
+        set: 'elemental',
+        setEffect: '元素套装'  
+      },
+      {  
+        id: 'legendary_elemental_robe',
+        name: '元素法袍',
+        type: 'armor',
+        bonus: { defense: 15, maxHp: 80, critChance: 5 },
+        rarity: 'legendary',
+        description: '吸收元素能量的神秘法袍',
+        set: 'elemental',
+        setEffect: '元素套装'  
+      },
+      {  
+        id: 'legendary_elemental_orb',
+        name: '元素核心',
+        type: 'trinket',
+        bonus: { attack: 10, maxHp: 60, critChance: 10 },
+        rarity: 'legendary',
+        description: '蕴含原始元素之力的核心',
+        set: 'elemental',
+        setEffect: '元素套装'  
+      },
+      {  
+        id: 'legendary_elemental_ring',
+        name: '元素指环',
+        type: 'ring',
+        bonus: { attack: 12, defense: 12, critChance: 8 },
+        rarity: 'legendary',
+        description: '平衡元素力量的神奇指环',
+        set: 'elemental',
+        setEffect: '元素套装'  
+      },
+      
+      // 暗影套装
+      {  
+        id: 'legendary_shadow_dagger',
+        name: '暗影匕首',
+        type: 'weapon',
+        bonus: { attack: 25, critChance: 20 },
+        rarity: 'legendary',
+        description: '能切开影子的致命匕首',
+        set: 'shadow',
+        setEffect: '暗影套装'  
+      },
+      {  
+        id: 'legendary_shadow_cloak',
+        name: '暗影斗篷',
+        type: 'armor',
+        bonus: { defense: 18, maxHp: 70 },
+        rarity: 'legendary',
+        description: '能融入黑暗的神秘斗篷',
+        set: 'shadow',
+        setEffect: '暗影套装'  
+      },
+      {  
+        id: 'legendary_shadow_amulet',
+        name: '暗影之心',
+        type: 'trinket',
+        bonus: { critChance: 15, attack: 8 },
+        rarity: 'legendary',
+        description: '跳动着暗影能量的护符',
+        set: 'shadow',
+        setEffect: '暗影套装'  
+      },
+      {  
+        id: 'legendary_shadow_ring',
+        name: '阴影指环',
+        type: 'ring',
+        bonus: { attack: 10, defense: 10, critChance: 12 },
+        rarity: 'legendary',
+        description: '能操控阴影的神奇指环',
+        set: 'shadow',
+        setEffect: '暗影套装'  
+      },
+      
+      // 光明套装
+      {  
+        id: 'legendary_light_sword',
+        name: '光明圣剑',
+        type: 'weapon',
+        bonus: { attack: 27, defense: 5, critChance: 10 },
+        rarity: 'legendary',
+        description: '散发神圣光芒的圣剑',
+        set: 'light',
+        setEffect: '光明套装'  
+      },
+      {  
+        id: 'legendary_light_armor',
+        name: '光明铠甲',
+        type: 'armor',
+        bonus: { defense: 22, maxHp: 110 },
+        rarity: 'legendary',
+        description: '被圣光祝福的神圣铠甲',
+        set: 'light',
+        setEffect: '光明套装'  
+      },
+      {  
+        id: 'legendary_light_amulet',
+        name: '光明吊坠',
+        type: 'trinket',
+        bonus: { maxHp: 80, defense: 8 },
+        rarity: 'legendary',
+        description: '散发治愈之光的神圣吊坠',
+        set: 'light',
+        setEffect: '光明套装'  
+      },
+      {  
+        id: 'legendary_light_ring',
+        name: '圣光指环',
+        type: 'ring',
+        bonus: { attack: 12, defense: 18, maxHp: 20 },
+        rarity: 'legendary',
+        description: '蕴含圣光之力的指环',
+        set: 'light',
+        setEffect: '光明套装'  
+      },
+      // 普通装备
       {
         id: 'sword_1',
         name: '铁剑',
@@ -1285,6 +1602,7 @@
       armorSlot: document.getElementById('armor-slot'),
       trinketSlot: document.getElementById('trinket-slot'),
       ringSlot: document.getElementById('ring-slot'),
+      setEffectsContainer: document.getElementById('set-effects-container'),
       
       levelUpModal: document.getElementById('level-up-modal'),
       skillOptions: [
@@ -1305,7 +1623,17 @@
       
       gameOverModal: document.getElementById('game-over-modal'),
       finalLevel: document.getElementById('final-level'),
-      restartButton: document.getElementById('restart-button')
+      restartButton: document.getElementById('restart-button'),
+      
+      // 剧情系统元素
+      storyModal: document.getElementById('story-modal'),
+      storyContent: document.getElementById('story-content'),
+      storyContinue: document.getElementById('story-continue'),
+      
+      // 大结局元素
+      endingModal: document.getElementById('ending-modal'),
+      endingContent: document.getElementById('ending-content'),
+      restartAfterEnding: document.getElementById('restart-after-ending')
     };
     
     // 初始化游戏
@@ -1388,6 +1716,10 @@
         elements.cardUpgradeModal.classList.add('hidden');
         checkForCardUpgrades(); // 检查是否还有可升级的卡牌
       });
+      
+      // 剧情系统事件监听
+      elements.storyContinue.addEventListener('click', continueAfterStory);
+      elements.restartAfterEnding.addEventListener('click', restartGameAfterEnding);
     }
     
     // 渲染游戏
@@ -1493,16 +1825,19 @@
       const equipment = gameState.player.equipment;
       
       elements.weaponSlot.textContent = equipment.weapon ? 
-        `${equipment.weapon.name} (攻击+${equipment.weapon.bonus.attack || 0})` : '无';
+        `${equipment.weapon.name}${equipment.weapon.set ? ` [${equipment.weapon.setEffect}]` : ''} (攻击+${equipment.weapon.bonus.attack || 0})` : '无';
         
       elements.armorSlot.textContent = equipment.armor ? 
-        `${equipment.armor.name} (防御+${equipment.armor.bonus.defense || 0})` : '无';
+        `${equipment.armor.name}${equipment.armor.set ? ` [${equipment.armor.setEffect}]` : ''} (防御+${equipment.armor.bonus.defense || 0})` : '无';
         
       elements.trinketSlot.textContent = equipment.trinket ? 
-        `${equipment.trinket.name} (生命+${equipment.trinket.bonus.maxHp || 0})` : '无';
+        `${equipment.trinket.name}${equipment.trinket.set ? ` [${equipment.trinket.setEffect}]` : ''} (生命+${equipment.trinket.bonus.maxHp || 0})` : '无';
         
       elements.ringSlot.textContent = equipment.ring ? 
-        `${equipment.ring.name} (攻击+${equipment.ring.bonus.attack || 0}, 防御+${equipment.ring.bonus.defense || 0})` : '无';
+        `${equipment.ring.name}${equipment.ring.set ? ` [${equipment.ring.setEffect}]` : ''} (攻击+${equipment.ring.bonus.attack || 0}, 防御+${equipment.ring.bonus.defense || 0})` : '无';
+        
+      // 渲染套装效果
+      renderSetEffects();
     }
     
     // 使用卡牌
@@ -2218,6 +2553,9 @@
         case 'epic':
           successRate = 0.4; // 40%成功率
           break;
+        case 'legendary':
+          successRate = 0.3; // 30%成功率，但强化收益更高
+          break;
         default:
           successRate = 0.5; // 默认50%
       }
@@ -2237,7 +2575,17 @@
         let upgradeText = '';
         for (const [key, value] of Object.entries(upgradeItem.bonus)) {
           if (!equipment.bonus[key]) equipment.bonus[key] = 0;
-          const randomBonus = Math.floor(Math.random() * 3); // 随机1-3点额外加成
+          // 根据装备稀有度增加不同的随机加成
+          let randomBonus;
+          if (equipment.rarity === 'legendary') {
+            randomBonus = Math.floor(Math.random() * 5) + 2; // 传奇装备：2-6点额外加成
+          } else if (equipment.rarity === 'epic') {
+            randomBonus = Math.floor(Math.random() * 4) + 1; // 史诗装备：1-5点额外加成
+          } else if (equipment.rarity === 'rare') {
+            randomBonus = Math.floor(Math.random() * 3) + 1; // 稀有装备：1-4点额外加成
+          } else {
+            randomBonus = Math.floor(Math.random() * 3); // 普通装备：0-3点额外加成
+          }
           const totalBonus = value + randomBonus;
           equipment.bonus[key] += totalBonus;
           
@@ -2270,11 +2618,17 @@
     
     // 生成战利品
     function generateLoot() {
-      // 根据难度调整装备稀有度概率
+      // 根据难度和敌人类型调整装备稀有度概率
       const random = Math.random() * 100;
       let rarityThreshold;
       
-      if (gameState.difficulty < 3) {
+      // 检查是否是BOSS战
+      const isBoss = gameState.enemy && gameState.enemy.isBoss;
+      
+      if (isBoss) {
+        // BOSS战：有几率掉落传奇装备
+        rarityThreshold = { legendary: 30, epic: 50, rare: 80, common: 100 };
+      } else if (gameState.difficulty < 3) {
         rarityThreshold = { epic: 5, rare: 20, common: 100 };
       } else if (gameState.difficulty < 7) {
         rarityThreshold = { epic: 10, rare: 30, common: 100 };
@@ -2284,7 +2638,11 @@
       
       let selectedEquipment;
       
-      if (random < rarityThreshold.epic) {
+      if (random < rarityThreshold.legendary && isBoss) {
+        // 传奇装备（只有BOSS才会掉落）
+        selectedEquipment = equipmentDatabase.filter(e => e.rarity === 'legendary')
+          [Math.floor(Math.random() * equipmentDatabase.filter(e => e.rarity === 'legendary').length)];
+      } else if (random < rarityThreshold.epic) {
         // 史诗装备
         selectedEquipment = equipmentDatabase.filter(e => e.rarity === 'epic')
           [Math.floor(Math.random() * equipmentDatabase.filter(e => e.rarity === 'epic').length)];
@@ -2303,17 +2661,20 @@
       
       // 显示战利品模态框
       let rarityColor = 'text-light';
+      if (selectedEquipment.rarity === 'legendary') rarityColor = 'text-yellow-400';
       if (selectedEquipment.rarity === 'rare') rarityColor = 'text-blue-400';
       if (selectedEquipment.rarity === 'epic') rarityColor = 'text-purple-400';
       
       elements.lootContent.innerHTML = `
-        <div class="bg-dark/60 rounded-lg p-3 border ${selectedEquipment.rarity === 'epic' ? 'border-purple-500 glow' : 
+        <div class="bg-dark/60 rounded-lg p-3 border ${selectedEquipment.rarity === 'legendary' ? 'border-yellow-500 glow pulse' :
+          selectedEquipment.rarity === 'epic' ? 'border-purple-500 glow' : 
           selectedEquipment.rarity === 'rare' ? 'border-blue-500' : 'border-gray-500'}">
           <div class="flex justify-between items-start mb-2">
             <h3 class="font-bold text-base ${rarityColor}">${selectedEquipment.name}</h3>
-            <span class="text-xs px-2 py-1 rounded-full ${selectedEquipment.rarity === 'epic' ? 'bg-purple-500/20 text-purple-400' : 
+            <span class="text-xs px-2 py-1 rounded-full ${selectedEquipment.rarity === 'legendary' ? 'bg-yellow-500/20 text-yellow-400' :
+              selectedEquipment.rarity === 'epic' ? 'bg-purple-500/20 text-purple-400' : 
               selectedEquipment.rarity === 'rare' ? 'bg-blue-500/20 text-blue-400' : 'bg-gray-500/20 text-gray-400'}">
-              ${selectedEquipment.rarity === 'epic' ? '史诗' : selectedEquipment.rarity === 'rare' ? '稀有' : '普通'}
+              ${selectedEquipment.rarity === 'legendary' ? '传奇' : selectedEquipment.rarity === 'epic' ? '史诗' : selectedEquipment.rarity === 'rare' ? '稀有' : '普通'}
             </span>
           </div>
           <p class="text-xs text-light/80 mb-2">${selectedEquipment.description}</p>
@@ -2338,15 +2699,9 @@
       
       const equipment = gameState.currentLoot;
       
-      // 如果已有该部位的装备，使用新装备来强化现有装备
-      if (gameState.player.equipment[equipment.type]) {
-        upgradeEquipment(equipment);
-      } else {
-        // 首次装备该部位，直接装备
-        applyEquipmentBonuses(equipment, true);
-        gameState.player.equipment[equipment.type] = equipment;
-        showToast(`装备了 ${equipment.name}！`);
-      }
+      applyEquipmentBonuses(equipment, true);
+      gameState.player.equipment[equipment.type] = equipment;
+      showToast(`装备了 ${equipment.name}！`);
       
       // 隐藏模态框
       elements.lootModal.classList.add('hidden');
@@ -2361,6 +2716,167 @@
         checkLevelUp();
       } else {
         setTimeout(spawnNewEnemy, 1000);
+      }
+    }
+    
+    // 套装效果定义
+    const setEffects = {
+      dragon_knight: {
+        2: { attack: 10, defense: 8 },
+        3: { maxHp: 50, critChance: 5 },
+        4: { attack: 15, defense: 12, maxHp: 100, critChance: 8 }
+      },
+      elemental: {
+        2: { attack: 12, critChance: 6 },
+        3: { defense: 10, maxHp: 40 },
+        4: { attack: 20, defense: 15, maxHp: 80, critChance: 10 }
+      },
+      shadow: {
+        2: { attack: 8, critChance: 10 },
+        3: { defense: 8, maxHp: 30 },
+        4: { attack: 20, defense: 12, maxHp: 60, critChance: 15 }
+      },
+      light: {
+        2: { defense: 12, maxHp: 50 },
+        3: { attack: 8, critChance: 5 },
+        4: { attack: 15, defense: 20, maxHp: 100, critChance: 8 }
+      }
+    };
+    
+    // 记录当前套装加成
+    let currentSetBonuses = {};
+    
+    // 检查和应用套装效果
+    function checkAndApplySetEffects() {
+      // 移除旧的套装加成
+      removeSetBonuses();
+      
+      // 计算每个套装的装备数量
+      const setCounts = {};
+      const equipment = gameState.player.equipment;
+      
+      for (const slot in equipment) {
+        const item = equipment[slot];
+        if (item && item.set) {
+          setCounts[item.set] = (setCounts[item.set] || 0) + 1;
+        }
+      }
+      
+      // 应用套装效果
+      currentSetBonuses = {};
+      
+      for (const setName in setCounts) {
+        const count = setCounts[setName];
+        const setEffect = setEffects[setName];
+        
+        if (setEffect && setEffect[count]) {
+          // 应用对应数量的套装效果
+          for (const [attr, value] of Object.entries(setEffect[count])) {
+            if (!currentSetBonuses[attr]) currentSetBonuses[attr] = 0;
+            currentSetBonuses[attr] += value;
+            
+            // 应用到玩家属性
+            if (attr === 'maxHp') {
+              const hpPercentage = gameState.player.hp / gameState.player.maxHp;
+              gameState.player.maxHp += value;
+              gameState.player.hp = Math.round(gameState.player.maxHp * hpPercentage);
+            } else {
+              gameState.player[attr] += value;
+            }
+          }
+          
+          // 显示套装效果激活提示
+          const effectName = setName === 'dragon_knight' ? '龙骑士套装' : 
+                            setName === 'elemental' ? '元素套装' : 
+                            setName === 'shadow' ? '暗影套装' : 
+                            setName === 'light' ? '光明套装' : '';
+          
+          if (count === 2) {
+            showToast(`✅ ${effectName}激活！装备2件获得基础加成！`);
+          } else if (count === 3) {
+            showToast(`✨ ${effectName}强化！装备3件获得高级加成！`);
+          } else if (count === 4) {
+            showToast(`👑 ${effectName}完整！装备4件获得终极加成！`);
+          }
+        }
+      }
+      
+      // 重新渲染UI
+      renderSetEffects();
+    }
+    
+    // 移除套装加成
+    function removeSetBonuses() {
+      for (const [attr, value] of Object.entries(currentSetBonuses)) {
+        if (attr === 'maxHp') {
+          const hpPercentage = gameState.player.hp / gameState.player.maxHp;
+          gameState.player.maxHp -= value;
+          gameState.player.hp = Math.round(gameState.player.maxHp * hpPercentage);
+        } else {
+          gameState.player[attr] -= value;
+        }
+      }
+      currentSetBonuses = {};
+    }
+    
+    // 渲染套装效果显示
+    function renderSetEffects() {
+      const equipment = gameState.player.equipment;
+      const setCounts = {};
+      let setHtml = '';
+      
+      // 计算套装数量
+      for (const slot in equipment) {
+        const item = equipment[slot];
+        if (item && item.set) {
+          setCounts[item.set] = (setCounts[item.set] || 0) + 1;
+        }
+      }
+      
+      // 构建套装显示HTML
+      for (const setName in setCounts) {
+        const count = setCounts[setName];
+        const setEffect = setEffects[setName];
+        const effectName = setName === 'dragon_knight' ? '龙骑士套装' : 
+                          setName === 'elemental' ? '元素套装' : 
+                          setName === 'shadow' ? '暗影套装' : 
+                          setName === 'light' ? '光明套装' : '';
+        
+        const bonusText = [];
+        
+        // 计算总套装加成
+        for (let i = 2; i <= count && i <= 4; i++) {
+          if (setEffect && setEffect[i]) {
+            for (const [attr, value] of Object.entries(setEffect[i])) {
+              const attrText = attr === 'attack' ? '攻击力' : 
+                             attr === 'defense' ? '防御力' : 
+                             attr === 'maxHp' ? '最大生命值' : 
+                             attr === 'critChance' ? '暴击率' : '';
+              bonusText.push(`+${value} ${attrText}`);
+            }
+          }
+        }
+        
+        setHtml += `
+          <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-2 mt-2">
+            <div class="text-sm font-semibold text-yellow-400 mb-1">
+              ${effectName} (${count}/4)
+            </div>
+            <div class="text-xs text-yellow-300">
+              ${bonusText.join(' | ')}
+            </div>
+          </div>
+        `;
+      }
+      
+      // 如果没有套装效果，显示空提示
+      if (!setHtml) {
+        setHtml = '<div class="text-xs text-light/50 italic">装备相同套装的装备可获得额外加成</div>';
+      }
+      
+      // 更新UI显示
+      if (elements.setEffectsContainer) {
+        elements.setEffectsContainer.innerHTML = setHtml;
       }
     }
     
@@ -2386,6 +2902,11 @@
       if (equipment.bonus.critChance) {
         gameState.player.critChance += equipment.bonus.critChance * multiplier;
       }
+      
+      // 如果是应用装备，延迟检查套装效果以确保所有装备操作完成
+      if (apply) {
+        setTimeout(checkAndApplySetEffects, 0);
+      }
     }
     
     // 添加技能给玩家
@@ -2408,6 +2929,15 @@
         // 计算下一级所需经验（递增）
         gameState.player.nextLevelExp = Math.round(gameState.player.nextLevelExp * 1.5);
         
+        // 显示剧情（如果是1-20级）
+        if (gameState.player.level <= 20 && storyDatabase[gameState.player.level]) {
+          showStoryScene(gameState.player.level);
+          
+          // 暂停游戏直到剧情结束
+          gameState.isBattleActive = false;
+          return; // 等待剧情结束后再显示升级选择
+        }
+        
         // 显示升级选择
         showLevelUpOptions();
         
@@ -2419,6 +2949,84 @@
         gameState.isBattleActive = false;
         return; // 一次只处理一级升级，等待玩家选择技能后继续
       }
+    }
+    
+    // 显示剧情场景
+    function showStoryScene(level) {
+      const story = storyDatabase[level];
+      
+      if (story) {
+        // 特殊处理20级大结局
+        if (level === 20) {
+          // 显示大结局模态框
+          elements.endingContent.innerHTML = `
+            <p class="text-lg font-medium mb-4">勇者传说 · 终章</p>
+            <p class="mb-4">${story.content}</p>
+            <p class="text-sm text-yellow-400">恭喜你完成了这段精彩的冒险！</p>
+            <p class="text-sm text-light/70 mt-2">你从一个普通的年轻人成长为拯救王国的英雄，<br>公主获救，王国重获和平，<br>而你也收获了属于自己的荣耀与爱情。</p>
+          `;
+          elements.endingModal.classList.remove('hidden');
+          
+          // 阻止生成新敌人，游戏结束
+          gameState.isBattleActive = false;
+        } else {
+          // 显示普通剧情模态框
+          elements.storyContent.innerHTML = `
+            <p class="text-lg font-medium mb-3">第${level}章：${story.title}</p>
+            <p>${story.content}</p>
+          `;
+          elements.storyModal.classList.remove('hidden');
+        }
+      }
+    }
+    
+    // 继续游戏（处理剧情结束后）
+    function continueAfterStory() {
+      // 隐藏剧情模态框
+      elements.storyModal.classList.add('hidden');
+      
+      // 显示升级选择
+      showLevelUpOptions();
+    }
+    
+    // 重新开始游戏（通关后）
+    function restartGameAfterEnding() {
+      // 隐藏大结局模态框
+      elements.endingModal.classList.add('hidden');
+      
+      // 重置游戏状态到初始值
+      gameState.player = {
+        level: 1,
+        hp: 100,
+        maxHp: 100,
+        exp: 0,
+        nextLevelExp: 100,
+        attack: 10,
+        defense: 0,
+        critChance: 5,
+        cards: [],
+        cardCounts: {},
+        skills: [
+          { id: 'basic_attack', name: '基础攻击', description: '造成10点伤害' }
+        ],
+        equipment: {
+          weapon: null,
+          armor: null,
+          trinket: null,
+          ring: null
+        }
+      };
+      
+      gameState.difficulty = 1;
+      gameState.isBattleActive = true;
+      
+      // 清空套装加成
+      removeSetBonuses();
+      
+      // 重新初始化游戏
+      initGame();
+      renderGame();
+      spawnNewEnemy();
     }
     
     // 显示升级选择
@@ -2514,6 +3122,10 @@
       // 随难度增强敌人属性
       const difficultyMultiplier = 1 + (gameState.difficulty - 1) * 0.2;
       
+      // 加强BOSS属性
+      const bossLevel = isBossFight ? Math.floor((gameState.player.level - 7) / 5) + 1 : 0;
+      const bossMultiplier = isBossFight ? 2 + bossLevel * 0.5 : 1;
+      
       // 随机选择敌人名称
       const randomNameIndex = Math.floor(Math.random() * baseEnemy.names.length);
       const enemyName = baseEnemy.names[randomNameIndex];
@@ -2521,12 +3133,12 @@
       // 创建敌人对象，包含特性
       gameState.enemy = {
         name: enemyName,
-        displayName: enemyName,
-        hp: Math.round(baseEnemy.baseHp * difficultyMultiplier),
-        maxHp: Math.round(baseEnemy.baseHp * difficultyMultiplier),
-        attack: Math.round(baseEnemy.baseAttack * difficultyMultiplier),
-        defense: baseEnemy.defense ? Math.round(baseEnemy.defense * difficultyMultiplier) : Math.floor(baseEnemy.baseAttack * difficultyMultiplier * 0.3),
-        expReward: Math.round(baseEnemy.exp * difficultyMultiplier * 1.5), // 提升怪物经验
+        displayName: isBossFight ? `${enemyName} (BOSS)` : enemyName,
+        hp: Math.round(baseEnemy.baseHp * difficultyMultiplier * bossMultiplier),
+        maxHp: Math.round(baseEnemy.baseHp * difficultyMultiplier * bossMultiplier),
+        attack: Math.round(baseEnemy.baseAttack * difficultyMultiplier * bossMultiplier),
+        defense: baseEnemy.defense ? Math.round(baseEnemy.defense * difficultyMultiplier * bossMultiplier) : Math.floor(baseEnemy.baseAttack * difficultyMultiplier * bossMultiplier * 0.3),
+        expReward: Math.round(baseEnemy.exp * difficultyMultiplier * bossMultiplier * 2), // BOSS提供更多经验值
         threat: baseEnemy.threat,
         sprite: baseEnemy.sprite,
         lootChance: 100, // 确保每只怪都必定掉落装备
@@ -2600,7 +3212,7 @@
       // 添加敌人特性描述
       let enemyDescription = '';
       if (isBossFight) {
-        enemyDescription = `强大的头目 ${gameState.enemy.displayName} 出现了！`;
+        enemyDescription = `⚠️ 危险！强大的BOSS ${gameState.enemy.displayName} 出现了！它的实力远超普通敌人！`;
       } else {
         enemyDescription = `新的敌人 ${gameState.enemy.displayName} 出现了！`;
       }
