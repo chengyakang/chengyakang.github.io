@@ -1765,7 +1765,90 @@
     
     // 初始化游戏
     function initGame() {
-      // 流派选择模态框
+      // 为职业选择创建一个全局引用，但不立即显示
+      window.classSelectionModal = null;
+      
+      // 初始化基础卡牌池（在选择职业前使用基础卡牌）
+      gameState.player.fullCardPool = [
+        {
+          id: 'basic_attack',
+          name: '基础攻击',
+          description: '对敌人造成基础伤害',
+          color: 'bg-secondary/20',
+          borderColor: 'border-secondary',
+          icon: 'fa-hand-paper-o',
+          damageMultiplier: 1,
+          type: 'attack',
+          upgradeTo: 'power_attack',
+          cooldown: 0,
+          defaultCooldown: 1
+        }
+      ];
+      
+      // 初始随机获得1张卡牌
+      gameState.player.cards = [gameState.player.fullCardPool[0]];
+      
+      // 提前绑定所有事件监听器，确保在游戏开始时就完成绑定
+      // 剧情系统事件监听
+      elements.storyContinue.addEventListener('click', continueAfterStory);
+      elements.restartAfterEnding.addEventListener('click', restartGameAfterEnding);
+      
+      // 游戏功能事件监听
+      elements.restartButton.addEventListener('click', restartGame);
+      elements.equipButton.addEventListener('click', equipLoot);
+      elements.upgradeConfirm.addEventListener('click', () => {
+        elements.cardUpgradeModal.classList.add('hidden');
+        checkForCardUpgrades(); // 检查是否还有可升级的卡牌
+      });
+      // 装备强化按钮事件监听
+      document.getElementById('discard-button').addEventListener('click', () => {
+        if (!gameState.currentLoot) return;
+        
+        // 获取当前战利品
+        const loot = gameState.currentLoot;
+        
+        // 检查玩家是否已有该类型的装备
+        if (!gameState.player.equipment[loot.type]) {
+          showToast('你还没有装备该类型的装备！请先装备后再强化。');
+          return;
+        }
+        
+        // 执行强化逻辑
+        const success = upgradeEquipment(loot);
+        
+        // 无论成功失败，都关闭模态框并继续游戏
+        setTimeout(() => {
+          elements.lootModal.classList.add('hidden');
+          gameState.currentLoot = null;
+          
+          // 重新渲染
+          renderEquipment();
+          renderPlayerStats();
+          
+          // 检查是否升级，否则生成新敌人
+          if (gameState.player.exp >= gameState.player.nextLevelExp) {
+            checkLevelUp();
+          } else {
+            setTimeout(spawnNewEnemy, 1000);
+          }
+        }, 100);
+      });
+      
+      // 显示初始剧情
+      setTimeout(() => {
+        showStoryScene(1);
+        gameState.isBattleActive = false;
+      }, 500);
+    }
+    
+    // 显示职业选择界面
+    function showClassSelection() {
+      if (window.classSelectionModal) {
+        window.classSelectionModal.classList.remove('hidden');
+        return;
+      }
+      
+      // 创建职业选择模态框
       const classSelectionModal = document.createElement('div');
       classSelectionModal.id = 'class-selection-modal';
       classSelectionModal.className = 'fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50';
@@ -1804,12 +1887,13 @@
         </div>
       `;
       document.body.appendChild(classSelectionModal);
+      window.classSelectionModal = classSelectionModal;
       
-      // 选择流派
+      // 选择职业
       function selectClass(classType) {
         gameState.player.class = classType;
         
-        // 给予初始职业加成
+        // 给予职业加成
         switch(classType) {
           case 'warrior':
             gameState.player.attack += 5;
@@ -1832,56 +1916,75 @@
         // 隐藏选择模态框
         classSelectionModal.classList.add('hidden');
         
-        // 显示初始剧情
-        setTimeout(() => {
-          showStoryScene(1);
-          gameState.isBattleActive = false;
-        }, 500);
+        // 获取玩家职业对应的卡牌池
+        const cardPool = classCardPools[classType] || classCardPools.warrior; // 默认战士卡牌池
+        
+        // 初始化玩家的完整卡牌池（带冷却属性）
+        gameState.player.fullCardPool = cardPool.map(cardDef => {
+          const card = cardDatabase.find(c => c.id === cardDef.id);
+          return card ? {
+            ...card,
+            cooldown: 0,
+            defaultCooldown: calculateCardCooldown(card) // 使用新的冷却计算函数
+          } : null;
+        }).filter(Boolean);
+        
+        // 更新手牌
+        gameState.player.cards = [gameState.player.fullCardPool[0]];
+        
+        // 恢复游戏
+        gameState.isBattleActive = true;
+        renderGame();
+        
+        // 显示获得新职业的消息
+        elements.battleMessage.textContent = `恭喜！你选择了${classType === 'warrior' ? '战士' : classType === 'assassin' ? '刺客' : '法师'}职业！`;
       }
       
-      // 绑定流派选择事件
+      // 绑定职业选择事件
       document.getElementById('warrior-option').addEventListener('click', () => selectClass('warrior'));
       document.getElementById('assassin-option').addEventListener('click', () => selectClass('assassin'));
       document.getElementById('mage-option').addEventListener('click', () => selectClass('mage'));
       
-      // 添加到initGame()函数中
-      document.getElementById('discard-button').addEventListener('click', () => {
-        if (!gameState.currentLoot) return;
-        
-        // 获取当前战利品
-        const loot = gameState.currentLoot;
-        
-        // 检查玩家是否已有该类型的装备
-        if (!gameState.player.equipment[loot.type]) {
-          showToast('你还没有装备该类型的装备！请先装备后再强化。');
-          return;
-        }
-        
-        // 执行强化逻辑
-        const success = upgradeEquipment(loot);
-        
-        // 无论成功失败，都关闭模态框并继续游戏
-        setTimeout(() => {
-          elements.lootModal.classList.add('hidden');
-          gameState.currentLoot = null;
-          
-          // 重新渲染装备和玩家状态
-          renderEquipment();
-          renderPlayerStats();
-          
-          if (gameState.player.exp >= gameState.player.nextLevelExp) {
-            checkLevelUp();
-          } else {
-            setTimeout(spawnNewEnemy, 1000);
-          }
-        }, 1000); // 延迟关闭，让玩家看到强化结果
-      });
-      // 初始化玩家卡牌
-      gameState.player.cards = [
-        cardDatabase.find(card => card.id === 'basic_attack'),
-        cardDatabase.find(card => card.id === 'basic_attack'),
-        cardDatabase.find(card => card.id === 'defend')
-      ].filter(Boolean); // 过滤掉undefined的卡牌
+      // 事件监听器已在initGame()函数中绑定，此处不再重复绑定
+      // 初始化玩家卡牌 - 根据职业分配固定卡牌池
+      const classCardPools = {
+        warrior: [
+          { id: 'basic_attack', defaultCooldown: 1 },
+          { id: 'strong_attack', defaultCooldown: 2 },
+          { id: 'defend', defaultCooldown: 1 },
+          { id: 'battle_rage', defaultCooldown: 3 }
+        ],
+        assassin: [
+          { id: 'basic_attack', defaultCooldown: 1 },
+          { id: 'backstab', defaultCooldown: 2 },
+          { id: 'dodge', defaultCooldown: 2 },
+          { id: 'poison_strike', defaultCooldown: 3 }
+        ],
+        mage: [
+          { id: 'fire_ball', defaultCooldown: 1 },
+          { id: 'ice_bolt', defaultCooldown: 2 },
+          { id: 'magic_shield', defaultCooldown: 2 },
+          { id: 'arcane_explosion', defaultCooldown: 3 }
+        ]
+      };
+      
+      // 获取玩家职业对应的卡牌池
+      const playerClass = gameState.player.class;
+      const cardPool = classCardPools[playerClass] || classCardPools.warrior; // 默认战士卡牌池
+      
+      // 初始化玩家的完整卡牌池（带冷却属性）
+      gameState.player.fullCardPool = cardPool.map(cardDef => {
+        const card = cardDatabase.find(c => c.id === cardDef.id);
+        return card ? {
+          ...card,
+          cooldown: 0,
+          defaultCooldown: cardDef.defaultCooldown
+        } : null;
+      }).filter(Boolean);
+      
+      // 初始随机获得1张卡牌
+      const randomIndex = Math.floor(Math.random() * gameState.player.fullCardPool.length);
+      gameState.player.cards = [gameState.player.fullCardPool[randomIndex]];
       
       // 初始化卡牌计数
       gameState.player.cardCounts = {};
@@ -1915,19 +2018,8 @@
       // 渲染游戏状态
       renderGame();
       
-      // 添加事件监听
-      elements.restartButton.addEventListener('click', restartGame);
-      elements.equipButton.addEventListener('click', equipLoot);
-      elements.upgradeConfirm.addEventListener('click', () => {
-        elements.cardUpgradeModal.classList.add('hidden');
-        checkForCardUpgrades(); // 检查是否还有可升级的卡牌
-      });
-      
-      // 剧情系统事件监听
-      elements.storyContinue.addEventListener('click', continueAfterStory);
-      elements.restartAfterEnding.addEventListener('click', restartGameAfterEnding);
-      
       // 游戏初始化后会在选择流派后显示剧情
+      // 注意：所有事件监听器已在initGame函数中绑定
     }
     
     // 渲染游戏
@@ -1992,9 +2084,10 @@
       elements.cardContainer.innerHTML = '';
       
       gameState.player.cards.forEach((card, index) => {
+        const isOnCooldown = card.cooldown > 0;
         const cardElement = document.createElement('div');
         // 移动端卡牌固定宽度，桌面端自适应
-        const cardClass = `min-w-[140px] ${card.color} ${card.borderColor} border rounded-xl p-3 md:p-4 card-hover cursor-pointer ${card.isUpgraded ? 'card-upgraded' : ''}`;
+        const cardClass = `min-w-[140px] ${card.color} ${card.borderColor} border rounded-xl p-3 md:p-4 transition-all ${card.isUpgraded ? 'card-upgraded' : ''} ${isOnCooldown ? 'opacity-50 cursor-not-allowed' : 'card-hover cursor-pointer'}`;
         cardElement.className = cardClass;
         cardElement.innerHTML = `
           <div class="flex justify-between items-start mb-2">
@@ -2002,11 +2095,14 @@
             <i class="fa ${card.icon} text-lg"></i>
           </div>
           <p class="text-xs md:text-sm text-light/80">${card.description}</p>
+          ${isOnCooldown ? `<div class="mt-1 text-center text-xs font-bold bg-red-600/30 text-red-300 px-2 py-1 rounded-full">冷却中: ${card.cooldown}回合</div>` : ''}
         `;
         
         // 增加触摸区域大小
         cardElement.style.touchAction = 'manipulation';
-        cardElement.addEventListener('click', () => useCard(index));
+        if (!isOnCooldown) {
+          cardElement.addEventListener('click', () => useCard(index));
+        }
         elements.cardContainer.appendChild(cardElement);
       });
       
@@ -2053,6 +2149,11 @@
       if (!gameState.isPlayerTurn || !gameState.isBattleActive) return;
       
       const card = gameState.player.cards[index];
+      // 检查卡牌是否在冷却中
+      if (card.cooldown > 0) {
+        elements.battleMessage.textContent = '该卡牌正在冷却中！';
+        return;
+      }
       let message = '';
       let hasUsedCard = false;
       
@@ -2330,14 +2431,11 @@
       }
       
       if (hasUsedCard) {
-        // 记录卡牌ID用于计数更新
-        const cardId = card.id;
+        // 应用卡牌冷却
+        gameState.player.cards[index].cooldown = gameState.player.cards[index].defaultCooldown;
         
-        // 移除已使用的卡牌
-        gameState.player.cards.splice(index, 1);
-        
-        // 更新卡牌计数
-        decrementCardCount(cardId);
+        // 标记卡牌已使用，不会移除卡牌
+        // 不更新卡牌计数，因为卡牌没有被消耗
         
         // 更新战斗信息
         elements.battleMessage.textContent = message;
@@ -2652,36 +2750,27 @@
       gameState.isPlayerTurn = true;
     }
     
-    // 抽新卡牌
+    // 处理卡牌冷却减少
     function drawNewCards(additional = 0) {
-      const maxCards = (gameState.player.maxCards || 5) + additional;
-      while (gameState.player.cards.length < maxCards) {
-        // 随着难度提升，获得高级卡牌的概率增加，同时减少防御卡牌的概率
-        const random = Math.random();
-        let newCard;
-        
-        // 根据卡牌类型设置不同的抽取概率，减少防御卡牌的出现频率
-        if (random < 0.05 * gameState.difficulty) {
-          // 强力攻击卡牌
-          newCard = getRandomCardByType(['attack'], true);
-        } else if (random < 0.2 * gameState.difficulty) {
-          // 特殊攻击卡牌
-          newCard = getRandomCardByType(['attack', 'magic', 'special'], false);
-        } else if (random < 0.25 * gameState.difficulty) {
-          // 持续伤害卡牌
-          newCard = getRandomCardByType(['dot'], false);
-        } else if (random < 0.3 + 0.05 * gameState.difficulty) {
-          // 治疗卡牌
-          newCard = getRandomCardByType(['support'], false);
-        } else if (random < 0.35 + 0.05 * gameState.difficulty) {
-          // 防御卡牌 - 概率最低
-          newCard = getRandomCardByType(['defense'], false);
-        } else {
-          // 基础攻击
-          newCard = cardDatabase.find(card => card.id === 'basic_attack');
+      // 为玩家回合开始时减少所有卡牌的冷却
+      gameState.player.cards.forEach(card => {
+        if (card.cooldown > 0) {
+          card.cooldown--;
         }
+      });
+      
+      // 如果卡牌池中有冷却为0但不在手牌中的卡牌，随机抽取一张添加到手牌
+      if (gameState.player.fullCardPool) {
+        const availableCards = gameState.player.fullCardPool.filter(card => 
+          card.cooldown === 0 && 
+          !gameState.player.cards.some(c => c.id === card.id)
+        );
         
-        addCardToPlayer({...newCard});
+        if (availableCards.length > 0) {
+          const randomIndex = Math.floor(Math.random() * availableCards.length);
+          const newCard = { ...availableCards[randomIndex] };
+          gameState.player.cards.push(newCard);
+        }
       }
       
       // 检查是否有可升级的卡牌
@@ -2706,7 +2795,14 @@
     
     // 添加卡牌给玩家
     function addCardToPlayer(card) {
-      gameState.player.cards.push(card);
+      // 确保卡牌有基于威力计算的冷却时间
+      const cardWithCooldown = {
+        ...card,
+        cooldown: 0,
+        defaultCooldown: card.defaultCooldown || calculateCardCooldown(card)
+      };
+      
+      gameState.player.cards.push(cardWithCooldown);
       
       // 更新卡牌计数
       incrementCardCount(card.id);
@@ -2754,9 +2850,12 @@
         return;
       }
       
+      // 默认两张卡牌即可升级
+      gameState.cardFusion.required = 2;
+      
       // 检查每种可升级的卡牌
       for (const [cardId, count] of Object.entries(gameState.player.cardCounts)) {
-        // 使用配置的数量要求（默认3张，可通过技能改为2张）
+        // 两张相同卡牌即可升级
         if (count >= gameState.cardFusion.required) {
           const card = cardDatabase.find(c => c.id === cardId);
           if (card && card.upgradeTo) {
@@ -3221,8 +3320,19 @@
           return; // 等待剧情结束后再显示升级选择
         }
         
-        // 显示升级选择
-        showLevelUpOptions();
+        // 5级时解锁职业选择
+        if (gameState.player.level === 5 && !gameState.player.class) {
+          // 暂停战斗
+          gameState.isBattleActive = false;
+          
+          // 显示职业选择
+          showClassSelection();
+          
+          return; // 等待职业选择完成
+        }
+        
+        // 显示升级选择（确保每次升级都获得新技能）
+        showLevelUpOptions(true); // 传入参数确保必选技能
         
         // 提高难度
         gameState.difficulty += 0.3;
@@ -3268,8 +3378,14 @@
       // 隐藏剧情模态框
       elements.storyModal.classList.add('hidden');
       
-      // 显示升级选择
-      showLevelUpOptions();
+      // 直接显示升级模态框，确保游戏继续
+      // 显示升级选择（确保必选技能）
+      showLevelUpOptions(true);
+      
+      // 强制显示升级模态框，以防万一
+      setTimeout(() => {
+        elements.levelUpModal.classList.remove('hidden');
+      }, 100);
     }
     
     // 重新开始游戏（通关后）
@@ -3315,48 +3431,245 @@
       spawnNewEnemy();
     }
     
+    // 根据卡牌威力计算冷却时间
+    function calculateCardCooldown(card) {
+      // 根据卡牌属性评估威力
+      let powerLevel = 1; // 默认为低级
+      
+      // 伤害类卡牌 - 根据伤害倍数和特效判断
+      if (card.damageMultiplier || card.damage) {
+        const multiplier = card.damageMultiplier || 1;
+        
+        // 低级伤害（1-1.2倍）
+        if (multiplier <= 1.2) {
+          powerLevel = 1;
+        }
+        // 中级伤害（1.3-1.8倍）
+        else if (multiplier <= 1.8) {
+          powerLevel = 2;
+        }
+        // 高级伤害（1.8倍以上或有特殊效果）
+        else {
+          powerLevel = 3;
+        }
+        
+        // 连击增加威力
+        if (card.hitCount && card.hitCount > 1) {
+          powerLevel = Math.min(powerLevel + 1, 3);
+        }
+        
+        // 特殊效果增加威力
+        if (card.stunChance || card.applyPoison || card.ignoreDefense) {
+          powerLevel = Math.min(powerLevel + 1, 3);
+        }
+      }
+      // 防御类卡牌
+      else if (card.defend || card.parryChance || card.dodgeChance) {
+        // 低级防御（减伤30%以下）
+        if ((card.defend && card.defend >= 0.7) || (card.parryChance && card.parryChance < 30)) {
+          powerLevel = 1;
+        }
+        // 中级防御（减伤30-50%）
+        else if ((card.defend && card.defend >= 0.5) || (card.parryChance && card.parryChance < 50)) {
+          powerLevel = 2;
+        }
+        // 高级防御
+        else {
+          powerLevel = 3;
+        }
+        
+        // 同时有治疗效果增加威力
+        if (card.heal && card.heal > 0) {
+          powerLevel = Math.min(powerLevel + 1, 3);
+        }
+      }
+      // 治疗类卡牌
+      else if (card.heal) {
+        // 低级治疗（5点以下）
+        if (card.heal <= 5) {
+          powerLevel = 1;
+        }
+        // 中级治疗（6-10点）
+        else if (card.heal <= 10) {
+          powerLevel = 2;
+        }
+        // 高级治疗（10点以上）
+        else {
+          powerLevel = 3;
+        }
+      }
+      // 特殊效果卡牌
+      else if (card.applyPoison || card.tempAttack || card.tempDefense) {
+        // 低级效果（持续伤害低或增益少）
+        if ((card.applyPoison && card.applyPoison <= 3) || 
+            (card.tempAttack && card.tempAttack <= 3) ||
+            (card.tempDefense && card.tempDefense <= 3)) {
+          powerLevel = 1;
+        }
+        // 中级效果
+        else if ((card.applyPoison && card.applyPoison <= 6) || 
+                (card.tempAttack && card.tempAttack <= 6) ||
+                (card.tempDefense && card.tempDefense <= 6)) {
+          powerLevel = 2;
+        }
+        // 高级效果
+        else {
+          powerLevel = 3;
+        }
+      }
+      
+      // 返回对应的冷却时间（1-3回合）
+      return powerLevel;
+    }
+    
     // 显示升级选择
-    function showLevelUpOptions() {
+    function showLevelUpOptions(mustChooseSkill = false) {
       const playerClass = gameState.player.class;
       
-      // 根据玩家流派筛选可用技能（通用技能+本流派专属技能）
-      const availableSkills = skillDatabase.filter(skill => {
-        // 通用技能没有classType或者本流派专属技能
-        return !skill.classType || skill.classType === playerClass;
-      });
+      // 优化：提高获得新卡牌的概率，让玩家更容易获得新卡牌
+      // 先检查是否还有可用的新卡牌
+      let hasAvailableCards = false;
+      if (playerClass === 'mage') {
+        hasAvailableCards = cardDatabase.some(card => 
+          (card.type === 'magic' || card.type === 'support') && 
+          !gameState.player.fullCardPool.some(c => c.id === card.id)
+        );
+      } else if (playerClass === 'warrior') {
+        hasAvailableCards = cardDatabase.some(card => 
+          (card.type === 'attack' || card.type === 'defense') && 
+          !gameState.player.fullCardPool.some(c => c.id === card.id)
+        );
+      } else if (playerClass === 'assassin') {
+        hasAvailableCards = cardDatabase.some(card => 
+          (card.type === 'attack' || card.type === 'special') && 
+          !gameState.player.fullCardPool.some(c => c.id === card.id)
+        );
+      } else {
+        hasAvailableCards = cardDatabase.some(card => 
+          !gameState.player.fullCardPool.some(c => c.id === card.id)
+        );
+      }
       
-      // 随机选择2个固定技能和1个随机生成的技能
-      const shuffledSkills = [...availableSkills].sort(() => 0.5 - Math.random());
-      const fixedSkills = shuffledSkills.slice(0, 2);
-      const randomSkill = generateRandomSkill();
-      const selectedSkills = [...fixedSkills, randomSkill].sort(() => 0.5 - Math.random());
+      // 如果有可用卡牌，70%的概率给卡牌选择；如果没有可用卡牌，则必选技能
+      const isCardChoice = !mustChooseSkill && hasAvailableCards && Math.random() < 0.7;
+      let selectedOptions;
       
-      // 更新模态框中的技能选项
+      if (isCardChoice) {
+        // 卡牌选择逻辑
+        // 根据职业筛选可选卡牌
+        let availableCards = [];
+        
+        // 法师职业优先魔法卡牌
+        if (playerClass === 'mage') {
+          availableCards = cardDatabase.filter(card => 
+            (card.type === 'magic' || card.type === 'support') && 
+            // 排除已在卡牌池中的卡牌
+            !gameState.player.fullCardPool.some(c => c.id === card.id)
+          );
+        } 
+        // 战士职业优先物理攻击和防御卡牌
+        else if (playerClass === 'warrior') {
+          availableCards = cardDatabase.filter(card => 
+            (card.type === 'attack' || card.type === 'defense') && 
+            !gameState.player.fullCardPool.some(c => c.id === card.id)
+          );
+        }
+        // 刺客职业优先攻击和特殊卡牌
+        else if (playerClass === 'assassin') {
+          availableCards = cardDatabase.filter(card => 
+            (card.type === 'attack' || card.type === 'special') && 
+            !gameState.player.fullCardPool.some(c => c.id === card.id)
+          );
+        }
+        
+        // 如果没有符合条件的卡牌，使用通用攻击卡牌
+        if (availableCards.length === 0) {
+          availableCards = cardDatabase.filter(card => 
+            !gameState.player.fullCardPool.some(c => c.id === card.id)
+          );
+        }
+        
+        // 随机选择3张卡牌
+        const shuffledCards = [...availableCards].sort(() => 0.5 - Math.random());
+        selectedOptions = shuffledCards.slice(0, 3).map(card => ({
+          ...card,
+          isCard: true,
+          // 为新卡牌根据威力计算冷却时间
+          defaultCooldown: calculateCardCooldown(card)
+        }));
+        
+        // 更新模态框标题
+        document.querySelector('#level-up-modal h2').textContent = '选择一张新卡牌加入你的卡牌池';
+      } else {
+        // 原有的技能选择逻辑
+        const availableSkills = skillDatabase.filter(skill => {
+          return !skill.classType || skill.classType === playerClass;
+        });
+        
+        const shuffledSkills = [...availableSkills].sort(() => 0.5 - Math.random());
+        const fixedSkills = shuffledSkills.slice(0, 2);
+        const randomSkill = generateRandomSkill();
+        selectedOptions = [...fixedSkills, randomSkill].sort(() => 0.5 - Math.random());
+        
+        // 恢复模态框标题
+        document.querySelector('#level-up-modal h2').textContent = '选择一个升级选项';
+      }
+      
+      // 更新模态框中的选项
       elements.skillOptions.forEach((option, index) => {
-        const skill = selectedSkills[index];
-        option.innerHTML = `
-          <h3 class="font-bold mb-1 ${skill.isRandom ? 'text-purple-400' : ''}">${skill.name}</h3>
-          <p class="text-xs text-light/80">${skill.description}</p>
-        `;
+        const optionData = selectedOptions[index];
+        
+        if (optionData.isCard) {
+          // 卡牌选项渲染
+          option.innerHTML = `
+            <div class="${optionData.color} ${optionData.borderColor} border rounded-lg p-2 mb-1">
+              <div class="flex justify-between items-center">
+                <h3 class="font-bold">${optionData.name}</h3>
+                <i class="fa ${optionData.icon}"></i>
+              </div>
+            </div>
+            <p class="text-xs text-light/80">${optionData.description}</p>
+            <div class="text-xs text-blue-400 mt-1">冷却时间: ${optionData.defaultCooldown}回合</div>
+          `;
+        } else {
+          // 技能选项渲染
+          option.innerHTML = `
+            <h3 class="font-bold mb-1 ${optionData.isRandom ? 'text-purple-400' : ''}">${optionData.name}</h3>
+            <p class="text-xs text-light/80">${optionData.description}</p>
+          `;
+        }
         
         // 添加选择事件
         option.onclick = () => {
-          // 应用技能效果
-          skill.effect(gameState.player);
+          if (optionData.isCard) {
+            // 处理卡牌选择
+            // 添加新卡牌到玩家的完整卡牌池
+            gameState.player.fullCardPool.push({
+              ...optionData,
+              cooldown: 0 // 新卡牌初始冷却为0
+            });
+            
+            elements.battleMessage.textContent = `你获得了新卡牌：${optionData.name}！`;
+          } else {
+            // 应用技能效果
+            optionData.effect(gameState.player);
+          }
           
-          // 添加技能到玩家技能列表（如果不是临时技能）
-          if (!skill.isRandom && !gameState.player.skills.some(s => s.id === skill.id)) {
-            gameState.player.skills.push({
-              id: skill.id,
-              name: skill.name,
-              description: skill.description
-            });
-          } else if (skill.isRandom) {
-            gameState.player.skills.push({
-              id: skill.id,
-              name: skill.name,
-              description: skill.description
-            });
+          // 添加技能到玩家技能列表（如果不是临时技能且不是卡牌）
+          if (!optionData.isCard) {
+            if (!optionData.isRandom && !gameState.player.skills.some(s => s.id === optionData.id)) {
+              gameState.player.skills.push({
+                id: optionData.id,
+                name: optionData.name,
+                description: optionData.description
+              });
+            } else if (optionData.isRandom) {
+              gameState.player.skills.push({
+                id: optionData.id,
+                name: optionData.name,
+                description: optionData.description
+              });
+            }
           }
           
           // 隐藏模态框
