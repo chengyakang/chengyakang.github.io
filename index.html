@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>深渊卡牌 - 肉鸽卡牌游戏</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-  
+
   <!-- 配置Tailwind -->
   <script>
     tailwind.config = {
@@ -26,7 +27,7 @@
       }
     }
   </script>
-  
+
   <style type="text/tailwindcss">
     @layer utilities {
       .content-auto {
@@ -98,6 +99,7 @@
     }
   </style>
 </head>
+
 <body class="bg-game font-game text-light min-h-screen flex flex-col overflow-x-hidden">
   <!-- 固定顶部的状态面板 - 在移动设备上始终可见 -->
   <div class="fixed top-0 left-0 right-0 z-40 bg-dark/80 backdrop-blur-md border-b border-primary/30 md:hidden">
@@ -106,16 +108,18 @@
       <div class="flex justify-between items-center mb-1">
         <div class="flex items-center">
           <i class="fa fa-user-circle mr-1 text-secondary text-sm"></i>
-          <span class="text-xs bg-primary/20 px-1.5 py-0.5 rounded-full">Lv <span id="player-level-mobile">1</span></span>
+          <span class="text-xs bg-primary/20 px-1.5 py-0.5 rounded-full">Lv <span
+              id="player-level-mobile">1</span></span>
         </div>
         <div class="text-xs">
           <span id="player-hp-mobile">100</span>/<span id="player-max-hp-mobile">100</span>
         </div>
       </div>
       <div class="h-1.5 bg-gray-700 rounded-full overflow-hidden mb-2">
-        <div id="player-hp-bar-mobile" class="h-full bg-green-500 rounded-full transition-all duration-500" style="width: 100%"></div>
+        <div id="player-hp-bar-mobile" class="h-full bg-green-500 rounded-full transition-all duration-500"
+          style="width: 100%"></div>
       </div>
-      
+
       <!-- 敌人状态 - 精简版 -->
       <div class="flex justify-between items-center mb-1">
         <div class="flex items-center">
@@ -127,14 +131,15 @@
         </div>
       </div>
       <div class="h-1.5 bg-gray-700 rounded-full overflow-hidden">
-        <div id="enemy-hp-bar-mobile" class="h-full bg-red-500 rounded-full transition-all duration-500" style="width: 100%"></div>
+        <div id="enemy-hp-bar-mobile" class="h-full bg-red-500 rounded-full transition-all duration-500"
+          style="width: 100%"></div>
       </div>
     </div>
   </div>
-  
+
   <!-- 游戏容器 - 移动端添加顶部 padding 避免被固定面板遮挡 -->
   <div id="game-container" class="container mx-auto px-4 pt-24 pb-6 md:pt-6 flex-grow flex flex-col">
-    
+
     <!-- 游戏标题 - 移动端缩小 -->
     <header class="text-center mb-4 md:mb-6">
       <div class="flex justify-center gap-2 mb-4">
@@ -148,7 +153,7 @@
       <!-- <h1 class="text-[clamp(1.5rem,5vw,3rem)] font-bold text-accent text-shadow mb-1">深渊卡牌</h1>
       <p class="text-light/70 text-sm md:text-base">无限挑战 · 每一次都是新的冒险</p> -->
     </header>
-    
+
     <!-- 状态面板 - 仅在桌面显示 -->
     <div class="hidden md:grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
       <!-- 玩家状态 -->
@@ -159,22 +164,24 @@
           </h2>
           <span class="bg-primary/20 px-2 py-1 rounded-full text-sm">等级 <span id="player-level">1</span></span>
         </div>
-        
+
         <div class="flex gap-4">
           <div class="flex-1">
             <div class="text-sm text-light/70 mb-1">生命值</div>
             <div class="h-3 bg-gray-700 rounded-full overflow-hidden">
-              <div id="player-hp-bar" class="h-full bg-green-500 rounded-full transition-all duration-500" style="width: 100%"></div>
+              <div id="player-hp-bar" class="h-full bg-green-500 rounded-full transition-all duration-500"
+                style="width: 100%"></div>
             </div>
             <div class="text-right mt-1 text-sm">
               <span id="player-hp">100</span> / <span id="player-max-hp">100</span>
             </div>
           </div>
-          
+
           <div class="flex-1">
             <div class="text-sm text-light/70 mb-1">经验值</div>
             <div class="h-3 bg-gray-700 rounded-full overflow-hidden">
-              <div id="player-exp-bar" class="h-full bg-accent rounded-full transition-all duration-500" style="width: 0%"></div>
+              <div id="player-exp-bar" class="h-full bg-accent rounded-full transition-all duration-500"
+                style="width: 0%"></div>
             </div>
             <div class="text-right mt-1 text-sm">
               <span id="player-exp">0</span> / <span id="player-next-level">100</span>
@@ -182,7 +189,7 @@
           </div>
         </div>
       </div>
-      
+
       <!-- 敌人状态 -->
       <div class="bg-dark/50 rounded-xl p-4 border border-primary/30 backdrop-blur-sm">
         <div class="flex justify-between items-center mb-2">
@@ -191,11 +198,12 @@
           </h2>
           <span class="bg-red-500/20 px-2 py-1 rounded-full text-sm">威胁度 <span id="enemy-threat">低</span></span>
         </div>
-        
+
         <div>
           <div class="text-sm text-light/70 mb-1">生命值</div>
           <div class="h-3 bg-gray-700 rounded-full overflow-hidden">
-            <div id="enemy-hp-bar" class="h-full bg-red-500 rounded-full transition-all duration-500" style="width: 100%"></div>
+            <div id="enemy-hp-bar" class="h-full bg-red-500 rounded-full transition-all duration-500"
+              style="width: 100%"></div>
           </div>
           <div class="text-right mt-1 text-sm">
             <span id="enemy-hp">50</span> / <span id="enemy-max-hp">50</span>
@@ -203,7 +211,7 @@
         </div>
       </div>
     </div>
-    
+
     <!-- 装备面板 - 移动端缩小 -->
     <div class="mb-4 md:mb-6">
       <h2 class="text-lg md:text-xl font-bold mb-2 md:mb-3 flex items-center">
@@ -231,33 +239,36 @@
           <div id="ring-slot" class="text-xs md:text-sm">无</div>
         </div>
       </div>
-      
+
       <!-- 套装效果显示区域 -->
       <div id="set-effects-container" class="mt-3">
         <div class="text-xs text-light/50 italic">装备相同套装的装备可获得额外加成</div>
       </div>
     </div>
-    
+
     <!-- 战斗区域 - 压缩高度适应移动设备 -->
     <div class="flex-grow mb-4 md:mb-6 relative">
-      <div id="battle-area" class="bg-dark/30 rounded-xl p-3 md:p-4 h-full min-h-[140px] md:min-h-[200px] flex flex-col items-center justify-center border border-primary/20">
+      <div id="battle-area"
+        class="bg-dark/30 rounded-xl p-3 md:p-4 h-full min-h-[140px] md:min-h-[200px] flex flex-col items-center justify-center border border-primary/20">
         <div id="battle-message" class="text-center mb-3 md:mb-6 text-sm md:text-lg text-light/90"></div>
-        
+
         <!-- 角色形象 - 缩小移动版尺寸 -->
         <div class="flex justify-around items-center w-full max-w-md mb-3 md:mb-6">
           <div class="text-center animate-float">
-            <div class="w-16 h-16 md:w-20 md:h-20 bg-secondary/20 rounded-full flex items-center justify-center mb-1 md:mb-2 border-2 border-secondary">
+            <div
+              class="w-16 h-16 md:w-20 md:h-20 bg-secondary/20 rounded-full flex items-center justify-center mb-1 md:mb-2 border-2 border-secondary">
               <i class="fa fa-user text-3xl md:text-4xl text-secondary"></i>
             </div>
             <div class="text-xs md:text-sm font-medium">玩家</div>
           </div>
-          
+
           <div class="text-xl md:text-2xl">
             <i class="fa fa-exchange text-accent/70"></i>
           </div>
-          
+
           <div class="text-center animate-float" style="animation-delay: 0.5s">
-            <div id="enemy-sprite" class="w-16 h-16 md:w-20 md:h-20 bg-red-500/20 rounded-full flex items-center justify-center mb-1 md:mb-2 border-2 border-red-500">
+            <div id="enemy-sprite"
+              class="w-16 h-16 md:w-20 md:h-20 bg-red-500/20 rounded-full flex items-center justify-center mb-1 md:mb-2 border-2 border-red-500">
               <i class="fa fa-asterisk text-3xl md:text-4xl text-red-500"></i>
             </div>
             <div class="text-xs md:text-sm font-medium" id="enemy-display-name">初级魔物</div>
@@ -265,14 +276,15 @@
         </div>
       </div>
     </div>
-    
+
     <!-- 卡牌区域 - 改为水平滚动，方便手机操作 -->
     <div class="mb-4 md:mb-6">
       <h2 class="text-lg md:text-xl font-bold mb-2 md:mb-3 flex items-center">
         <i class="fa fa-th-large mr-2 text-accent"></i>你的卡牌
       </h2>
       <div class="relative">
-        <div id="card-container" class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide md:grid md:grid-cols-2 md:md:grid-cols-3 md:gap-4">
+        <div id="card-container"
+          class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide md:grid md:grid-cols-2 md:md:grid-cols-3 md:gap-4">
           <!-- 卡牌将通过JS动态生成 -->
         </div>
         <!-- 滚动指示器 -->
@@ -283,7 +295,7 @@
         </div>
       </div>
     </div>
-    
+
     <!-- 卡牌合成提示 - 新增功能 -->
     <div id="card-fusion-hint" class="mb-4 bg-primary/20 border border-primary/40 rounded-lg p-3 hidden">
       <div class="flex items-start">
@@ -294,7 +306,7 @@
         </div>
       </div>
     </div>
-    
+
     <!-- 技能列表 - 移动端改为可滚动 -->
     <div class="mb-4 md:mb-6">
       <h2 class="text-lg md:text-xl font-bold mb-2 md:mb-3 flex items-center">
@@ -307,32 +319,52 @@
       </div>
     </div>
   </div>
-  
+
+  <!-- 属性查看模态框 -->
+  <div id="attributes-modal"
+    class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+    <div class="bg-dark border-2 border-accent rounded-xl p-5 max-w-md w-full mx-4">
+      <h2 id="attributes-title" class="text-xl md:text-2xl font-bold text-center mb-3 md:mb-4">属性详情</h2>
+      <div id="attributes-content" class="space-y-2 md:space-y-3 mb-4">
+        <!-- 属性内容将通过JS动态生成 -->
+      </div>
+      <div class="text-center">
+        <button id="attributes-close" class="bg-primary hover:bg-primary/80 text-white px-4 py-2 rounded-lg transition-all">
+          关闭
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- 升级选择模态框 - 优化移动端尺寸 -->
-  <div id="level-up-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+  <div id="level-up-modal"
+    class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 hidden">
     <div class="bg-dark border-2 border-accent rounded-xl p-5 max-w-md w-full mx-4">
       <h2 class="text-xl md:text-2xl font-bold text-accent text-center mb-3 md:mb-4">升级了！</h2>
       <p class="text-center mb-4 md:mb-6 text-sm md:text-base">选择一项技能提升：</p>
-      
+
       <div class="grid grid-cols-1 gap-3 md:gap-4">
-        <div id="skill-option-1" class="skill-option bg-primary/20 hover:bg-primary/40 p-3 md:p-4 rounded-lg cursor-pointer transition-all card-hover border border-primary/30">
+        <div id="skill-option-1"
+          class="skill-option bg-primary/20 hover:bg-primary/40 p-3 md:p-4 rounded-lg cursor-pointer transition-all card-hover border border-primary/30">
           <h3 class="font-bold mb-1 md:mb-2">技能名称</h3>
           <p class="text-xs md:text-sm text-light/80">技能描述</p>
         </div>
-        
-        <div id="skill-option-2" class="skill-option bg-primary/20 hover:bg-primary/40 p-3 md:p-4 rounded-lg cursor-pointer transition-all card-hover border border-primary/30">
+
+        <div id="skill-option-2"
+          class="skill-option bg-primary/20 hover:bg-primary/40 p-3 md:p-4 rounded-lg cursor-pointer transition-all card-hover border border-primary/30">
           <h3 class="font-bold mb-1 md:mb-2">技能名称</h3>
           <p class="text-xs md:text-sm text-light/80">技能描述</p>
         </div>
-        
-        <div id="skill-option-3" class="skill-option bg-primary/20 hover:bg-primary/40 p-3 md:p-4 rounded-lg cursor-pointer transition-all card-hover border border-primary/30">
+
+        <div id="skill-option-3"
+          class="skill-option bg-primary/20 hover:bg-primary/40 p-3 md:p-4 rounded-lg cursor-pointer transition-all card-hover border border-primary/30">
           <h3 class="font-bold mb-1 md:mb-2">技能名称</h3>
           <p class="text-xs md:text-sm text-light/80">技能描述</p>
         </div>
       </div>
     </div>
   </div>
-  
+
   <!-- 剧情叙事模态框 -->
   <div id="story-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 hidden">
     <div class="bg-dark border-2 border-accent rounded-xl p-5 max-w-md w-full mx-4">
@@ -343,14 +375,16 @@
       <div id="story-content" class="text-center mb-6 leading-relaxed text-light/90">
         <!-- 剧情内容将动态生成 -->
       </div>
-      <button id="story-continue" class="bg-accent hover:bg-accent/80 text-dark font-bold py-2 px-6 rounded-full transition-all card-hover w-full">
+      <button id="story-continue"
+        class="bg-accent hover:bg-accent/80 text-dark font-bold py-2 px-6 rounded-full transition-all card-hover w-full">
         继续冒险
       </button>
     </div>
   </div>
-  
+
   <!-- 大结局模态框 -->
-  <div id="ending-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+  <div id="ending-modal"
+    class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 hidden">
     <div class="bg-dark border-2 border-yellow-500 rounded-xl p-5 max-w-md w-full mx-4 text-center">
       <div class="mb-4">
         <i class="fa fa-trophy text-4xl text-yellow-500"></i>
@@ -359,29 +393,33 @@
       <div id="ending-content" class="mb-6 leading-relaxed text-light/90">
         <!-- 大结局内容将动态生成 -->
       </div>
-      <button id="restart-after-ending" class="bg-yellow-500 hover:bg-yellow-400 text-dark font-bold py-2 px-6 rounded-full transition-all card-hover w-full">
+      <button id="restart-after-ending"
+        class="bg-yellow-500 hover:bg-yellow-400 text-dark font-bold py-2 px-6 rounded-full transition-all card-hover w-full">
         重新开始冒险
       </button>
     </div>
   </div>
-  
-  <!-- 卡牌升级提示 - 三合一功能 -->
-  <div id="card-upgrade-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+
+  <!-- 卡牌升级提示 - 二合一功能 -->
+  <div id="card-upgrade-modal"
+    class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
     <div class="bg-dark border-2 border-accent rounded-xl p-5 max-w-md w-full mx-4 text-center">
       <div class="w-12 h-12 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-3">
         <i class="fa fa-arrow-circle-up text-2xl text-accent"></i>
       </div>
       <h2 class="text-xl md:text-2xl font-bold text-accent mb-3">卡牌升级！</h2>
       <div class="mb-5">
-        <p class="text-sm">3张<span id="upgrade-from" class="text-blue-400 font-bold"></span>已合成为</p>
-        <p class="mt-2 text-base md:text-xl"><span id="upgrade-to" class="text-yellow-400 font-bold card-upgraded px-2 py-1 rounded"></span></p>
+        <p class="text-sm">2张<span id="upgrade-from" class="text-blue-400 font-bold"></span>已合成为</p>
+        <p class="mt-2 text-base md:text-xl"><span id="upgrade-to"
+            class="text-yellow-400 font-bold card-upgraded px-2 py-1 rounded"></span></p>
       </div>
-      <button id="upgrade-confirm" class="bg-accent hover:bg-accent/80 text-dark font-bold py-2 px-6 rounded-full transition-all card-hover w-full">
+      <button id="upgrade-confirm"
+        class="bg-accent hover:bg-accent/80 text-dark font-bold py-2 px-6 rounded-full transition-all card-hover w-full">
         确认
       </button>
     </div>
   </div>
-  
+
   <!-- 装备掉落模态框 -->
   <div id="loot-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 hidden">
     <div class="bg-dark border-2 border-accent rounded-xl p-5 max-w-md w-full mx-4">
@@ -390,28 +428,32 @@
         <!-- 战利品内容将动态生成 -->
       </div>
       <div class="flex gap-2">
-        <button id="equip-button" class="flex-1 bg-accent hover:bg-accent/80 text-dark font-bold py-2 px-6 rounded-full transition-all card-hover">
+        <button id="equip-button"
+          class="flex-1 bg-accent hover:bg-accent/80 text-dark font-bold py-2 px-6 rounded-full transition-all card-hover">
           装备物品
         </button>
-        <button id="discard-button" class="flex-1 bg-purple-700 hover:bg-purple-600 text-light font-bold py-2 px-6 rounded-full transition-all card-hover"> 
-           强化 
-         </button>
+        <button id="discard-button"
+          class="flex-1 bg-purple-700 hover:bg-purple-600 text-light font-bold py-2 px-6 rounded-full transition-all card-hover">
+          强化
+        </button>
       </div>
     </div>
   </div>
-  
+
   <!-- 游戏结束模态框 -->
-  <div id="game-over-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+  <div id="game-over-modal"
+    class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 hidden">
     <div class="bg-dark border-2 border-red-500 rounded-xl p-5 max-w-md w-full mx-4 text-center">
       <h2 class="text-xl md:text-2xl font-bold text-red-500 mb-3 md:mb-4">游戏结束</h2>
       <p class="mb-2 text-sm md:text-base">你的冒险结束了</p>
       <p class="text-lg md:text-xl font-bold mb-5 md:mb-6">最终等级: <span id="final-level">1</span></p>
-      <button id="restart-button" class="bg-accent hover:bg-accent/80 text-dark font-bold py-2 px-6 rounded-full transition-all card-hover w-full">
+      <button id="restart-button"
+        class="bg-accent hover:bg-accent/80 text-dark font-bold py-2 px-6 rounded-full transition-all card-hover w-full">
         重新开始
       </button>
     </div>
   </div>
-  
+
   <script>
     // 剧情数据库 - 勇者救公主的王道剧情（20级）
     const storyDatabase = {
@@ -496,7 +538,7 @@
         content: "经过一场惊心动魄的战斗，你终于击败了邪恶的黑龙！公主得救了，你成功完成了使命。当你带着公主返回王国时，全城的人民都为你欢呼喝彩，国王兑现了他的承诺..."
       }
     };
-    
+
     // 游戏状态
     const gameState = {
       player: {
@@ -514,7 +556,7 @@
         cards: [],
         cardCounts: {}, // 用于跟踪各类卡牌数量，实现升级
         skills: [
-           { id: 'basic_attack', name: '基础攻击', description: '造成10点伤害' }
+          { id: 'basic_attack', name: '基础攻击', description: '造成10点伤害' }
         ],
         equipment: {
           weapon: null,
@@ -591,34 +633,34 @@
       {
         id: 'power_attack',
         name: '强力攻击',
-        description: '对敌人造成1.5倍基础伤害',
+        description: '对敌人造成1.8倍基础伤害',
         color: 'bg-accent/20',
         borderColor: 'border-accent',
         icon: 'fa-hand-rock-o',
-        damageMultiplier: 1.5,
+        damageMultiplier: 1.8,
         type: 'attack',
         upgradeTo: 'devastating_attack'
       },
       {
         id: 'piercing_attack',
         name: '穿刺攻击',
-        description: '无视敌人2点防御，造成基础伤害',
+        description: '无视敌人3点防御，造成基础伤害',
         color: 'bg-indigo-500/20',
         borderColor: 'border-indigo-500',
         icon: 'fa-arrow-right',
         damageMultiplier: 1,
-        ignoreDefense: 2,
+        ignoreDefense: 3,
         type: 'attack',
         upgradeTo: 'armor_break_attack'
       },
       {
         id: 'combo_attack',
         name: '连击',
-        description: '连续攻击两次，每次造成60%伤害',
+        description: '连续攻击两次，每次造成70%伤害',
         color: 'bg-rose-500/20',
         borderColor: 'border-rose-500',
         icon: 'fa-repeat',
-        damageMultiplier: 0.6,
+        damageMultiplier: 0.7,
         hitCount: 2,
         type: 'attack',
         upgradeTo: 'triple_attack'
@@ -635,7 +677,7 @@
         type: 'attack',
         upgradeTo: 'assassinate'
       },
-      
+
       // // 防御类
       // {
       //   id: 'defend',
@@ -662,24 +704,24 @@
       {
         id: 'dodge',
         name: '闪避',
-        description: '本回合有40%几率闪避攻击',
+        description: '本回合有50%几率闪避攻击',
         color: 'bg-teal-500/20',
         borderColor: 'border-teal-500',
         icon: 'fa-bolt',
-        dodgeChance: 40,
+        dodgeChance: 50,
         type: 'defense',
         upgradeTo: 'blink'
       },
-      
+
       // 特殊效果类
       {
         id: 'sacrifice_attack',
         name: '献祭攻击',
-        description: '消耗10点生命，造成2倍伤害',
+        description: '消耗10点生命，造成2.2倍伤害',
         color: 'bg-red-600/20',
         borderColor: 'border-red-600',
         icon: 'fa-balance-scale',
-        damageMultiplier: 2,
+        damageMultiplier: 2.2,
         healthCost: 10,
         type: 'special',
         upgradeTo: 'life_steal_attack'
@@ -687,46 +729,46 @@
       {
         id: 'fireball',
         name: '火球术',
-        description: '造成15点火焰伤害，有20%几率灼烧敌人',
+        description: '造成20点火焰伤害，有30%几率灼烧敌人',
         color: 'bg-orange-500/20',
         borderColor: 'border-orange-500',
         icon: 'fa-fire',
-        damage: 15,
-        burnChance: 20,
+        damage: 20,
+        burnChance: 30,
         type: 'magic',
         upgradeTo: 'flame_strike'
       },
       {
         id: 'frost_bolt',
         name: '寒冰箭',
-        description: '造成12点伤害，有30%几率减缓敌人',
+        description: '造成18点伤害，有40%几率减缓敌人',
         color: 'bg-sky-500/20',
         borderColor: 'border-sky-500',
         icon: 'fa-snowflake-o',
-        damage: 12,
-        slowChance: 30,
+        damage: 18,
+        slowChance: 40,
         type: 'magic',
         upgradeTo: 'ice_lance'
       },
       {
         id: 'heal',
         name: '治愈',
-        description: '恢复20点生命值',
+        description: '恢复25点生命值',
         color: 'bg-green-500/20',
         borderColor: 'border-green-500',
         icon: 'fa-heart',
-        heal: 20,
+        heal: 25,
         type: 'support',
         upgradeTo: 'greater_heal'
       },
       {
         id: 'poison_sting',
         name: '毒刺',
-        description: '使敌人中毒，每回合受到5点伤害，持续3回合',
+        description: '使敌人中毒，每回合受到7点伤害，持续3回合',
         color: 'bg-green-600/20',
         borderColor: 'border-green-600',
         icon: 'fa-bug',
-        applyPoison: 5,
+        applyPoison: 7,
         poisonDuration: 3,
         type: 'dot',
         upgradeTo: 'deadly_poison'
@@ -734,16 +776,16 @@
       {
         id: 'whirlwind',
         name: '旋风斩',
-        description: '对敌人造成两次50%伤害',
+        description: '对敌人造成两次60%伤害',
         color: 'bg-blue-500/20',
         borderColor: 'border-blue-500',
         icon: 'fa-sync',
-        damageMultiplier: 0.5,
+        damageMultiplier: 0.6,
         hitCount: 2,
         type: 'attack',
         upgradeTo: 'tornado'
       },
-      
+
       // 升级后的高级卡牌
       {
         id: 'fortify',
@@ -917,54 +959,33 @@
         upgradeTo: null
       }
     ];
-    
+
     // 技能数据库 - 按流派分类
     const skillDatabase = [
       // 通用技能
-      { 
-        id: 'toughness', 
-        name: '坚韧', 
+      {
+        id: 'toughness',
+        name: '坚韧',
         description: '最大生命值提升20点',
-        effect: (player) => { 
+        effect: (player) => {
           player.maxHp += 20;
         }
       },
-      { 
-        id: 'card_mastery', 
-        name: '卡牌精通', 
-        description: '增加一张手牌上限',
-        effect: (player) => { 
-          player.maxCards = (player.maxCards || 5) + 1;
-        }
-      },
-      { 
-        id: 'upgrade_mastery', 
-        name: '卡牌合成', 
-        description: '两张相同卡牌即可合成升级',
-        effect: (player) => { 
-          gameState.cardFusion.required = 2;
-          addSkillToPlayer({
-            id: 'upgrade_mastery_active',
-            name: '卡牌合成',
-            description: '两张相同卡牌即可合成升级'
-          });
-        }
-      },
-      
+
       // 物理流（战士）专属技能
-      { 
-        id: 'strong_attack', 
-        name: '强化攻击', 
+      {
+        id: 'strong_attack',
+        name: '强化攻击',
         description: '攻击力提升5点',
         classType: 'warrior',
         effect: (player) => { player.attack += 5; }
       },
-      { 
-        id: 'battle_fury', 
-        name: '战斗狂怒', 
+      {
+        id: 'battle_fury',
+        name: '战斗狂怒',
         description: '生命值低于30%时，攻击力提升30%',
         classType: 'warrior',
-        effect: (player) => { 
+        effect: (player) => {
           addSkillToPlayer({
             id: 'battle_fury_active',
             name: '战斗狂怒',
@@ -972,19 +993,19 @@
           });
         }
       },
-      { 
-        id: 'shield', 
-        name: '防御姿态', 
+      {
+        id: 'shield',
+        name: '防御姿态',
         description: '获得5点防御力，减少受到的伤害',
         classType: 'warrior',
         effect: (player) => { player.defense += 5; }
       },
-      { 
-        id: 'weapon_mastery', 
-        name: '武器精通', 
+      {
+        id: 'weapon_mastery',
+        name: '武器精通',
         description: '装备的武器攻击力提升20%',
         classType: 'warrior',
-        effect: (player) => { 
+        effect: (player) => {
           addSkillToPlayer({
             id: 'weapon_mastery_active',
             name: '武器精通',
@@ -992,24 +1013,24 @@
           });
         }
       },
-      
+
       // 刺客流专属技能
-      { 
-        id: 'critical_strike', 
-        name: '暴击精通', 
+      {
+        id: 'critical_strike',
+        name: '暴击精通',
         description: '暴击几率提升5%，暴击伤害提升20%',
         classType: 'assassin',
-        effect: (player) => { 
-          player.critChance += 5; 
+        effect: (player) => {
+          player.critChance += 5;
           player.critDamage += 0.2;
         }
       },
-      { 
-        id: 'assassinate', 
-        name: '暗杀精通', 
+      {
+        id: 'assassinate',
+        name: '暗杀精通',
         description: '对生命值高于70%的敌人，暴击几率翻倍',
         classType: 'assassin',
-        effect: (player) => { 
+        effect: (player) => {
           addSkillToPlayer({
             id: 'assassinate_active',
             name: '暗杀精通',
@@ -1017,43 +1038,43 @@
           });
         }
       },
-      { 
-        id: 'deadly_strike', 
-        name: '致命打击', 
+      {
+        id: 'deadly_strike',
+        name: '致命打击',
         description: '暴击伤害额外提升30%',
         classType: 'assassin',
         effect: (player) => { player.critDamage += 0.3; }
       },
-      { 
-        id: 'vampirism', 
-        name: '吸血', 
+      {
+        id: 'vampirism',
+        name: '吸血',
         description: '攻击时恢复5点生命值',
         classType: 'assassin',
-        effect: (player) => { 
+        effect: (player) => {
           if (!player.skills.some(s => s.id === 'vampirism_active')) {
-            player.skills.push({ 
-              id: 'vampirism_active', 
-              name: '吸血', 
-              description: '攻击时恢复5点生命值' 
+            player.skills.push({
+              id: 'vampirism_active',
+              name: '吸血',
+              description: '攻击时恢复5点生命值'
             });
           }
         }
       },
-      
+
       // 法师流专属技能
-      { 
-        id: 'magic_attack', 
-        name: '魔法强化', 
+      {
+        id: 'magic_attack',
+        name: '魔法强化',
         description: '魔法攻击力提升8点',
         classType: 'mage',
         effect: (player) => { player.magicAttack += 8; }
       },
-      { 
-        id: 'magic_affinity', 
-        name: '魔法亲和', 
+      {
+        id: 'magic_affinity',
+        name: '魔法亲和',
         description: '魔法卡牌效果提升20%',
         classType: 'mage',
-        effect: (player) => { 
+        effect: (player) => {
           addSkillToPlayer({
             id: 'magic_affinity_active',
             name: '魔法亲和',
@@ -1061,12 +1082,12 @@
           });
         }
       },
-      { 
-        id: 'spell_efficiency', 
-        name: '法术效能', 
+      {
+        id: 'spell_efficiency',
+        name: '法术效能',
         description: '减少魔法卡牌的消耗，增加10%魔法伤害',
         classType: 'mage',
-        effect: (player) => { 
+        effect: (player) => {
           addSkillToPlayer({
             id: 'spell_efficiency_active',
             name: '法术效能',
@@ -1074,12 +1095,12 @@
           });
         }
       },
-      { 
-        id: 'elemental_mastery', 
-        name: '元素精通', 
+      {
+        id: 'elemental_mastery',
+        name: '元素精通',
         description: '装备的魔法装备效果提升25%',
         classType: 'mage',
-        effect: (player) => { 
+        effect: (player) => {
           addSkillToPlayer({
             id: 'elemental_mastery_active',
             name: '元素精通',
@@ -1087,13 +1108,13 @@
           });
         }
       },
-      
+
       // 其他辅助技能
-      { 
-        id: 'second_wind', 
-        name: '二次攻击', 
+      {
+        id: 'second_wind',
+        name: '二次攻击',
         description: '获得一张"二次打击"卡牌',
-        effect: (player) => { 
+        effect: (player) => {
           addCardToPlayer({
             id: 'second_strike',
             name: '二次打击',
@@ -1107,21 +1128,21 @@
           });
         }
       },
-      { 
-        id: 'battle_trance', 
-        name: '战斗专注', 
-        description: '每使用3张攻击卡牌，获得一张随机攻击卡牌',
-        effect: (player) => { 
-          addSkillToPlayer({
-            id: 'battle_trance_active',
-            name: '战斗专注',
-            description: '每使用3张攻击卡牌，获得一张随机攻击卡牌'
-          });
-          player.attackCardCounter = 0;
-        }
-      }
+      // { 
+      //   id: 'battle_trance', 
+      //   name: '战斗专注', 
+      //   description: '每使用3张攻击卡牌，获得一张随机攻击卡牌',
+      //   effect: (player) => { 
+      //     addSkillToPlayer({
+      //       id: 'battle_trance_active',
+      //       name: '战斗专注',
+      //       description: '每使用3张攻击卡牌，获得一张随机攻击卡牌'
+      //     });
+      //     player.attackCardCounter = 0;
+      //   }
+      // }
     ];
-    
+
     // 随机技能生成函数
     function generateRandomSkill() {
       const baseEffects = [
@@ -1130,33 +1151,33 @@
         { type: 'hp', min: 10, max: 30, namePart: ['活力', '生命', '体质'] },
         { type: 'crit', min: 3, max: 8, namePart: ['暴击', '致命', '精准'] }
       ];
-      
+
       const modifiers = [
         { name: '初级', multiplier: 1 },
         { name: '中级', multiplier: 1.5 },
         { name: '高级', multiplier: 2 }
       ];
-      
+
       const effectTypes = [
         { name: '提升', func: (stat, value) => stat + value },
         { name: '强化', func: (stat, value) => stat + Math.round(value * 1.2) },
         { name: '精通', func: (stat, value) => stat + Math.round(value * 1.5) }
       ];
-      
+
       // 随机选择基础效果
       const base = baseEffects[Math.floor(Math.random() * baseEffects.length)];
       const modifier = modifiers[Math.floor(Math.random() * modifiers.length)];
       const effectType = effectTypes[Math.floor(Math.random() * effectTypes.length)];
-      
+
       // 计算数值
       const value = Math.floor((Math.random() * (base.max - base.min + 1) + base.min) * modifier.multiplier);
-      
+
       // 生成名称和描述
       const namePart = base.namePart[Math.floor(Math.random() * base.namePart.length)];
       const skillName = `${modifier.name}${namePart}${effectType.name}`;
-      
+
       let description, effect;
-      
+
       switch (base.type) {
         case 'attack':
           description = `攻击力提升${value}点`;
@@ -1175,7 +1196,7 @@
           effect = (player) => { player.critChance = effectType.func(player.critChance, value); };
           break;
       }
-      
+
       return {
         id: `random_${Date.now()}`,
         name: skillName,
@@ -1184,12 +1205,12 @@
         isRandom: true
       };
     }
-    
+
     // 装备数据库
     const equipmentDatabase = [
       // ===== 物理流（战士）装备 =====
       // 传奇装备 - 龙骑士套装（物理流）
-      {  
+      {
         id: 'legendary_dragon_slayer',
         name: '屠龙剑',
         type: 'weapon',
@@ -1198,9 +1219,9 @@
         description: '传说中屠过龙的神剑，物理伤害极高',
         set: 'dragon_knight',
         setEffect: '龙骑士套装',
-        classType: 'warrior'  
+        classType: 'warrior'
       },
-      {  
+      {
         id: 'legendary_dragon_armor',
         name: '龙血铠甲',
         type: 'armor',
@@ -1209,9 +1230,9 @@
         description: '汲取龙血精华的神秘铠甲，提供强大防御',
         set: 'dragon_knight',
         setEffect: '龙骑士套装',
-        classType: 'warrior'  
+        classType: 'warrior'
       },
-      {  
+      {
         id: 'legendary_dragon_amulet',
         name: '龙之护符',
         type: 'trinket',
@@ -1220,9 +1241,9 @@
         description: '封印着巨龙灵魂的护符，大幅提升攻击力',
         set: 'dragon_knight',
         setEffect: '龙骑士套装',
-        classType: 'warrior'  
+        classType: 'warrior'
       },
-      {  
+      {
         id: 'legendary_dragon_ring',
         name: '龙鳞指环',
         type: 'ring',
@@ -1231,12 +1252,12 @@
         description: '用龙鳞打造的神秘指环',
         set: 'dragon_knight',
         setEffect: '龙骑士套装',
-        classType: 'warrior'  
+        classType: 'warrior'
       },
-      
+
       // ===== 法师流装备 =====
       // 传奇装备 - 元素套装（法师流）
-      {  
+      {
         id: 'legendary_elemental_staff',
         name: '元素法杖',
         type: 'weapon',
@@ -1245,9 +1266,9 @@
         description: '掌控四种元素力量的法杖，魔法伤害极高',
         set: 'elemental',
         setEffect: '元素套装',
-        classType: 'mage'  
+        classType: 'mage'
       },
-      {  
+      {
         id: 'legendary_elemental_robe',
         name: '元素法袍',
         type: 'armor',
@@ -1256,9 +1277,9 @@
         description: '吸收元素能量的神秘法袍，提升魔法攻击',
         set: 'elemental',
         setEffect: '元素套装',
-        classType: 'mage'  
+        classType: 'mage'
       },
-      {  
+      {
         id: 'legendary_elemental_orb',
         name: '元素核心',
         type: 'trinket',
@@ -1267,9 +1288,9 @@
         description: '蕴含原始元素之力的核心，大幅提升魔法攻击',
         set: 'elemental',
         setEffect: '元素套装',
-        classType: 'mage'  
+        classType: 'mage'
       },
-      {  
+      {
         id: 'legendary_elemental_ring',
         name: '元素指环',
         type: 'ring',
@@ -1278,12 +1299,12 @@
         description: '平衡元素力量的神奇指环',
         set: 'elemental',
         setEffect: '元素套装',
-        classType: 'mage'  
+        classType: 'mage'
       },
-      
+
       // ===== 刺客流装备 =====
       // 传奇装备 - 暗影套装（刺客流）
-      {  
+      {
         id: 'legendary_shadow_dagger',
         name: '暗影匕首',
         type: 'weapon',
@@ -1292,9 +1313,9 @@
         description: '能切开影子的致命匕首，暴击率极高',
         set: 'shadow',
         setEffect: '暗影套装',
-        classType: 'assassin'  
+        classType: 'assassin'
       },
-      {  
+      {
         id: 'legendary_shadow_cloak',
         name: '暗影斗篷',
         type: 'armor',
@@ -1303,9 +1324,9 @@
         description: '能融入黑暗的神秘斗篷，提升暴击率',
         set: 'shadow',
         setEffect: '暗影套装',
-        classType: 'assassin'  
+        classType: 'assassin'
       },
-      {  
+      {
         id: 'legendary_shadow_amulet',
         name: '暗影之心',
         type: 'trinket',
@@ -1314,9 +1335,9 @@
         description: '跳动着暗影能量的护符，大幅提升暴击伤害',
         set: 'shadow',
         setEffect: '暗影套装',
-        classType: 'assassin'  
+        classType: 'assassin'
       },
-      {  
+      {
         id: 'legendary_shadow_ring',
         name: '阴影指环',
         type: 'ring',
@@ -1325,11 +1346,11 @@
         description: '能操控阴影的神奇指环',
         set: 'shadow',
         setEffect: '暗影套装',
-        classType: 'assassin'  
+        classType: 'assassin'
       },
-      
+
       // 通用传奇装备 - 光明套装
-      {  
+      {
         id: 'legendary_light_sword',
         name: '光明圣剑',
         type: 'weapon',
@@ -1337,9 +1358,9 @@
         rarity: 'legendary',
         description: '散发神圣光芒的圣剑，同时提升物理和魔法攻击',
         set: 'light',
-        setEffect: '光明套装'  
+        setEffect: '光明套装'
       },
-      {  
+      {
         id: 'legendary_light_armor',
         name: '光明铠甲',
         type: 'armor',
@@ -1347,9 +1368,9 @@
         rarity: 'legendary',
         description: '被圣光祝福的神圣铠甲',
         set: 'light',
-        setEffect: '光明套装'  
+        setEffect: '光明套装'
       },
-      {  
+      {
         id: 'legendary_light_amulet',
         name: '光明吊坠',
         type: 'trinket',
@@ -1357,9 +1378,9 @@
         rarity: 'legendary',
         description: '散发治愈之光的神圣吊坠',
         set: 'light',
-        setEffect: '光明套装'  
+        setEffect: '光明套装'
       },
-      {  
+      {
         id: 'legendary_light_ring',
         name: '圣光指环',
         type: 'ring',
@@ -1367,7 +1388,7 @@
         rarity: 'legendary',
         description: '蕴含圣光之力的指环',
         set: 'light',
-        setEffect: '光明套装'  
+        setEffect: '光明套装'
       },
       // 物理流普通装备
       {
@@ -1415,7 +1436,7 @@
         description: '能够释放火焰的魔法魔杖，增加12点魔法攻击力',
         classType: 'mage'
       },
-      
+
       // 物理流防具装备
       {
         id: 'greatsword',
@@ -1453,7 +1474,7 @@
         description: '轻便的魔法长袍，增加5点魔法攻击力和1点防御力',
         classType: 'mage'
       },
-      
+
       // 物理流饰品装备
       {
         id: 'full_plate',
@@ -1501,7 +1522,7 @@
         classType: 'assassin'
       }
     ];
-    
+
     // 敌人名称和类型数据库
     const enemyNameDatabase = {
       low: [
@@ -1521,175 +1542,175 @@
         '暗影本源', '混沌之神', '永恒巫妖', '毁灭巨龙', '虚空造物'
       ]
     };
-    
-    // 敌人类型数据库 - 增加独特特性
+
+    // 敌人类型数据库 - 增加独特特性（属性已降低）
     const enemyTypes = [
       // 低威胁敌人
-      { 
-        baseHp: 50, 
-        baseAttack: 8, 
-        exp: 50, 
-        threat: '低', 
-        sprite: 'fa-asterisk', 
+      {
+        baseHp: 40,
+        baseAttack: 6,
+        exp: 50,
+        threat: '低',
+        sprite: 'fa-asterisk',
         names: enemyNameDatabase.low,
         type: 'basic',
         ability: null
       },
-      { 
-        baseHp: 60, 
-        baseAttack: 6, 
-        exp: 55, 
-        threat: '低', 
-        sprite: 'fa-shield', 
+      {
+        baseHp: 50,
+        baseAttack: 5,
+        exp: 55,
+        threat: '低',
+        sprite: 'fa-shield',
         names: ['小石魔', '岩石守卫', '石肤怪', '地元素'],
         type: 'stone',
         ability: 'highDefense', // 高防御
-        defense: 4 // 额外防御
+        defense: 3 // 额外防御
       },
-      { 
-        baseHp: 40, 
-        baseAttack: 10, 
-        exp: 55, 
-        threat: '低', 
-        sprite: 'fa-heartbeat', 
+      {
+        baseHp: 35,
+        baseAttack: 8,
+        exp: 55,
+        threat: '低',
+        sprite: 'fa-heartbeat',
         names: ['小吸血鬼', '吸血蝙蝠', '血虫'],
         type: 'vampire',
         ability: 'vampirism', // 吸血
         vampirismRate: 0.3 // 吸血比例
       },
-      
+
       // 中威胁敌人
-      { 
-        baseHp: 80, 
-        baseAttack: 12, 
-        exp: 80, 
-        threat: '中', 
-        sprite: 'fa-moon-o', 
+      {
+        baseHp: 65,
+        baseAttack: 10,
+        exp: 80,
+        threat: '中',
+        sprite: 'fa-moon-o',
         names: enemyNameDatabase.medium,
         type: 'medium',
         ability: null
       },
-      { 
-        baseHp: 100, 
-        baseAttack: 10, 
-        exp: 85, 
-        threat: '中', 
-        sprite: 'fa-paw', 
+      {
+        baseHp: 80,
+        baseAttack: 8,
+        exp: 85,
+        threat: '中',
+        sprite: 'fa-paw',
         names: ['森林狼人', '血月狼人', '狼人战士'],
         type: 'werewolf',
         ability: 'vampirism', // 吸血
         vampirismRate: 0.4 // 吸血比例
       },
-      { 
-        baseHp: 70, 
-        baseAttack: 15, 
-        exp: 85, 
-        threat: '中', 
-        sprite: 'fa-bolt', 
+      {
+        baseHp: 60,
+        baseAttack: 12,
+        exp: 85,
+        threat: '中',
+        sprite: 'fa-bolt',
         names: ['闪电法师', '风暴巫师', '雷霆术士'],
         type: 'mage',
         ability: 'spellDamage', // 魔法伤害，无视防御
         isMagicDamage: true
       },
-      
+
       // 高威胁敌人
-      { 
-        baseHp: 120, 
-        baseAttack: 16, 
-        exp: 120, 
-        threat: '高', 
-        sprite: 'fa-shield', 
+      {
+        baseHp: 95,
+        baseAttack: 13,
+        exp: 120,
+        threat: '高',
+        sprite: 'fa-shield',
         names: enemyNameDatabase.high,
         type: 'high',
         ability: null
       },
-      { 
-        baseHp: 150, 
-        baseAttack: 12, 
-        exp: 130, 
-        threat: '高', 
-        sprite: 'fa-shield', 
+      {
+        baseHp: 120,
+        baseAttack: 10,
+        exp: 130,
+        threat: '高',
+        sprite: 'fa-shield',
         names: ['石巨人', '熔岩守卫', '泰坦石像'],
         type: 'stoneGiant',
         ability: 'highDefense', // 高防御
-        defense: 8 // 额外防御
+        defense: 6 // 额外防御
       },
-      { 
-        baseHp: 100, 
-        baseAttack: 20, 
-        exp: 130, 
-        threat: '高', 
-        sprite: 'fa-dagger', 
+      {
+        baseHp: 80,
+        baseAttack: 16,
+        exp: 130,
+        threat: '高',
+        sprite: 'fa-dagger',
         names: ['影刺客', '暗夜杀手', '致命盗贼'],
         type: 'assassin',
         ability: 'highCrit', // 高暴击
         critChance: 30 // 暴击率
       },
-      { 
-        baseHp: 120, 
-        baseAttack: 15, 
-        exp: 130, 
-        threat: '高', 
-        sprite: 'fa-plus-circle', 
+      {
+        baseHp: 95,
+        baseAttack: 12,
+        exp: 130,
+        threat: '高',
+        sprite: 'fa-plus-circle',
         names: ['生命祭司', '神圣医师', '治疗恶魔'],
         type: 'healer',
         ability: 'selfHeal', // 自我治疗
-        healAmount: 15, // 每次治疗量
+        healAmount: 12, // 每次治疗量
         healFrequency: 3 // 每3回合治疗一次
       },
-      
-      // 极高威胁敌人（BOSS）
-      { 
-        baseHp: 200, 
-        baseAttack: 25, 
-        exp: 200, 
-        threat: '极高', 
-        sprite: 'fa-fire', 
+
+      // 极高威胁敌人（BOSS）- 攻击力已大幅降低（减少4倍）
+      {
+        baseHp: 160,
+        baseAttack: 5,
+        exp: 200,
+        threat: '极高',
+        sprite: 'fa-fire',
         names: enemyNameDatabase.extreme,
         type: 'extreme',
         ability: null
       },
-      { 
-        baseHp: 250, 
-        baseAttack: 20, 
-        exp: 220, 
-        threat: '极高', 
-        sprite: 'fa-shield', 
+      {
+        baseHp: 200,
+        baseAttack: 4,
+        exp: 220,
+        threat: '极高',
+        sprite: 'fa-shield',
         names: ['远古石魔', '大地守护者', '岩石泰坦'],
         type: 'ancientStone',
         ability: 'highDefense', // 高防御
-        defense: 12, // 额外防御
+        defense: 10, // 额外防御
         passive: 'damageReturn', // 反弹伤害
         damageReturnRate: 0.2 // 反弹20%伤害
       },
-      { 
-        baseHp: 180, 
-        baseAttack: 30, 
-        exp: 220, 
-        threat: '极高', 
-        sprite: 'fa-heartbeat', 
+      {
+        baseHp: 150,
+        baseAttack: 6,
+        exp: 220,
+        threat: '极高',
+        sprite: 'fa-heartbeat',
         names: ['吸血鬼伯爵', '血之领主', '不朽吸血鬼'],
         type: 'vampireLord',
         ability: 'vampirism', // 吸血
         vampirismRate: 0.5, // 吸血比例
         passive: 'lifeStealAura', // 生命偷取光环
-        auraDamage: 5 // 每回合对玩家造成固定伤害并吸血
+        auraDamage: 4 // 每回合对玩家造成固定伤害并吸血
       },
-      { 
-        baseHp: 220, 
-        baseAttack: 25, 
-        exp: 220, 
-        threat: '极高', 
-        sprite: 'fa-star', 
+      {
+        baseHp: 180,
+        baseAttack: 5,
+        exp: 220,
+        threat: '极高',
+        sprite: 'fa-star',
         names: ['元素掌控者', '魔法之王', '奥术主宰'],
         type: 'archMage',
         ability: 'spellDamage', // 魔法伤害
         isMagicDamage: true,
         passive: 'manaShield', // 魔法护盾
-        shieldStrength: 20 // 护盾值
+        shieldStrength: 15 // 护盾值
       }
     ];
-    
+
     // DOM元素 - 新增移动端血条元素
     const elements = {
       // 移动端元素
@@ -1701,7 +1722,7 @@
       enemyHpMobile: document.getElementById('enemy-hp-mobile'),
       enemyMaxHpMobile: document.getElementById('enemy-max-hp-mobile'),
       enemyHpBarMobile: document.getElementById('enemy-hp-bar-mobile'),
-      
+
       // 桌面端元素
       playerLevel: document.getElementById('player-level'),
       playerHp: document.getElementById('player-hp'),
@@ -1710,7 +1731,7 @@
       playerExp: document.getElementById('player-exp'),
       playerNextLevel: document.getElementById('player-next-level'),
       playerExpBar: document.getElementById('player-exp-bar'),
-      
+
       enemyName: document.getElementById('enemy-name'),
       enemyDisplayName: document.getElementById('enemy-display-name'),
       enemyHp: document.getElementById('enemy-hp'),
@@ -1718,56 +1739,65 @@
       enemyHpBar: document.getElementById('enemy-hp-bar'),
       enemyThreat: document.getElementById('enemy-threat'),
       enemySprite: document.getElementById('enemy-sprite'),
-      
+
       battleMessage: document.getElementById('battle-message'),
       cardContainer: document.getElementById('card-container'),
       skillsContainer: document.getElementById('skills-container'),
       cardFusionHint: document.getElementById('card-fusion-hint'),
-      
+
       // 装备槽
       weaponSlot: document.getElementById('weapon-slot'),
       armorSlot: document.getElementById('armor-slot'),
       trinketSlot: document.getElementById('trinket-slot'),
       ringSlot: document.getElementById('ring-slot'),
       setEffectsContainer: document.getElementById('set-effects-container'),
-      
+
       levelUpModal: document.getElementById('level-up-modal'),
       skillOptions: [
         document.getElementById('skill-option-1'),
         document.getElementById('skill-option-2'),
         document.getElementById('skill-option-3')
       ],
-      
+
       // 卡牌升级模态框
       cardUpgradeModal: document.getElementById('card-upgrade-modal'),
       upgradeFrom: document.getElementById('upgrade-from'),
       upgradeTo: document.getElementById('upgrade-to'),
       upgradeConfirm: document.getElementById('upgrade-confirm'),
-      
+
       lootModal: document.getElementById('loot-modal'),
       lootContent: document.getElementById('loot-content'),
       equipButton: document.getElementById('equip-button'),
-      
+
       gameOverModal: document.getElementById('game-over-modal'),
       finalLevel: document.getElementById('final-level'),
       restartButton: document.getElementById('restart-button'),
-      
+
       // 剧情系统元素
       storyModal: document.getElementById('story-modal'),
       storyContent: document.getElementById('story-content'),
       storyContinue: document.getElementById('story-continue'),
-      
+
       // 大结局元素
       endingModal: document.getElementById('ending-modal'),
       endingContent: document.getElementById('ending-content'),
-      restartAfterEnding: document.getElementById('restart-after-ending')
+      restartAfterEnding: document.getElementById('restart-after-ending'),
+      
+      // 属性查看模态框元素
+      attributesModal: document.getElementById('attributes-modal'),
+      attributesTitle: document.getElementById('attributes-title'),
+      attributesContent: document.getElementById('attributes-content'),
+      attributesClose: document.getElementById('attributes-close')
     };
-    
+
     // 初始化游戏
     function initGame() {
       // 为职业选择创建一个全局引用，但不立即显示
       window.classSelectionModal = null;
-      
+
+      // 初始化怪物计数器，用于控制BOSS生成频率
+      gameState.monsterCount = 0;
+
       // 初始化基础卡牌池（在选择职业前使用基础卡牌）
       gameState.player.fullCardPool = [
         {
@@ -1784,15 +1814,34 @@
           defaultCooldown: 1
         }
       ];
-      
-      // 初始随机获得1张卡牌
-      gameState.player.cards = [gameState.player.fullCardPool[0]];
-      
+
+      // 初始时不直接给玩家卡牌，等待职业选择后再分配
+      gameState.player.cards = [];
+
       // 提前绑定所有事件监听器，确保在游戏开始时就完成绑定
       // 剧情系统事件监听
       elements.storyContinue.addEventListener('click', continueAfterStory);
       elements.restartAfterEnding.addEventListener('click', restartGameAfterEnding);
       
+      // 属性查看模态框事件监听
+      elements.attributesClose.addEventListener('click', () => {
+        elements.attributesModal.classList.add('hidden');
+      });
+      
+      // 为玩家和敌人元素添加点击事件
+      const playerElement = document.querySelector('#battle-area .text-center.animate-float:first-child');
+      const enemyElement = document.querySelector('#battle-area .text-center.animate-float:last-child');
+      
+      if (playerElement) {
+        playerElement.style.cursor = 'pointer';
+        playerElement.addEventListener('click', showPlayerAttributes);
+      }
+      
+      if (enemyElement) {
+        enemyElement.style.cursor = 'pointer';
+        enemyElement.addEventListener('click', showEnemyAttributes);
+      }
+
       // 游戏功能事件监听
       elements.restartButton.addEventListener('click', restartGame);
       elements.equipButton.addEventListener('click', equipLoot);
@@ -1803,28 +1852,28 @@
       // 装备强化按钮事件监听
       document.getElementById('discard-button').addEventListener('click', () => {
         if (!gameState.currentLoot) return;
-        
+
         // 获取当前战利品
         const loot = gameState.currentLoot;
-        
+
         // 检查玩家是否已有该类型的装备
         if (!gameState.player.equipment[loot.type]) {
           showToast('你还没有装备该类型的装备！请先装备后再强化。');
           return;
         }
-        
+
         // 执行强化逻辑
         const success = upgradeEquipment(loot);
-        
+
         // 无论成功失败，都关闭模态框并继续游戏
         setTimeout(() => {
           elements.lootModal.classList.add('hidden');
           gameState.currentLoot = null;
-          
+
           // 重新渲染
           renderEquipment();
           renderPlayerStats();
-          
+
           // 检查是否升级，否则生成新敌人
           if (gameState.player.exp >= gameState.player.nextLevelExp) {
             checkLevelUp();
@@ -1833,21 +1882,23 @@
           }
         }, 100);
       });
-      
-      // 显示初始剧情
+
+      // 直接显示职业选择，放在游戏最开始
       setTimeout(() => {
-        showStoryScene(1);
-        gameState.isBattleActive = false;
+        if (!gameState.player.class) {
+          showClassSelection();
+          gameState.isBattleActive = false;
+        }
       }, 500);
     }
-    
+
     // 显示职业选择界面
     function showClassSelection() {
       if (window.classSelectionModal) {
         window.classSelectionModal.classList.remove('hidden');
         return;
       }
-      
+
       // 创建职业选择模态框
       const classSelectionModal = document.createElement('div');
       classSelectionModal.id = 'class-selection-modal';
@@ -1888,37 +1939,39 @@
       `;
       document.body.appendChild(classSelectionModal);
       window.classSelectionModal = classSelectionModal;
-      
+
       // 选择职业
       function selectClass(classType) {
         gameState.player.class = classType;
-        
-        // 给予职业加成
-        switch(classType) {
+
+        // 给予职业加成（已增强）
+        switch (classType) {
           case 'warrior':
-            gameState.player.attack += 5;
-            gameState.player.maxHp += 20;
+            gameState.player.attack += 8;
+            gameState.player.maxHp += 30;
+            gameState.player.defense += 3; // 额外增加防御力
             break;
           case 'assassin':
-            gameState.player.attack += 2;
-            gameState.player.critChance += 10;
-            gameState.player.critDamage += 0.3; // 增加到1.8倍
+            gameState.player.attack += 5;
+            gameState.player.critChance += 15;
+            gameState.player.critDamage += 0.5; // 增加到2.0倍
             break;
           case 'mage':
-            gameState.player.magicAttack = 15; // 法师初始有魔法攻击力
-            gameState.player.maxHp -= 10; // 法师生命值较低
+            gameState.player.magicAttack = 20; // 法师初始有更高的魔法攻击力
+            gameState.player.attack += 2; // 小幅增加物理攻击
+            gameState.player.maxHp += 0; // 不再降低生命值
             break;
         }
-        
+
         // 更新当前生命值
         gameState.player.hp = gameState.player.maxHp;
-        
+
         // 隐藏选择模态框
         classSelectionModal.classList.add('hidden');
-        
+
         // 获取玩家职业对应的卡牌池
         const cardPool = classCardPools[classType] || classCardPools.warrior; // 默认战士卡牌池
-        
+
         // 初始化玩家的完整卡牌池（带冷却属性）
         gameState.player.fullCardPool = cardPool.map(cardDef => {
           const card = cardDatabase.find(c => c.id === cardDef.id);
@@ -1928,50 +1981,74 @@
             defaultCooldown: calculateCardCooldown(card) // 使用新的冷却计算函数
           } : null;
         }).filter(Boolean);
-        
+
         // 更新手牌
         gameState.player.cards = [gameState.player.fullCardPool[0]];
-        
-        // 恢复游戏
-        gameState.isBattleActive = true;
-        renderGame();
-        
-        // 显示获得新职业的消息
-        elements.battleMessage.textContent = `恭喜！你选择了${classType === 'warrior' ? '战士' : classType === 'assassin' ? '刺客' : '法师'}职业！`;
+
+        // 使用ES6 Promise和链式调用来处理职业选择后的流程
+        Promise.resolve()
+          .then(() => {
+            // 显示获得新职业的消息
+            elements.battleMessage.textContent = `恭喜！你选择了${classType === 'warrior' ? '战士' : classType === 'assassin' ? '刺客' : '法师'}职业！`;
+
+            // 返回一个Promise，模拟消息显示时间
+            return new Promise(resolve => setTimeout(resolve, 1000));
+          })
+          .then(() => {
+            // 职业选择后显示初始剧情
+            showStoryScene(1);
+            return new Promise(resolve => {
+              // 监听剧情继续按钮的点击事件来解析Promise
+              const handleContinue = () => {
+                elements.storyContinue.removeEventListener('click', handleContinue);
+                resolve();
+              };
+              elements.storyContinue.addEventListener('click', handleContinue);
+            });
+          })
+          .then(() => {
+            // 恢复游戏状态
+            gameState.isBattleActive = true;
+            renderGame();
+
+            // 重新触发升级检查
+            checkLevelUp();
+          })
+          .catch(error => console.error('职业选择流程出错:', error));
       }
-      
+
       // 绑定职业选择事件
       document.getElementById('warrior-option').addEventListener('click', () => selectClass('warrior'));
       document.getElementById('assassin-option').addEventListener('click', () => selectClass('assassin'));
       document.getElementById('mage-option').addEventListener('click', () => selectClass('mage'));
-      
+
       // 事件监听器已在initGame()函数中绑定，此处不再重复绑定
       // 初始化玩家卡牌 - 根据职业分配固定卡牌池
       const classCardPools = {
         warrior: [
           { id: 'basic_attack', defaultCooldown: 1 },
-          { id: 'strong_attack', defaultCooldown: 2 },
-          { id: 'defend', defaultCooldown: 1 },
-          { id: 'battle_rage', defaultCooldown: 3 }
+          { id: 'power_attack', defaultCooldown: 2 }, // 替换为实际存在的强力攻击
+          { id: 'parry', defaultCooldown: 1 }, // 替换为实际存在的格挡
+          { id: 'piercing_attack', defaultCooldown: 2 } // 替换为实际存在的穿刺攻击
         ],
         assassin: [
           { id: 'basic_attack', defaultCooldown: 1 },
           { id: 'backstab', defaultCooldown: 2 },
           { id: 'dodge', defaultCooldown: 2 },
-          { id: 'poison_strike', defaultCooldown: 3 }
+          { id: 'combo_attack', defaultCooldown: 3 } // 替换为实际存在的连击
         ],
         mage: [
-          { id: 'fire_ball', defaultCooldown: 1 },
-          { id: 'ice_bolt', defaultCooldown: 2 },
-          { id: 'magic_shield', defaultCooldown: 2 },
-          { id: 'arcane_explosion', defaultCooldown: 3 }
+          { id: 'fireball', defaultCooldown: 1 }, // 修正为实际存在的火球术
+          { id: 'frost_bolt', defaultCooldown: 2 }, // 修正为实际存在的寒冰箭
+          { id: 'heal', defaultCooldown: 3 }, // 使用实际存在的治愈技能
+          { id: 'poison_sting', defaultCooldown: 2 } // 使用实际存在的毒刺技能
         ]
       };
-      
+
       // 获取玩家职业对应的卡牌池
       const playerClass = gameState.player.class;
       const cardPool = classCardPools[playerClass] || classCardPools.warrior; // 默认战士卡牌池
-      
+
       // 初始化玩家的完整卡牌池（带冷却属性）
       gameState.player.fullCardPool = cardPool.map(cardDef => {
         const card = cardDatabase.find(c => c.id === cardDef.id);
@@ -1981,11 +2058,11 @@
           defaultCooldown: cardDef.defaultCooldown
         } : null;
       }).filter(Boolean);
-      
+
       // 初始随机获得1张卡牌
       const randomIndex = Math.floor(Math.random() * gameState.player.fullCardPool.length);
       gameState.player.cards = [gameState.player.fullCardPool[randomIndex]];
-      
+
       // 初始化卡牌计数
       gameState.player.cardCounts = {};
       gameState.player.cards.forEach(card => {
@@ -1993,7 +2070,7 @@
           incrementCardCount(card.id);
         }
       });
-      
+
       // 初始化装备为空
       gameState.player.equipment = {
         weapon: null,
@@ -2001,27 +2078,27 @@
         trinket: null,
         ring: null
       };
-      
+
       // 显示卡牌合成提示
       setTimeout(() => {
         if (!gameState.cardFusion.shownHint) {
           elements.cardFusionHint.classList.remove('hidden');
           gameState.cardFusion.shownHint = true;
-          
+
           // 3秒后自动隐藏提示
           setTimeout(() => {
             elements.cardFusionHint.classList.add('hidden');
           }, 5000);
         }
       }, 3000);
-      
+
       // 渲染游戏状态
       renderGame();
-      
+
       // 游戏初始化后会在选择流派后显示剧情
       // 注意：所有事件监听器已在initGame函数中绑定
     }
-    
+
     // 渲染游戏
     function renderGame() {
       renderPlayerStats();
@@ -2030,7 +2107,7 @@
       renderSkills();
       renderEquipment();
     }
-    
+
     // 渲染玩家状态 - 同时更新移动端和桌面端
     function renderPlayerStats() {
       // 更新桌面端
@@ -2038,17 +2115,17 @@
       elements.playerHp.textContent = gameState.player.hp;
       elements.playerMaxHp.textContent = gameState.player.maxHp;
       elements.playerHpBar.style.width = `${(gameState.player.hp / gameState.player.maxHp) * 100}%`;
-      
+
       elements.playerExp.textContent = gameState.player.exp;
       elements.playerNextLevel.textContent = gameState.player.nextLevelExp;
       elements.playerExpBar.style.width = `${(gameState.player.exp / gameState.player.nextLevelExp) * 100}%`;
-      
+
       // 更新移动端
       elements.playerLevelMobile.textContent = gameState.player.level;
       elements.playerHpMobile.textContent = gameState.player.hp;
       elements.playerMaxHpMobile.textContent = gameState.player.maxHp;
       elements.playerHpBarMobile.style.width = `${(gameState.player.hp / gameState.player.maxHp) * 100}%`;
-      
+
       // 移动端血条颜色变化
       if (gameState.player.hp / gameState.player.maxHp < 0.3) {
         elements.playerHpBarMobile.classList.remove('bg-green-500');
@@ -2058,7 +2135,62 @@
         elements.playerHpBarMobile.classList.add('bg-green-500');
       }
     }
-    
+
+    // 创建伤害跳字效果
+    function createDamagePopup(damage, isCritical = false) {
+      const enemyElement = elements.enemySprite;
+      const popup = document.createElement('div');
+
+      // 设置伤害数字样式
+      popup.className = `absolute font-bold text-shadow transition-all duration-1000 pointer-events-none z-50`;
+      popup.style.cssText = `
+        position: absolute;
+        font-weight: bold;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        transition: all 1s ease-out;
+        transform: translate(-50%, -50%);
+        z-index: 50;
+        pointer-events: none;
+        opacity: 1;
+      `;
+
+      // 设置伤害数字内容和颜色（暴击为金色）
+      if (isCritical) {
+        popup.textContent = `${damage}！`;
+        popup.style.color = '#F59E0B'; // 金色暴击
+        popup.style.fontSize = '1.5rem';
+      } else {
+        popup.textContent = damage;
+        popup.style.color = '#FFFFFF'; // 普通伤害
+        popup.style.fontSize = '1.2rem';
+      }
+
+      // 获取敌人图标的位置
+      const rect = enemyElement.getBoundingClientRect();
+      const parentRect = enemyElement.parentElement.getBoundingClientRect();
+
+      // 设置弹出位置在敌人头顶
+      popup.style.left = `${(rect.left + rect.width / 2 - parentRect.left)}px`;
+      popup.style.top = `${(rect.top - parentRect.top - 20)}px`;
+
+      // 添加到父容器
+      enemyElement.parentElement.appendChild(popup);
+
+      // 动画效果：向上飘动并逐渐消失
+      setTimeout(() => {
+        popup.style.transform = 'translate(-50%, -100%)';
+        popup.style.opacity = '0';
+        popup.style.fontSize = isCritical ? '2rem' : '1.5rem';
+
+        // 动画结束后移除元素
+        setTimeout(() => {
+          if (popup.parentNode) {
+            popup.parentNode.removeChild(popup);
+          }
+        }, 1000);
+      }, 10);
+    }
+
     // 渲染敌人状态 - 同时更新移动端和桌面端
     function renderEnemyStats() {
       // 更新桌面端
@@ -2068,21 +2200,21 @@
       elements.enemyMaxHp.textContent = gameState.enemy.maxHp;
       elements.enemyHpBar.style.width = `${(gameState.enemy.hp / gameState.enemy.maxHp) * 100}%`;
       elements.enemyThreat.textContent = gameState.enemy.threat;
-      
+
       // 更新敌人图标
       elements.enemySprite.innerHTML = `<i class="fa ${gameState.enemy.sprite} text-3xl md:text-4xl text-red-500"></i>`;
-      
+
       // 更新移动端
       elements.enemyNameMobile.textContent = gameState.enemy.name;
       elements.enemyHpMobile.textContent = gameState.enemy.hp;
       elements.enemyMaxHpMobile.textContent = gameState.enemy.maxHp;
       elements.enemyHpBarMobile.style.width = `${(gameState.enemy.hp / gameState.enemy.maxHp) * 100}%`;
     }
-    
+
     // 渲染卡牌 - 优化移动端显示
     function renderCards() {
       elements.cardContainer.innerHTML = '';
-      
+
       gameState.player.cards.forEach((card, index) => {
         const isOnCooldown = card.cooldown > 0;
         const cardElement = document.createElement('div');
@@ -2097,7 +2229,7 @@
           <p class="text-xs md:text-sm text-light/80">${card.description}</p>
           ${isOnCooldown ? `<div class="mt-1 text-center text-xs font-bold bg-red-600/30 text-red-300 px-2 py-1 rounded-full">冷却中: ${card.cooldown}回合</div>` : ''}
         `;
-        
+
         // 增加触摸区域大小
         cardElement.style.touchAction = 'manipulation';
         if (!isOnCooldown) {
@@ -2105,17 +2237,17 @@
         }
         elements.cardContainer.appendChild(cardElement);
       });
-      
+
       // 移动端自动滚动到第一张卡牌
       if (window.innerWidth < 768) {
         elements.cardContainer.scrollLeft = 0;
       }
     }
-    
+
     // 渲染技能
     function renderSkills() {
       elements.skillsContainer.innerHTML = '';
-      
+
       gameState.player.skills.forEach(skill => {
         const skillElement = document.createElement('div');
         skillElement.className = 'bg-primary/20 px-3 py-1 rounded-full text-xs md:text-sm whitespace-nowrap';
@@ -2123,31 +2255,31 @@
         elements.skillsContainer.appendChild(skillElement);
       });
     }
-    
+
     // 渲染装备
     function renderEquipment() {
       const equipment = gameState.player.equipment;
-      
-      elements.weaponSlot.textContent = equipment.weapon ? 
+
+      elements.weaponSlot.textContent = equipment.weapon ?
         `${equipment.weapon.name}${equipment.weapon.set ? ` [${equipment.weapon.setEffect}]` : ''} (攻击+${equipment.weapon.bonus.attack || 0})` : '无';
-        
-      elements.armorSlot.textContent = equipment.armor ? 
+
+      elements.armorSlot.textContent = equipment.armor ?
         `${equipment.armor.name}${equipment.armor.set ? ` [${equipment.armor.setEffect}]` : ''} (防御+${equipment.armor.bonus.defense || 0})` : '无';
-        
-      elements.trinketSlot.textContent = equipment.trinket ? 
+
+      elements.trinketSlot.textContent = equipment.trinket ?
         `${equipment.trinket.name}${equipment.trinket.set ? ` [${equipment.trinket.setEffect}]` : ''} (生命+${equipment.trinket.bonus.maxHp || 0})` : '无';
-        
-      elements.ringSlot.textContent = equipment.ring ? 
+
+      elements.ringSlot.textContent = equipment.ring ?
         `${equipment.ring.name}${equipment.ring.set ? ` [${equipment.ring.setEffect}]` : ''} (攻击+${equipment.ring.bonus.attack || 0}, 防御+${equipment.ring.bonus.defense || 0})` : '无';
-        
+
       // 渲染套装效果
       renderSetEffects();
     }
-    
+
     // 使用卡牌
     function useCard(index) {
       if (!gameState.isPlayerTurn || !gameState.isBattleActive) return;
-      
+
       const card = gameState.player.cards[index];
       // 检查卡牌是否在冷却中
       if (card.cooldown > 0) {
@@ -2156,7 +2288,7 @@
       }
       let message = '';
       let hasUsedCard = false;
-      
+
       // 处理卡牌效果
       if (card.damage || card.damageMultiplier) {
         hasUsedCard = true;
@@ -2170,7 +2302,7 @@
         if (gameState.player.equipment.ring && gameState.player.equipment.ring.bonus.attack) {
           baseAttack += gameState.player.equipment.ring.bonus.attack;
         }
-        
+
         // 计算魔法攻击力（用于魔法卡牌）
         let magicAttack = gameState.player.magicAttack;
         let magicEquipmentBonus = 0;
@@ -2182,14 +2314,14 @@
           magicEquipmentBonus += gameState.player.equipment.ring.bonus.magicAttack;
           magicAttack += gameState.player.equipment.ring.bonus.magicAttack;
         }
-        
+
         // 战斗狂怒效果（物理流）
         const hasBattleFury = gameState.player.skills.some(skill => skill.id === 'battle_fury_active');
         if (hasBattleFury && gameState.player.hp / gameState.player.maxHp < 0.3) {
           baseAttack = Math.round(baseAttack * 1.3);
           message += '战斗狂怒激活！攻击力提升30%！';
         }
-        
+
         // 武器精通效果（物理流）
         const hasWeaponMastery = gameState.player.skills.some(skill => skill.id === 'weapon_mastery_active');
         if (hasWeaponMastery && weaponAttackBonus > 0) {
@@ -2197,14 +2329,14 @@
           baseAttack += masteryBonus;
           message += `武器精通！额外攻击+${masteryBonus}！`;
         }
-        
+
         // 法术效能效果（法师流）
         const hasSpellEfficiency = gameState.player.skills.some(skill => skill.id === 'spell_efficiency_active');
         if (hasSpellEfficiency) {
           magicAttack = Math.round(magicAttack * 1.1);
           message += '法术效能！魔法伤害提升10%！';
         }
-        
+
         // 元素精通效果（法师流）
         const hasElementalMastery = gameState.player.skills.some(skill => skill.id === 'elemental_mastery_active');
         if (hasElementalMastery && magicEquipmentBonus > 0) {
@@ -2212,7 +2344,7 @@
           magicAttack += elementalBonus;
           message += `元素精通！额外魔法攻击+${elementalBonus}！`;
         }
-        
+
         // 魔法亲和效果
         const hasMagicAffinity = gameState.player.skills.some(skill => skill.id === 'magic_affinity_active');
         if (hasMagicAffinity && card.type === 'magic') {
@@ -2223,7 +2355,7 @@
           }
           message += '魔法亲和增强了效果！';
         }
-        
+
         // 计算伤害
         // 魔法卡牌使用魔法攻击力，普通攻击卡牌使用物理攻击力
         let damage;
@@ -2232,23 +2364,23 @@
         } else {
           damage = card.damage || Math.round(baseAttack * (card.damageMultiplier || 1));
         }
-        
+
         // 处理破甲效果和敌人防御特性
         let effectiveDefense = gameState.enemy.defense || 0;
-        
+
         // 检查敌人是否有特殊防御能力
         if (gameState.enemy.ability === 'highDefense' && gameState.enemy.defenseMultiplier) {
           effectiveDefense = Math.round(effectiveDefense * gameState.enemy.defenseMultiplier);
         }
-        
+
         // 处理破甲效果
         if (card.ignoreDefense) {
           effectiveDefense = Math.max(0, effectiveDefense - card.ignoreDefense);
         }
-        
+
         // 计算伤害（考虑防御）
         damage = Math.max(1, damage - effectiveDefense);
-        
+
         // 检查条件伤害（如背刺）
         if (card.condition === 'high_hp' && gameState.enemy.hp / gameState.enemy.maxHp < 0.7) {
           damage = Math.round(damage / card.damageMultiplier); // 移除倍率
@@ -2258,7 +2390,7 @@
           damage = Math.round(damage / 3); // 移除暗杀的3倍倍率
           message += '敌人生命值过低，暗杀效果减弱！';
         }
-        
+
         // 检查暴击（包括装备加成）
         let critChance = gameState.player.critChance;
         if (gameState.player.equipment.weapon && gameState.player.equipment.weapon.bonus.critChance) {
@@ -2270,14 +2402,14 @@
         if (gameState.player.equipment.ring && gameState.player.equipment.ring.bonus.critChance) {
           critChance += gameState.player.equipment.ring.bonus.critChance;
         }
-        
+
         // 暗杀精通效果（刺客流）- 对高生命值敌人暴击率翻倍
         const hasAssassinate = gameState.player.skills.some(skill => skill.id === 'assassinate_active');
         if (hasAssassinate && gameState.enemy.hp / gameState.enemy.maxHp > 0.7) {
           critChance *= 2;
           message += '暗杀精通激活！暴击率翻倍！';
         }
-        
+
         // 暴击伤害倍率（包括装备加成）
         let critDamage = gameState.player.critDamage;
         if (gameState.player.equipment.weapon && gameState.player.equipment.weapon.bonus.critDamage) {
@@ -2289,7 +2421,7 @@
         if (gameState.player.equipment.ring && gameState.player.equipment.ring.bonus.critDamage) {
           critDamage += gameState.player.equipment.ring.bonus.critDamage;
         }
-        
+
         const isCrit = Math.random() * 100 < critChance;
         if (isCrit) {
           damage = Math.round(damage * critDamage);
@@ -2297,37 +2429,40 @@
         } else {
           message += `你使用了${card.name}，造成了${damage}点伤害！`;
         }
-        
+
         // 处理多段攻击
         const hitCount = card.hitCount || 1;
         if (hitCount > 1) {
           damage *= hitCount;
-          message = message.replace(`造成了${damage/hitCount}`, `造成了${hitCount}次${damage/hitCount}，总计${damage}`);
+          message = message.replace(`造成了${damage / hitCount}`, `造成了${hitCount}次${damage / hitCount}，总计${damage}`);
         }
-        
+
         // 处理魔法护盾
         let damageToEnemy = damage;
         let damageToShield = 0;
-        
+
         if (gameState.enemy.passive === 'manaShield' && gameState.enemy.shieldStrength > 0) {
           damageToShield = Math.min(damage, gameState.enemy.shieldStrength);
           gameState.enemy.shieldStrength -= damageToShield;
           damageToEnemy -= damageToShield;
           message += ` 魔法护盾吸收了${damageToShield}点伤害！`;
         }
-        
+
         // 应用剩余伤害到敌人
         if (damageToEnemy > 0) {
           gameState.enemy.hp -= damageToEnemy;
           if (gameState.enemy.hp < 0) gameState.enemy.hp = 0;
+
+          // 显示伤害跳字效果
+          createDamagePopup(damageToEnemy, isCrit);
         }
-        
+
         // 处理反弹伤害（荆棘光环）
         if (gameState.enemy.passive === 'thorns' && damageToEnemy > 0 && gameState.enemy.thornsDamage > 0) {
           const thornsDamage = Math.round(damageToEnemy * gameState.enemy.thornsDamage);
           gameState.player.hp = Math.max(0, gameState.player.hp - thornsDamage);
           message += ` ${gameState.enemy.displayName}的荆棘光环对你造成了${thornsDamage}点伤害！`;
-          
+
           // 检查玩家是否死亡
           if (gameState.player.hp <= 0) {
             gameState.player.hp = 0;
@@ -2336,13 +2471,13 @@
             return;
           }
         }
-        
+
         // 处理击晕效果
         if (card.stunChance && Math.random() * 100 < card.stunChance) {
           gameState.enemy.stunned = true;
           message += ` 敌人被击晕了，下一回合无法行动！`;
         }
-        
+
         // 处理灼烧效果
         if (card.burnChance && Math.random() * 100 < card.burnChance) {
           gameState.enemy.burn = {
@@ -2351,7 +2486,7 @@
           };
           message += ` 敌人被灼烧，每回合受到5点伤害！`;
         }
-        
+
         // 检查吸血效果
         const hasVampirism = gameState.player.skills.some(skill => skill.id === 'vampirism_active');
         if (hasVampirism) {
@@ -2359,20 +2494,20 @@
           gameState.player.hp += healAmount;
           message += ` 你吸取了${healAmount}点生命值！`;
         }
-        
+
         // 处理献祭攻击的生命消耗
         if (card.healthCost) {
           gameState.player.hp = Math.max(1, gameState.player.hp - card.healthCost);
           message += ` 你消耗了${card.healthCost}点生命值！`;
         }
-        
+
         // 处理生命偷取
         if (card.heal) {
           const actualHeal = Math.min(card.heal, gameState.player.maxHp - gameState.player.hp);
           gameState.player.hp += actualHeal;
           message += ` 你恢复了${actualHeal}点生命值！`;
         }
-        
+
         // 战斗专注计数
         if (gameState.player.skills.some(skill => skill.id === 'battle_trance_active')) {
           gameState.player.attackCardCounter = (gameState.player.attackCardCounter || 0) + 1;
@@ -2380,7 +2515,7 @@
             // 获得随机攻击卡牌
             const attackCards = cardDatabase.filter(c => c.type === 'attack' && !c.isUpgraded);
             const randomCard = attackCards[Math.floor(Math.random() * attackCards.length)];
-            addCardToPlayer({...randomCard});
+            addCardToPlayer({ ...randomCard });
             message += ` 战斗专注激活，获得了${randomCard.name}！`;
             gameState.player.attackCardCounter = 0;
           }
@@ -2391,7 +2526,7 @@
         const actualHeal = Math.min(card.heal, gameState.player.maxHp - gameState.player.hp);
         gameState.player.hp += actualHeal;
         message = `你使用了${card.name}，恢复了${actualHeal}点生命值！`;
-        
+
         // 临时防御
         if (card.tempDefense) {
           gameState.player.tempDefense += card.tempDefense;
@@ -2413,7 +2548,7 @@
           gameState.player.dodgeChance = card.dodgeChance;
           message = `你使用了${card.name}，有${card.dodgeChance}%几率闪避攻击！`;
         }
-        
+
         // 治疗效果（如强化防御）
         if (card.heal) {
           const actualHeal = Math.min(card.heal, gameState.player.maxHp - gameState.player.hp);
@@ -2429,65 +2564,65 @@
         };
         message = `你使用了${card.name}，使敌人中毒，每回合受到${card.applyPoison}点伤害，持续${card.poisonDuration}回合！`;
       }
-      
+
       if (hasUsedCard) {
         // 应用卡牌冷却
         gameState.player.cards[index].cooldown = gameState.player.cards[index].defaultCooldown;
-        
+
         // 标记卡牌已使用，不会移除卡牌
         // 不更新卡牌计数，因为卡牌没有被消耗
-        
+
         // 更新战斗信息
         elements.battleMessage.textContent = message;
-        
+
         // 重新渲染
         renderPlayerStats();
         renderEnemyStats();
         renderCards();
-        
+
         // 检查敌人是否死亡
         if (gameState.enemy.hp <= 0) {
           handleEnemyDeath();
           return;
         }
-        
+
         // 切换到敌人回合
         gameState.isPlayerTurn = false;
         setTimeout(enemyTurn, 1500);
       }
     }
-    
+
     // 敌人回合
     function enemyTurn() {
       if (gameState.isPlayerTurn || !gameState.isBattleActive) return;
-      
+
       // 增加敌人回合计数
       gameState.enemy.turnCount = (gameState.enemy.turnCount || 0) + 1;
-      
+
       // 检查是否被击晕
       if (gameState.enemy.stunned) {
         elements.battleMessage.textContent = `${gameState.enemy.displayName}被击晕了，无法行动！`;
         gameState.enemy.stunned = false;
-        
+
         // 抽牌补充手牌
         drawNewCards();
-        
+
         // 切换回玩家回合
         gameState.isPlayerTurn = true;
         return;
       }
-      
+
       // 处理生命偷取光环（被动）
       if (gameState.enemy.passive === 'lifeStealAura' && gameState.enemy.auraDamage > 0) {
         const auraDamage = gameState.enemy.auraDamage;
         gameState.player.hp = Math.max(0, gameState.player.hp - auraDamage);
         gameState.enemy.hp = Math.min(gameState.enemy.hp + auraDamage, gameState.enemy.maxHp);
-        elements.battleMessage.textContent = 
+        elements.battleMessage.textContent =
           `${gameState.enemy.displayName}的生命吸取光环对你造成了${auraDamage}点伤害，并恢复了${auraDamage}点生命值！`;
-        
+
         renderPlayerStats();
         renderEnemyStats();
-        
+
         // 检查玩家是否死亡
         if (gameState.player.hp <= 0) {
           gameState.player.hp = 0;
@@ -2495,114 +2630,182 @@
           handleGameOver();
           return;
         }
-        
+
         setTimeout(() => {
           processNextEnemyAction();
         }, 1000);
         return;
       }
-      
+
       // 处理自我治疗能力
-      if (gameState.enemy.ability === 'selfHeal' && 
-          gameState.enemy.healAmount > 0 && 
-          gameState.enemy.healFrequency && 
-          gameState.enemy.turnCount % gameState.enemy.healFrequency === 0) {
+      if (gameState.enemy.ability === 'selfHeal' &&
+        gameState.enemy.healAmount > 0 &&
+        gameState.enemy.healFrequency &&
+        gameState.enemy.turnCount % gameState.enemy.healFrequency === 0) {
         const healAmount = gameState.enemy.healAmount;
         gameState.enemy.hp = Math.min(gameState.enemy.hp + healAmount, gameState.enemy.maxHp);
-        elements.battleMessage.textContent = 
+        elements.battleMessage.textContent =
           `${gameState.enemy.displayName}使用了自我治疗，恢复了${healAmount}点生命值！`;
-        
+
         renderEnemyStats();
-        
+
         setTimeout(() => {
           processNextEnemyAction();
         }, 1000);
         return;
       }
-      
+
       // 处理中毒效果
       if (gameState.enemy.poison && gameState.enemy.poison.duration > 0) {
         gameState.enemy.hp -= gameState.enemy.poison.damage;
         gameState.enemy.poison.duration -= 1;
-        elements.battleMessage.textContent = 
+        elements.battleMessage.textContent =
           `${gameState.enemy.displayName}受到${gameState.enemy.poison.damage}点毒素伤害！`;
-        
+
+        // 显示伤害跳字效果（毒素伤害使用绿色）
+        const poisonDamage = gameState.enemy.poison.damage;
+        const popup = document.createElement('div');
+        popup.className = `absolute font-bold text-shadow transition-all duration-1000 pointer-events-none z-50`;
+        popup.style.cssText = `
+          position: absolute;
+          font-weight: bold;
+          text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+          transition: all 1s ease-out;
+          transform: translate(-50%, -50%);
+          z-index: 50;
+          pointer-events: none;
+          opacity: 1;
+          color: #10B981; /* 绿色毒素伤害 */
+          fontSize: '1.2rem';
+        `;
+        popup.textContent = poisonDamage;
+
+        const enemyElement = elements.enemySprite;
+        const rect = enemyElement.getBoundingClientRect();
+        const parentRect = enemyElement.parentElement.getBoundingClientRect();
+        popup.style.left = `${(rect.left + rect.width / 2 - parentRect.left)}px`;
+        popup.style.top = `${(rect.top - parentRect.top - 20)}px`;
+
+        enemyElement.parentElement.appendChild(popup);
+
+        setTimeout(() => {
+          popup.style.transform = 'translate(-50%, -100%)';
+          popup.style.opacity = '0';
+          setTimeout(() => {
+            if (popup.parentNode) popup.parentNode.removeChild(popup);
+          }, 1000);
+        }, 10);
+
         if (gameState.enemy.hp <= 0) {
           gameState.enemy.hp = 0;
           renderEnemyStats();
           handleEnemyDeath();
           return;
         }
-        
+
         renderEnemyStats();
         setTimeout(() => {
           processNextEnemyAction();
         }, 1000);
         return;
       }
-      
+
       // 处理灼烧效果
       if (gameState.enemy.burn && gameState.enemy.burn.duration > 0) {
         gameState.enemy.hp -= gameState.enemy.burn.damage;
         gameState.enemy.burn.duration -= 1;
-        elements.battleMessage.textContent = 
+        elements.battleMessage.textContent =
           `${gameState.enemy.displayName}受到${gameState.enemy.burn.damage}点灼烧伤害！`;
-        
+
+        // 显示伤害跳字效果（灼烧伤害使用红色）
+        const burnDamage = gameState.enemy.burn.damage;
+        const popup = document.createElement('div');
+        popup.className = `absolute font-bold text-shadow transition-all duration-1000 pointer-events-none z-50`;
+        popup.style.cssText = `
+          position: absolute;
+          font-weight: bold;
+          text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+          transition: all 1s ease-out;
+          transform: translate(-50%, -50%);
+          z-index: 50;
+          pointer-events: none;
+          opacity: 1;
+          color: #EF4444; /* 红色灼烧伤害 */
+          fontSize: '1.2rem';
+        `;
+        popup.textContent = burnDamage;
+
+        const enemyElement = elements.enemySprite;
+        const rect = enemyElement.getBoundingClientRect();
+        const parentRect = enemyElement.parentElement.getBoundingClientRect();
+        popup.style.left = `${(rect.left + rect.width / 2 - parentRect.left)}px`;
+        popup.style.top = `${(rect.top - parentRect.top - 20)}px`;
+
+        enemyElement.parentElement.appendChild(popup);
+
+        setTimeout(() => {
+          popup.style.transform = 'translate(-50%, -100%)';
+          popup.style.opacity = '0';
+          setTimeout(() => {
+            if (popup.parentNode) popup.parentNode.removeChild(popup);
+          }, 1000);
+        }, 10);
+
         if (gameState.enemy.hp <= 0) {
           gameState.enemy.hp = 0;
           renderEnemyStats();
           handleEnemyDeath();
           return;
         }
-        
+
         renderEnemyStats();
         setTimeout(() => {
           processNextEnemyAction();
         }, 1000);
         return;
       }
-      
+
       processNextEnemyAction();
     }
-    
+
     // 处理敌人下一个动作（攻击前的逻辑）
     function processNextEnemyAction() {
       // 继续处理敌人的主要攻击
       continueEnemyTurn();
     }
-    
+
     // 继续敌人回合（处理攻击）
     function continueEnemyTurn() {
       // 检查闪避
       if (gameState.player.dodgeChance && Math.random() * 100 < gameState.player.dodgeChance) {
         elements.battleMessage.textContent = `你成功闪避了${gameState.enemy.displayName}的攻击！`;
-        
+
         // 闪现的额外抽牌
         const hasBlink = gameState.player.cards.some(c => c.id === 'blink' && c.drawCard);
         if (hasBlink) {
           drawNewCards(1); // 额外抽1张牌
           elements.battleMessage.textContent += ` 闪现使你获得了一张额外卡牌！`;
         }
-        
+
         // 重置闪避几率
         gameState.player.dodgeChance = 0;
-        
+
         // 抽牌补充手牌
         drawNewCards();
-        
+
         // 切换回玩家回合
         gameState.isPlayerTurn = true;
         return;
       }
-      
+
       // 检查格挡
       if (gameState.player.parryChance && Math.random() * 100 < gameState.player.parryChance) {
         let message = `你成功格挡了${gameState.enemy.displayName}的攻击！`;
-        
+
         // 处理反击伤害（考虑魔法护盾）
         if (gameState.player.counterDamage > 0) {
           let counterDamage = Math.round(gameState.player.attack * gameState.player.counterDamage);
-          
+
           // 检查魔法护盾
           if (gameState.enemy.passive === 'manaShield' && gameState.enemy.shieldStrength > 0) {
             const damageToShield = Math.min(counterDamage, gameState.enemy.shieldStrength);
@@ -2610,13 +2813,16 @@
             counterDamage -= damageToShield;
             message += ` 魔法护盾吸收了${damageToShield}点伤害！`;
           }
-          
+
           // 对敌人造成剩余伤害
           if (counterDamage > 0) {
             gameState.enemy.hp = Math.max(0, gameState.enemy.hp - counterDamage);
             message += ` 反击造成了${counterDamage}点伤害！`;
+
+            // 显示伤害跳字效果
+            createDamagePopup(counterDamage, false);
           }
-          
+
           // 检查敌人是否因反击死亡
           if (gameState.enemy.hp <= 0) {
             renderEnemyStats();
@@ -2625,22 +2831,22 @@
             return;
           }
         }
-        
+
         // 重置格挡几率和反击伤害
         gameState.player.parryChance = 0;
         gameState.player.counterDamage = 0;
-        
+
         elements.battleMessage.textContent = message;
         renderEnemyStats();
-        
+
         // 抽牌补充手牌
         drawNewCards();
-        
+
         // 切换回玩家回合
         gameState.isPlayerTurn = true;
         return;
       }
-      
+
       // 计算玩家总防御（包括装备）
       let totalDefense = gameState.player.defense;
       if (gameState.player.equipment.armor && gameState.player.equipment.armor.bonus.defense) {
@@ -2649,17 +2855,17 @@
       if (gameState.player.equipment.ring && gameState.player.equipment.ring.bonus.defense) {
         totalDefense += gameState.player.equipment.ring.bonus.defense;
       }
-      
+
       // 计算基础伤害
       let damage = gameState.enemy.attack;
-      
+
       // 处理暴击（刺客特性）
       if (gameState.enemy.ability === 'highCrit' && gameState.enemy.critChance && Math.random() * 100 < gameState.enemy.critChance) {
         const enemyCritDamage = gameState.enemy.critDamage || 1.5;
         damage = Math.round(damage * enemyCritDamage);
         elements.battleMessage.textContent = `${gameState.enemy.displayName}对你发动了暴击！`;
       }
-      
+
       // 处理魔法伤害（法师特性）
       if (gameState.enemy.ability === 'spellDamage' && gameState.enemy.isMagicDamage) {
         // 魔法伤害无视防御，但仍然可以被临时防御减免
@@ -2667,26 +2873,26 @@
         // 物理伤害考虑防御
         damage = damage - totalDefense;
       }
-      
+
       // 应用临时防御
       if (gameState.player.tempDefense) {
         damage = Math.round(damage * gameState.player.tempDefense);
         gameState.player.tempDefense = 0; // 重置临时防御
       }
-      
+
       // 确保伤害不为负
       damage = Math.max(1, damage);
-      
+
       // 设置战斗消息
       if (gameState.enemy.ability === 'spellDamage' && gameState.enemy.isMagicDamage) {
         elements.battleMessage.textContent = `${gameState.enemy.displayName}对你造成了${damage}点魔法伤害！`;
       } else {
         elements.battleMessage.textContent = `${gameState.enemy.displayName}对你造成了${damage}点伤害！`;
       }
-      
+
       // 应用伤害
       gameState.player.hp -= damage;
-      
+
       // 处理吸血特性
       if (gameState.enemy.ability === 'vampirism' && gameState.enemy.vampirismRate) {
         const healAmount = Math.round(damage * gameState.enemy.vampirismRate);
@@ -2694,12 +2900,12 @@
         elements.battleMessage.textContent += ` ${gameState.enemy.displayName}吸取了${healAmount}点生命值！`;
         renderEnemyStats();
       }
-      
+
       // 检查反击效果
       const hasCounterAttack = gameState.player.skills.some(skill => skill.id === 'counter_attack_active');
       if (hasCounterAttack && Math.random() * 100 < 30) {
         let counterDamage = Math.round(gameState.player.attack * 0.5);
-        
+
         // 检查魔法护盾
         if (gameState.enemy.passive === 'manaShield' && gameState.enemy.shieldStrength > 0) {
           const damageToShield = Math.min(counterDamage, gameState.enemy.shieldStrength);
@@ -2707,13 +2913,16 @@
           counterDamage -= damageToShield;
           elements.battleMessage.textContent += ` 魔法护盾吸收了${damageToShield}点伤害！`;
         }
-        
+
         // 对敌人造成剩余伤害
         if (counterDamage > 0) {
           gameState.enemy.hp = Math.max(0, gameState.enemy.hp - counterDamage);
           elements.battleMessage.textContent += ` 你反击造成了${counterDamage}点伤害！`;
+
+          // 显示伤害跳字效果
+          createDamagePopup(counterDamage, false);
         }
-        
+
         // 检查敌人是否因反击死亡
         if (gameState.enemy.hp <= 0) {
           renderPlayerStats();
@@ -2722,11 +2931,11 @@
           return;
         }
       }
-      
+
       // 重新渲染
       renderPlayerStats();
       renderEnemyStats();
-      
+
       // 检查玩家是否死亡
       if (gameState.player.hp <= 0) {
         gameState.player.hp = 0;
@@ -2734,7 +2943,7 @@
         handleGameOver();
         return;
       }
-      
+
       // 回合结束，检查神圣祝福
       const hasBlessing = gameState.player.skills.some(skill => skill.id === 'blessing_active');
       if (hasBlessing) {
@@ -2742,14 +2951,14 @@
         elements.battleMessage.textContent += ` 神圣祝福恢复了3点生命值！`;
         renderPlayerStats();
       }
-      
+
       // 抽牌补充手牌
       drawNewCards();
-      
+
       // 切换回玩家回合
       gameState.isPlayerTurn = true;
     }
-    
+
     // 处理卡牌冷却减少
     function drawNewCards(additional = 0) {
       // 为玩家回合开始时减少所有卡牌的冷却
@@ -2758,41 +2967,41 @@
           card.cooldown--;
         }
       });
-      
+
       // 如果卡牌池中有冷却为0但不在手牌中的卡牌，随机抽取一张添加到手牌
       if (gameState.player.fullCardPool) {
-        const availableCards = gameState.player.fullCardPool.filter(card => 
-          card.cooldown === 0 && 
+        const availableCards = gameState.player.fullCardPool.filter(card =>
+          card.cooldown === 0 &&
           !gameState.player.cards.some(c => c.id === card.id)
         );
-        
+
         if (availableCards.length > 0) {
           const randomIndex = Math.floor(Math.random() * availableCards.length);
           const newCard = { ...availableCards[randomIndex] };
           gameState.player.cards.push(newCard);
         }
       }
-      
+
       // 检查是否有可升级的卡牌
       checkForCardUpgrades();
-      
+
       renderCards();
     }
-    
+
     // 根据类型获取随机卡牌
     function getRandomCardByType(types, preferUpgradable) {
-      let candidates = cardDatabase.filter(card => 
+      let candidates = cardDatabase.filter(card =>
         types.includes(card.type) && (!preferUpgradable || card.upgradeTo)
       );
-      
+
       // 如果没有符合条件的，放宽条件
       if (candidates.length === 0) {
         candidates = cardDatabase.filter(card => types.includes(card.type));
       }
-      
+
       return candidates[Math.floor(Math.random() * candidates.length)];
     }
-    
+
     // 添加卡牌给玩家
     function addCardToPlayer(card) {
       // 确保卡牌有基于威力计算的冷却时间
@@ -2801,12 +3010,79 @@
         cooldown: 0,
         defaultCooldown: card.defaultCooldown || calculateCardCooldown(card)
       };
-      
-      gameState.player.cards.push(cardWithCooldown);
-      
-      // 更新卡牌计数
-      incrementCardCount(card.id);
-      
+
+      // 检查是否已有相同卡牌
+      const existingCardIndex = gameState.player.cards.findIndex(c => c.id === card.id);
+
+      if (existingCardIndex !== -1) {
+        // 存在相同卡牌，执行合成操作
+        const existingCard = gameState.player.cards[existingCardIndex];
+
+        // 移除旧卡牌
+        gameState.player.cards.splice(existingCardIndex, 1);
+        decrementCardCount(card.id);
+
+        // 添加升级后的卡牌并增加属性加成
+        const upgradeLevel = (existingCard.upgradeLevel || 0) + 1;
+        const upgradeMultiplier = 1 + (upgradeLevel * 0.2); // 每级升级增加20%效果
+
+        // 复制原始卡牌数据
+        const upgradedCard = {
+          ...cardWithCooldown,
+          name: existingCard.name.includes('+') ?
+            existingCard.name.replace(/\+\d+$/, m => `+${parseInt(m.slice(1)) + 1}`) :
+            existingCard.name + '+1',
+          isUpgraded: true,
+          upgradeLevel: upgradeLevel
+        };
+
+        // 根据卡牌类型应用不同的属性加成
+        if (card.damage || card.damageMultiplier) {
+          // 攻击类卡牌 - 增加伤害或伤害倍数
+          if (upgradedCard.damage) {
+            upgradedCard.damage = Math.round(upgradedCard.damage * upgradeMultiplier);
+          } else if (upgradedCard.damageMultiplier) {
+            upgradedCard.damageMultiplier = Math.round((upgradedCard.damageMultiplier * upgradeMultiplier) * 10) / 10;
+          }
+        } else if (card.defend || card.blockAmount) {
+          // 防御类卡牌 - 增加防御效果
+          if (upgradedCard.defend) {
+            upgradedCard.defend = Math.round((upgradedCard.defend / upgradeMultiplier) * 10) / 10; // defend是伤害减免系数，需要特殊处理
+          } else if (upgradedCard.blockAmount) {
+            upgradedCard.blockAmount = Math.round(upgradedCard.blockAmount * upgradeMultiplier);
+          }
+        } else if (card.healAmount) {
+          // 治疗类卡牌 - 增加治疗量
+          upgradedCard.healAmount = Math.round(upgradedCard.healAmount * upgradeMultiplier);
+        } else if (card.ignoreDefense) {
+          // 破甲类卡牌 - 增加破甲值
+          upgradedCard.ignoreDefense = Math.round(upgradedCard.ignoreDefense * upgradeMultiplier);
+        } else if (card.hitCount) {
+          // 多段攻击卡牌 - 增加攻击次数
+          upgradedCard.hitCount = Math.floor(upgradedCard.hitCount * upgradeMultiplier);
+        } else if (card.parryChance || card.dodgeChance) {
+          // 概率类卡牌 - 增加成功率
+          if (upgradedCard.parryChance) {
+            upgradedCard.parryChance = Math.min(95, Math.round(upgradedCard.parryChance * upgradeMultiplier));
+          }
+          if (upgradedCard.dodgeChance) {
+            upgradedCard.dodgeChance = Math.min(95, Math.round(upgradedCard.dodgeChance * upgradeMultiplier));
+          }
+        }
+
+        gameState.player.cards.push(upgradedCard);
+        incrementCardCount(card.id); // 仍然增加卡牌计数，因为我们只是升级而非移除
+
+        // 显示合成提示
+        showToast(`卡牌合成！${card.name} 升级为 ${upgradedCard.name}！`, 'green');
+      } else {
+        // 直接添加新卡牌
+        gameState.player.cards.push(cardWithCooldown);
+
+        // 更新卡牌计数
+        incrementCardCount(card.id);
+      }
+
       // 确保卡牌数量不超过上限
       const maxCards = gameState.player.maxCards || 5;
       if (gameState.player.cards.length > maxCards) {
@@ -2824,15 +3100,15 @@
         }
       }
     }
-    
+
     // 增加卡牌计数
     function incrementCardCount(cardId) {
       gameState.player.cardCounts[cardId] = (gameState.player.cardCounts[cardId] || 0) + 1;
-      
+
       // 每增加一张卡就检查是否可以升级
       checkForCardUpgrades();
     }
-    
+
     // 减少卡牌计数
     function decrementCardCount(cardId) {
       if (gameState.player.cardCounts[cardId]) {
@@ -2842,17 +3118,17 @@
         }
       }
     }
-    
+
     // 检查卡牌升级 - 完善三合一功能
     function checkForCardUpgrades() {
       // 如果有模态框正在显示，则不检查
       if (!elements.cardUpgradeModal.classList.contains('hidden')) {
         return;
       }
-      
+
       // 默认两张卡牌即可升级
       gameState.cardFusion.required = 2;
-      
+
       // 检查每种可升级的卡牌
       for (const [cardId, count] of Object.entries(gameState.player.cardCounts)) {
         // 两张相同卡牌即可升级
@@ -2865,7 +3141,7 @@
               elements.upgradeFrom.textContent = card.name;
               elements.upgradeTo.textContent = upgradedCard.name;
               elements.cardUpgradeModal.classList.remove('hidden');
-              
+
               // 移除相应数量的旧卡牌
               for (let i = 0; i < gameState.cardFusion.required; i++) {
                 const index = gameState.player.cards.findIndex(c => c.id === cardId);
@@ -2873,78 +3149,74 @@
                   gameState.player.cards.splice(index, 1);
                 }
               }
-              
+
               // 更新计数
               gameState.player.cardCounts[cardId] -= gameState.cardFusion.required;
               if (gameState.player.cardCounts[cardId] <= 0) {
                 delete gameState.player.cardCounts[cardId];
               }
-              
+
               // 添加升级后的卡牌
-              addCardToPlayer({...upgradedCard});
-              
+              addCardToPlayer({ ...upgradedCard });
+
               return; // 一次只处理一个升级
             }
           }
         }
       }
     }
-    
+
     // 处理敌人死亡
     function handleEnemyDeath(enemy = gameState.enemy) {
       gameState.isBattleActive = false;
       elements.battleMessage.textContent = `你击败了${enemy.displayName}！获得了${enemy.expReward}点经验值！`;
-      
-      // 奖励经验
-      gameState.player.exp += enemy.expReward;
-      
-      // 50%概率掉落装备
-      if (Math.random() < 0.5) {
-        generateLoot();
-      } else {
-        // 如果没有掉落装备，直接生成新敌人
-        setTimeout(() => {
-          if (gameState.player.exp >= gameState.player.nextLevelExp) {
-            checkLevelUp();
-          } else {
-            spawnNewEnemy();
-          }
-        }, 2000);
-      }
-      
-      // 重新渲染
-      renderPlayerStats();
-      
-      // 检查是否升级
-      checkLevelUp();
-      
-      // 如果没有升级也没有掉落，直接生成新敌人
-      if (gameState.player.exp < gameState.player.nextLevelExp && !gameState.currentLoot) {
-        setTimeout(spawnNewEnemy, 2000);
-      }
+
+      // 延迟半秒后再执行后续逻辑，让玩家能看到伤害跳字
+      setTimeout(() => {
+        // 奖励经验
+        gameState.player.exp += enemy.expReward;
+
+        // 50%概率掉落装备
+        if (Math.random() < 0.6) {
+          generateLoot();
+        }
+
+        // 重新渲染
+        renderPlayerStats();
+
+        // 检查是否升级
+        checkLevelUp();
+
+        // 击败怪物必定获得三选一技能，但1级时不显示
+        if (gameState.player.exp < gameState.player.nextLevelExp && !gameState.currentLoot && gameState.player.level > 1) {
+          setTimeout(() => {
+            showLevelUpOptions(true); // 确保显示技能选择
+          }, 1500); // 减少延迟时间，因为已经有了前面的500ms延迟
+        }
+      }, 500);
     }
-    
+
     // 强化装备函数
     function upgradeEquipment(upgradeItem) {
       if (!gameState.player.equipment[upgradeItem.type]) {
         showToast('你还没有装备该部位的装备！');
         return false;
       }
-      
+
       // 统一设置强化成功率为50%
       let successRate = 0.5; // 所有装备类型都是50%成功率
-      
+
       // 执行强化
       if (Math.random() < successRate) {
         // 强化成功
         const equipment = gameState.player.equipment[upgradeItem.type];
-        
+
         // 移除旧的装备加成
         applyEquipmentBonuses(equipment, false);
-        
+
         // 更新装备属性
         if (!equipment.bonus) equipment.bonus = {};
-        
+
         // 为每个属性增加对应的强化值
         let upgradeText = '';
         for (const [key, value] of Object.entries(upgradeItem.bonus)) {
@@ -2962,25 +3234,25 @@
           }
           const totalBonus = value + randomBonus;
           equipment.bonus[key] += totalBonus;
-          
+
           // 构建提示文本
-          const keyText = key === 'attack' ? '攻击力' : 
-                         key === 'defense' ? '防御力' : 
-                         key === 'maxHp' ? '最大生命值' : 
-                         key === 'critChance' ? '暴击率' : '';
+          const keyText = key === 'attack' ? '攻击力' :
+            key === 'defense' ? '防御力' :
+              key === 'maxHp' ? '最大生命值' :
+                key === 'critChance' ? '暴击率' : '';
           upgradeText += `${keyText}+${totalBonus} `;
         }
-        
+
         if (!equipment.upgrades) equipment.upgrades = 0;
         equipment.upgrades++;
-        
+
         // 保存原始名称用于升级显示
         if (!equipment.baseName) equipment.baseName = equipment.name;
         equipment.name = `${equipment.baseName} +${equipment.upgrades}`;
-        
+
         // 重新应用装备加成
         applyEquipmentBonuses(equipment, true);
-        
+
         showToast(`${equipment.baseName}强化成功！${upgradeText}`);
         return true;
       } else {
@@ -2989,102 +3261,132 @@
         return false;
       }
     }
-    
+
     // 生成战利品
     function generateLoot() {
       // 根据难度和敌人类型调整装备稀有度概率
       const random = Math.random() * 100;
       let rarityThreshold;
-      
-      // 检查是否是BOSS战
+
+      // 检查是否是BOSS战和是否需要掉落套装
       const isBoss = gameState.enemy && gameState.enemy.isBoss;
-      
+      // 设置30%的概率掉落套装装备，或者在特定条件下必定掉落套装
+      const isSetGuaranteed = (Math.random() < 0.3) || (gameState.enemy && gameState.enemy.isSetGuaranteed);
+
       if (isBoss) {
         // BOSS战：有几率掉落传奇装备
         rarityThreshold = { legendary: 30, epic: 50, rare: 80, common: 100 };
       } else if (gameState.difficulty < 3) {
-        rarityThreshold = { epic: 5, rare: 20, common: 100 };
+        rarityThreshold = {legendary: 3,epic: 5, rare: 20, common: 100 };
       } else if (gameState.difficulty < 7) {
-        rarityThreshold = { epic: 10, rare: 30, common: 100 };
+        rarityThreshold = { legendary: 7, epic: 10, rare: 30, common: 100 };
       } else {
-        rarityThreshold = { epic: 15, rare: 40, common: 100 };
+        rarityThreshold = { legendary: 15, epic: 15, rare: 40, common: 100 };
       }
-      
+
       let selectedEquipment;
-      
-      if (random < rarityThreshold.legendary && isBoss) {
+      let filteredEquipment;
+
+      if (random < rarityThreshold.legendary) {
         // 传奇装备（只有BOSS才会掉落）
-        selectedEquipment = equipmentDatabase.filter(e => e.rarity === 'legendary')
-          [Math.floor(Math.random() * equipmentDatabase.filter(e => e.rarity === 'legendary').length)];
+        filteredEquipment = equipmentDatabase.filter(e => e.rarity === 'legendary');
+        // 如果需要必定掉落套装，进一步过滤出有set属性的装备
+        if (isSetGuaranteed) {
+          filteredEquipment = filteredEquipment.filter(e => e.set);
+        }
+        selectedEquipment = filteredEquipment[Math.floor(Math.random() * filteredEquipment.length)];
       } else if (random < rarityThreshold.epic) {
         // 史诗装备
-        selectedEquipment = equipmentDatabase.filter(e => e.rarity === 'epic')
-          [Math.floor(Math.random() * equipmentDatabase.filter(e => e.rarity === 'epic').length)];
+        filteredEquipment = equipmentDatabase.filter(e => e.rarity === 'epic');
+        // 如果需要必定掉落套装，进一步过滤出有set属性的装备
+        if (isSetGuaranteed) {
+          filteredEquipment = filteredEquipment.filter(e => e.set);
+        }
+        selectedEquipment = filteredEquipment[Math.floor(Math.random() * filteredEquipment.length)];
       } else if (random < rarityThreshold.rare) {
         // 稀有装备
-        selectedEquipment = equipmentDatabase.filter(e => e.rarity === 'rare')
-          [Math.floor(Math.random() * equipmentDatabase.filter(e => e.rarity === 'rare').length)];
+        filteredEquipment = equipmentDatabase.filter(e => e.rarity === 'rare');
+        // 如果需要必定掉落套装，进一步过滤出有set属性的装备
+        if (isSetGuaranteed) {
+          filteredEquipment = filteredEquipment.filter(e => e.set);
+        }
+        selectedEquipment = filteredEquipment[Math.floor(Math.random() * filteredEquipment.length)];
       } else {
         // 普通装备
-        selectedEquipment = equipmentDatabase.filter(e => e.rarity === 'common')
-          [Math.floor(Math.random() * equipmentDatabase.filter(e => e.rarity === 'common').length)];
+        filteredEquipment = equipmentDatabase.filter(e => e.rarity === 'common');
+        // 如果需要必定掉落套装，进一步过滤出有set属性的装备
+        if (isSetGuaranteed) {
+          filteredEquipment = filteredEquipment.filter(e => e.set);
+        }
+        selectedEquipment = filteredEquipment[Math.floor(Math.random() * filteredEquipment.length)];
       }
-      
+
+      // 检查是否成功选择了装备，如果没有则选择一个普通装备作为备选
+      if (!selectedEquipment) {
+        const backupEquipment = equipmentDatabase.filter(e => e.rarity === 'common');
+        if (backupEquipment.length > 0) {
+          selectedEquipment = backupEquipment[Math.floor(Math.random() * backupEquipment.length)];
+        } else {
+          console.error('无法找到任何装备！');
+          return; // 防止后续代码继续执行
+        }
+      }
+
       // 保存当前战利品
       gameState.currentLoot = selectedEquipment;
-      
+
       // 显示战利品模态框
       let rarityColor = 'text-light';
       if (selectedEquipment.rarity === 'legendary') rarityColor = 'text-yellow-400';
       if (selectedEquipment.rarity === 'rare') rarityColor = 'text-blue-400';
       if (selectedEquipment.rarity === 'epic') rarityColor = 'text-purple-400';
-      
+
       elements.lootContent.innerHTML = `
         <div class="bg-dark/60 rounded-lg p-3 border ${selectedEquipment.rarity === 'legendary' ? 'border-yellow-500 glow pulse' :
-          selectedEquipment.rarity === 'epic' ? 'border-purple-500 glow' : 
-          selectedEquipment.rarity === 'rare' ? 'border-blue-500' : 'border-gray-500'}">
+          selectedEquipment.rarity === 'epic' ? 'border-purple-500 glow' :
+            selectedEquipment.rarity === 'rare' ? 'border-blue-500' : 'border-gray-500'}">
           <div class="flex justify-between items-start mb-2">
             <h3 class="font-bold text-base ${rarityColor}">${selectedEquipment.name}</h3>
             <span class="text-xs px-2 py-1 rounded-full ${selectedEquipment.rarity === 'legendary' ? 'bg-yellow-500/20 text-yellow-400' :
-              selectedEquipment.rarity === 'epic' ? 'bg-purple-500/20 text-purple-400' : 
-              selectedEquipment.rarity === 'rare' ? 'bg-blue-500/20 text-blue-400' : 'bg-gray-500/20 text-gray-400'}">
+          selectedEquipment.rarity === 'epic' ? 'bg-purple-500/20 text-purple-400' :
+            selectedEquipment.rarity === 'rare' ? 'bg-blue-500/20 text-blue-400' : 'bg-gray-500/20 text-gray-400'}">
               ${selectedEquipment.rarity === 'legendary' ? '传奇' : selectedEquipment.rarity === 'epic' ? '史诗' : selectedEquipment.rarity === 'rare' ? '稀有' : '普通'}
             </span>
           </div>
           <p class="text-xs text-light/80 mb-2">${selectedEquipment.description}</p>
           <div class="text-xs">
             ${Object.entries(selectedEquipment.bonus).map(([key, value]) => {
-              const keyText = key === 'attack' ? '攻击力' : 
-                             key === 'defense' ? '防御力' : 
-                             key === 'maxHp' ? '最大生命值' : 
-                             key === 'critChance' ? '暴击率' : '';
+              const keyText = key === 'attack' ? '攻击力' :
+                key === 'defense' ? '防御力' :
+                  key === 'maxHp' ? '最大生命值' :
+                    key === 'critChance' ? '暴击率' : '';
               return `<span class="mr-3">+${value} ${keyText}</span>`;
             }).join('')}
           </div>
         </div>
       `;
-      
+
       elements.lootModal.classList.remove('hidden');
     }
-    
+
     // 装备战利品（现在改为强化装备）
     function equipLoot() {
       if (!gameState.currentLoot) return;
-      
+
       const equipment = gameState.currentLoot;
-      
+
       applyEquipmentBonuses(equipment, true);
       gameState.player.equipment[equipment.type] = equipment;
       showToast(`装备了 ${equipment.name}！`);
-      
+
       // 隐藏模态框
       elements.lootModal.classList.add('hidden');
       gameState.currentLoot = null;
-      
+
       // 重新渲染
       renderEquipment();
       renderPlayerStats();
-      
+
       // 检查是否升级，否则生成新敌人
       if (gameState.player.exp >= gameState.player.nextLevelExp) {
         checkLevelUp();
@@ -3092,7 +3394,7 @@
         setTimeout(spawnNewEnemy, 1000);
       }
     }
-    
+
     // 套装效果定义
     const setEffects = {
       dragon_knight: {
@@ -3116,39 +3418,39 @@
         4: { attack: 15, defense: 20, maxHp: 100, critChance: 8 }
       }
     };
-    
+
     // 记录当前套装加成
     let currentSetBonuses = {};
-    
+
     // 检查和应用套装效果
     function checkAndApplySetEffects() {
       // 移除旧的套装加成
       removeSetBonuses();
-      
+
       // 计算每个套装的装备数量
       const setCounts = {};
       const equipment = gameState.player.equipment;
-      
+
       for (const slot in equipment) {
         const item = equipment[slot];
         if (item && item.set) {
           setCounts[item.set] = (setCounts[item.set] || 0) + 1;
         }
       }
-      
+
       // 应用套装效果
       currentSetBonuses = {};
-      
+
       for (const setName in setCounts) {
         const count = setCounts[setName];
         const setEffect = setEffects[setName];
-        
+
         if (setEffect && setEffect[count]) {
           // 应用对应数量的套装效果
           for (const [attr, value] of Object.entries(setEffect[count])) {
             if (!currentSetBonuses[attr]) currentSetBonuses[attr] = 0;
             currentSetBonuses[attr] += value;
-            
+
             // 应用到玩家属性
             if (attr === 'maxHp') {
               const hpPercentage = gameState.player.hp / gameState.player.maxHp;
@@ -3158,13 +3460,13 @@
               gameState.player[attr] += value;
             }
           }
-          
+
           // 显示套装效果激活提示
-          const effectName = setName === 'dragon_knight' ? '龙骑士套装' : 
-                            setName === 'elemental' ? '元素套装' : 
-                            setName === 'shadow' ? '暗影套装' : 
-                            setName === 'light' ? '光明套装' : '';
-          
+          const effectName = setName === 'dragon_knight' ? '龙骑士套装' :
+            setName === 'elemental' ? '元素套装' :
+              setName === 'shadow' ? '暗影套装' :
+                setName === 'light' ? '光明套装' : '';
+
           if (count === 2) {
             showToast(`✅ ${effectName}激活！装备2件获得基础加成！`);
           } else if (count === 3) {
@@ -3174,11 +3476,11 @@
           }
         }
       }
-      
+
       // 重新渲染UI
       renderSetEffects();
     }
-    
+
     // 移除套装加成
     function removeSetBonuses() {
       for (const [attr, value] of Object.entries(currentSetBonuses)) {
@@ -3192,13 +3494,13 @@
       }
       currentSetBonuses = {};
     }
-    
+
     // 渲染套装效果显示
     function renderSetEffects() {
       const equipment = gameState.player.equipment;
       const setCounts = {};
       let setHtml = '';
-      
+
       // 计算套装数量
       for (const slot in equipment) {
         const item = equipment[slot];
@@ -3206,31 +3508,31 @@
           setCounts[item.set] = (setCounts[item.set] || 0) + 1;
         }
       }
-      
+
       // 构建套装显示HTML
       for (const setName in setCounts) {
         const count = setCounts[setName];
         const setEffect = setEffects[setName];
-        const effectName = setName === 'dragon_knight' ? '龙骑士套装' : 
-                          setName === 'elemental' ? '元素套装' : 
-                          setName === 'shadow' ? '暗影套装' : 
-                          setName === 'light' ? '光明套装' : '';
-        
+        const effectName = setName === 'dragon_knight' ? '龙骑士套装' :
+          setName === 'elemental' ? '元素套装' :
+            setName === 'shadow' ? '暗影套装' :
+              setName === 'light' ? '光明套装' : '';
+
         const bonusText = [];
-        
+
         // 计算总套装加成
         for (let i = 2; i <= count && i <= 4; i++) {
           if (setEffect && setEffect[i]) {
             for (const [attr, value] of Object.entries(setEffect[i])) {
-              const attrText = attr === 'attack' ? '攻击力' : 
-                             attr === 'defense' ? '防御力' : 
-                             attr === 'maxHp' ? '最大生命值' : 
-                             attr === 'critChance' ? '暴击率' : '';
+              const attrText = attr === 'attack' ? '攻击力' :
+                attr === 'defense' ? '防御力' :
+                  attr === 'maxHp' ? '最大生命值' :
+                    attr === 'critChance' ? '暴击率' : '';
               bonusText.push(`+${value} ${attrText}`);
             }
           }
         }
-        
+
         setHtml += `
           <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-2 mt-2">
             <div class="text-sm font-semibold text-yellow-400 mb-1">
@@ -3242,112 +3544,126 @@
           </div>
         `;
       }
-      
+
       // 如果没有套装效果，显示空提示
       if (!setHtml) {
         setHtml = '<div class="text-xs text-light/50 italic">装备相同套装的装备可获得额外加成</div>';
       }
-      
+
       // 更新UI显示
       if (elements.setEffectsContainer) {
         elements.setEffectsContainer.innerHTML = setHtml;
       }
     }
-    
+
     // 应用装备属性加成
     function applyEquipmentBonuses(equipment, apply) {
       const multiplier = apply ? 1 : -1;
-      
+
       if (equipment.bonus.attack) {
         gameState.player.attack += equipment.bonus.attack * multiplier;
       }
-      
+
       if (equipment.bonus.magicAttack) {
         gameState.player.magicAttack += equipment.bonus.magicAttack * multiplier;
       }
-      
+
       if (equipment.bonus.defense) {
         gameState.player.defense += equipment.bonus.defense * multiplier;
       }
-      
+
       if (equipment.bonus.maxHp) {
         // 计算生命值百分比，保持比例
         const hpPercentage = gameState.player.hp / gameState.player.maxHp;
         gameState.player.maxHp += equipment.bonus.maxHp * multiplier;
         gameState.player.hp = Math.round(gameState.player.maxHp * hpPercentage);
       }
-      
+
       if (equipment.bonus.critChance) {
         gameState.player.critChance += equipment.bonus.critChance * multiplier;
       }
-      
+
       if (equipment.bonus.critDamage) {
         gameState.player.critDamage += equipment.bonus.critDamage * multiplier;
       }
-      
+
       // 如果是应用装备，延迟检查套装效果以确保所有装备操作完成
       if (apply) {
         setTimeout(checkAndApplySetEffects, 0);
       }
     }
-    
+
     // 添加技能给玩家
     function addSkillToPlayer(skill) {
       if (!gameState.player.skills.some(s => s.id === skill.id)) {
         gameState.player.skills.push(skill);
       }
     }
-    
+
     // 检查升级
     function checkLevelUp() {
-      while (gameState.player.exp >= gameState.player.nextLevelExp) {
+      console.log('检查是否升级...');
+      console.log('当前经验值:', gameState.player.exp);
+      console.log('升级所需经验值:', gameState.player.nextLevelExp);
+
+      if (gameState.player.exp >= gameState.player.nextLevelExp) {
+        console.log('满足升级条件，执行升级...');
         // 升级
         gameState.player.level += 1;
         gameState.player.exp -= gameState.player.nextLevelExp;
-        
+
         // 升级后回满生命值
         gameState.player.hp = gameState.player.maxHp;
-        
+
         // 计算下一级所需经验（递增）
         gameState.player.nextLevelExp = Math.round(gameState.player.nextLevelExp * 1.5);
-        
+
+        // 1级时解锁职业选择（优先于剧情显示）
+        if (gameState.player.level === 1 && !gameState.player.class) {
+          console.log('显示职业选择...');
+          // 暂停战斗
+          gameState.isBattleActive = false;
+
+          // 显示职业选择
+          showClassSelection();
+
+          return; // 等待职业选择完成
+        }
+
         // 显示剧情（如果是1-20级）
         if (gameState.player.level <= 20 && storyDatabase[gameState.player.level]) {
+          console.log('显示剧情场景...');
           showStoryScene(gameState.player.level);
-          
+
           // 暂停游戏直到剧情结束
           gameState.isBattleActive = false;
           return; // 等待剧情结束后再显示升级选择
         }
-        
-        // 5级时解锁职业选择
-        if (gameState.player.level === 5 && !gameState.player.class) {
-          // 暂停战斗
-          gameState.isBattleActive = false;
-          
-          // 显示职业选择
-          showClassSelection();
-          
-          return; // 等待职业选择完成
+
+        // 显示升级选择（升级时优先显示卡牌选择，如果有可用卡牌），但1级时不显示
+        if (gameState.player.level > 1) {
+          console.log('调用showLevelUpOptions函数...');
+          showLevelUpOptions(); // 不传参数，让isCardChoice根据是否有可用卡牌来决定
         }
-        
-        // 显示升级选择（确保每次升级都获得新技能）
-        showLevelUpOptions(true); // 传入参数确保必选技能
-        
+
         // 提高难度
         gameState.difficulty += 0.3;
         gameState.enemy.lootChance = Math.min(70, 30 + gameState.difficulty * 5); // 提高掉落概率
-        
+
         // 暂停游戏直到选择技能
         gameState.isBattleActive = false;
+        console.log('升级处理完成，等待玩家选择...');
         return; // 一次只处理一级升级，等待玩家选择技能后继续
       }
+
+      // 不满足升级条件
+      console.log('不满足升级条件');
     }
-    
+
     // 显示剧情场景
     function showStoryScene(level) {
       const story = storyDatabase[level];
-      
+
       if (story) {
         // 特殊处理20级大结局
         if (level === 20) {
@@ -3359,7 +3675,7 @@
             <p class="text-sm text-light/70 mt-2">你从一个普通的年轻人成长为拯救王国的英雄，<br>公主获救，王国重获和平，<br>而你也收获了属于自己的荣耀与爱情。</p>
           `;
           elements.endingModal.classList.remove('hidden');
-          
+
           // 阻止生成新敌人，游戏结束
           gameState.isBattleActive = false;
         } else {
@@ -3372,27 +3688,27 @@
         }
       }
     }
-    
+
     // 继续游戏（处理剧情结束后）
     function continueAfterStory() {
       // 隐藏剧情模态框
       elements.storyModal.classList.add('hidden');
-      
+
       // 直接显示升级模态框，确保游戏继续
       // 显示升级选择（确保必选技能）
       showLevelUpOptions(true);
-      
+
       // 强制显示升级模态框，以防万一
       setTimeout(() => {
         elements.levelUpModal.classList.remove('hidden');
       }, 100);
     }
-    
+
     // 重新开始游戏（通关后）
     function restartGameAfterEnding() {
       // 隐藏大结局模态框
       elements.endingModal.classList.add('hidden');
-      
+
       // 重置游戏状态到初始值
       gameState.player = {
         level: 1,
@@ -3418,46 +3734,52 @@
           ring: null
         }
       };
-      
+
       gameState.difficulty = 1;
       gameState.isBattleActive = true;
-      
+
       // 清空套装加成
       removeSetBonuses();
-      
+
       // 重新初始化游戏
       initGame();
       renderGame();
       spawnNewEnemy();
     }
-    
+
     // 根据卡牌威力计算冷却时间
     function calculateCardCooldown(card) {
+      // 特殊处理基础攻击，保持其冷却时间为1回合
+      if (card.id === 'basic_attack') {
+        return 1;
+      }
+
+      // 强力攻击固定设置为3回合冷却
+      if (card.id === 'power_attack') {
+        return 3;
+      }
+
       // 根据卡牌属性评估威力
-      let powerLevel = 1; // 默认为低级
-      
+      let powerLevel = 2; // 默认为中级（2回合冷却），符合用户要求的最低冷却回合
+
       // 伤害类卡牌 - 根据伤害倍数和特效判断
       if (card.damageMultiplier || card.damage) {
         const multiplier = card.damageMultiplier || 1;
-        
-        // 低级伤害（1-1.2倍）
-        if (multiplier <= 1.2) {
-          powerLevel = 1;
-        }
-        // 中级伤害（1.3-1.8倍）
-        else if (multiplier <= 1.8) {
+
+        // 中级伤害（1-1.5倍）
+        if (multiplier <= 1.5) {
           powerLevel = 2;
         }
-        // 高级伤害（1.8倍以上或有特殊效果）
+        // 高级伤害（1.5倍以上或有特殊效果）
         else {
           powerLevel = 3;
         }
-        
+
         // 连击增加威力
         if (card.hitCount && card.hitCount > 1) {
           powerLevel = Math.min(powerLevel + 1, 3);
         }
-        
+
         // 特殊效果增加威力
         if (card.stunChance || card.applyPoison || card.ignoreDefense) {
           powerLevel = Math.min(powerLevel + 1, 3);
@@ -3465,19 +3787,15 @@
       }
       // 防御类卡牌
       else if (card.defend || card.parryChance || card.dodgeChance) {
-        // 低级防御（减伤30%以下）
-        if ((card.defend && card.defend >= 0.7) || (card.parryChance && card.parryChance < 30)) {
-          powerLevel = 1;
-        }
-        // 中级防御（减伤30-50%）
-        else if ((card.defend && card.defend >= 0.5) || (card.parryChance && card.parryChance < 50)) {
+        // 中级防御（减伤50%以下）
+        if ((card.defend && card.defend >= 0.5) || (card.parryChance && card.parryChance < 50)) {
           powerLevel = 2;
         }
         // 高级防御
         else {
           powerLevel = 3;
         }
-        
+
         // 同时有治疗效果增加威力
         if (card.heal && card.heal > 0) {
           powerLevel = Math.min(powerLevel + 1, 3);
@@ -3485,31 +3803,21 @@
       }
       // 治疗类卡牌
       else if (card.heal) {
-        // 低级治疗（5点以下）
-        if (card.heal <= 5) {
-          powerLevel = 1;
-        }
-        // 中级治疗（6-10点）
-        else if (card.heal <= 10) {
+        // 中级治疗（15点以下）
+        if (card.heal <= 15) {
           powerLevel = 2;
         }
-        // 高级治疗（10点以上）
+        // 高级治疗（15点以上）
         else {
           powerLevel = 3;
         }
       }
       // 特殊效果卡牌
       else if (card.applyPoison || card.tempAttack || card.tempDefense) {
-        // 低级效果（持续伤害低或增益少）
-        if ((card.applyPoison && card.applyPoison <= 3) || 
-            (card.tempAttack && card.tempAttack <= 3) ||
-            (card.tempDefense && card.tempDefense <= 3)) {
-          powerLevel = 1;
-        }
         // 中级效果
-        else if ((card.applyPoison && card.applyPoison <= 6) || 
-                (card.tempAttack && card.tempAttack <= 6) ||
-                (card.tempDefense && card.tempDefense <= 6)) {
+        if ((card.applyPoison && card.applyPoison <= 6) ||
+          (card.tempAttack && card.tempAttack <= 6) ||
+          (card.tempDefense && card.tempDefense <= 6)) {
           powerLevel = 2;
         }
         // 高级效果
@@ -3517,79 +3825,141 @@
           powerLevel = 3;
         }
       }
-      
-      // 返回对应的冷却时间（1-3回合）
+
+      // 返回对应的冷却时间（最低2回合，最高3回合）
       return powerLevel;
     }
-    
+
     // 显示升级选择
     function showLevelUpOptions(mustChooseSkill = false) {
-      const playerClass = gameState.player.class;
       
+
+      const playerClass = gameState.player.class;
+
       // 优化：提高获得新卡牌的概率，让玩家更容易获得新卡牌
       // 先检查是否还有可用的新卡牌
       let hasAvailableCards = false;
       if (playerClass === 'mage') {
-        hasAvailableCards = cardDatabase.some(card => 
-          (card.type === 'magic' || card.type === 'support') && 
+        hasAvailableCards = cardDatabase.some(card =>
+          (card.type === 'magic' || card.type === 'support') &&
           !gameState.player.fullCardPool.some(c => c.id === card.id)
         );
       } else if (playerClass === 'warrior') {
-        hasAvailableCards = cardDatabase.some(card => 
-          (card.type === 'attack' || card.type === 'defense') && 
+        hasAvailableCards = cardDatabase.some(card =>
+          (card.type === 'attack' || card.type === 'defense') &&
           !gameState.player.fullCardPool.some(c => c.id === card.id)
         );
       } else if (playerClass === 'assassin') {
-        hasAvailableCards = cardDatabase.some(card => 
-          (card.type === 'attack' || card.type === 'special') && 
+        hasAvailableCards = cardDatabase.some(card =>
+          (card.type === 'attack' || card.type === 'special') &&
           !gameState.player.fullCardPool.some(c => c.id === card.id)
         );
       } else {
-        hasAvailableCards = cardDatabase.some(card => 
+        hasAvailableCards = cardDatabase.some(card =>
           !gameState.player.fullCardPool.some(c => c.id === card.id)
         );
       }
-      
-      // 如果有可用卡牌，70%的概率给卡牌选择；如果没有可用卡牌，则必选技能
-      const isCardChoice = !mustChooseSkill && hasAvailableCards && Math.random() < 0.7;
+      // 升级必定获得三选一卡牌（如果有可用卡牌）
+      // 增加一个额外的检查，确保即使在某些情况下也能找到可用卡牌
+      if (!hasAvailableCards) {
+        // 最后的兜底检查，不考虑职业限制，只要有未获得的卡牌就认为有可用卡牌
+        hasAvailableCards = cardDatabase.some(card =>
+          !gameState.player.fullCardPool.some(c => c.id === card.id)
+        );
+      }
+
+      // 调试信息
+      console.log('hasAvailableCards:', hasAvailableCards);
+      console.log('mustChooseSkill:', mustChooseSkill);
+
+      // 基于是否有可用卡牌来决定显示类型
+      // 如果有可用卡牌，且不是强制选择技能，则显示卡牌选择
+      // 将卡牌选择的概率设置为30%，确保玩家有30%的概率获得新卡牌
+      const cardChoiceChance = 0.3; // 30%概率选择卡牌
+      const isCardChoice = Math.random() < cardChoiceChance;
+      console.log('isCardChoice:', isCardChoice);
+
+      // 计算并显示可用卡牌数量
+      let availableCardsCount = 0;
+      if (playerClass === 'mage') {
+        availableCardsCount = cardDatabase.filter(card =>
+          (card.type === 'magic' || card.type === 'support') &&
+          !gameState.player.fullCardPool.some(c => c.id === card.id)
+        ).length;
+      } else if (playerClass === 'warrior') {
+        availableCardsCount = cardDatabase.filter(card =>
+          (card.type === 'attack' || card.type === 'defense') &&
+          !gameState.player.fullCardPool.some(c => c.id === card.id)
+        ).length;
+      } else if (playerClass === 'assassin') {
+        availableCardsCount = cardDatabase.filter(card =>
+          (card.type === 'attack' || card.type === 'special') &&
+          !gameState.player.fullCardPool.some(c => c.id === card.id)
+        ).length;
+      }
+      // 计算所有可用卡牌数量（不考虑职业限制）
+      const allAvailableCardsCount = cardDatabase.filter(card =>
+        !gameState.player.fullCardPool.some(c => c.id === card.id)
+      ).length;
+      console.log('职业可用卡牌数量:', availableCardsCount);
+      console.log('所有可用卡牌数量:', allAvailableCardsCount);
+      console.log('已拥有的卡牌:', gameState.player.fullCardPool.map(c => c.id));
+
       let selectedOptions;
-      
+
       if (isCardChoice) {
         // 卡牌选择逻辑
         // 根据职业筛选可选卡牌
         let availableCards = [];
-        
+
         // 法师职业优先魔法卡牌
         if (playerClass === 'mage') {
-          availableCards = cardDatabase.filter(card => 
-            (card.type === 'magic' || card.type === 'support') && 
+          availableCards = cardDatabase.filter(card =>
+            (card.type === 'magic' || card.type === 'support') &&
             // 排除已在卡牌池中的卡牌
             !gameState.player.fullCardPool.some(c => c.id === card.id)
           );
-        } 
+        }
         // 战士职业优先物理攻击和防御卡牌
         else if (playerClass === 'warrior') {
-          availableCards = cardDatabase.filter(card => 
-            (card.type === 'attack' || card.type === 'defense') && 
+          availableCards = cardDatabase.filter(card =>
+            (card.type === 'attack' || card.type === 'defense') &&
             !gameState.player.fullCardPool.some(c => c.id === card.id)
           );
         }
         // 刺客职业优先攻击和特殊卡牌
         else if (playerClass === 'assassin') {
-          availableCards = cardDatabase.filter(card => 
-            (card.type === 'attack' || card.type === 'special') && 
+          availableCards = cardDatabase.filter(card =>
+            (card.type === 'attack' || card.type === 'special') &&
             !gameState.player.fullCardPool.some(c => c.id === card.id)
           );
         }
-        
-        // 如果没有符合条件的卡牌，使用通用攻击卡牌
-        if (availableCards.length === 0) {
-          availableCards = cardDatabase.filter(card => 
+
+        // 调试信息
+        console.log('过滤后的可用卡牌:', availableCards.map(c => c.id));
+        console.log('可用卡牌数量:', availableCards.length);
+
+        // 使用50%概率随机判断是否使用通用攻击卡牌
+        if (Math.random() < 0.5) {
+          console.log('没有符合职业条件的卡牌，尝试使用所有可用卡牌');
+          availableCards = cardDatabase.filter(card =>
             !gameState.player.fullCardPool.some(c => c.id === card.id)
           );
+          console.log('回退后的可用卡牌:', availableCards.map(c => c.id));
+          console.log('回退后的可用卡牌数量:', availableCards.length);
+
+          // 如果仍然没有可用卡牌，使用基础攻击卡牌（即使已拥有）
+          if (availableCards.length === 0) {
+            console.log('没有任何可用的新卡牌，使用基础攻击卡牌');
+            const basicAttackCard = cardDatabase.find(card => card.id === 'basic_attack');
+            if (basicAttackCard) {
+              availableCards = [basicAttackCard];
+            }
+          }
         }
-        
+
         // 随机选择3张卡牌
+        console.log('准备随机选择卡牌...');
         const shuffledCards = [...availableCards].sort(() => 0.5 - Math.random());
         selectedOptions = shuffledCards.slice(0, 3).map(card => ({
           ...card,
@@ -3597,7 +3967,8 @@
           // 为新卡牌根据威力计算冷却时间
           defaultCooldown: calculateCardCooldown(card)
         }));
-        
+        console.log('选中的卡牌选项:', selectedOptions.map(c => c.id));
+
         // 更新模态框标题
         document.querySelector('#level-up-modal h2').textContent = '选择一张新卡牌加入你的卡牌池';
       } else {
@@ -3605,23 +3976,25 @@
         const availableSkills = skillDatabase.filter(skill => {
           return !skill.classType || skill.classType === playerClass;
         });
-        
+
         const shuffledSkills = [...availableSkills].sort(() => 0.5 - Math.random());
         const fixedSkills = shuffledSkills.slice(0, 2);
         const randomSkill = generateRandomSkill();
         selectedOptions = [...fixedSkills, randomSkill].sort(() => 0.5 - Math.random());
-        
+
         // 恢复模态框标题
         document.querySelector('#level-up-modal h2').textContent = '选择一个升级选项';
       }
-      
+
       // 更新模态框中的选项
       elements.skillOptions.forEach((option, index) => {
         const optionData = selectedOptions[index];
-        
-        if (optionData.isCard) {
-          // 卡牌选项渲染
-          option.innerHTML = `
+
+        // 检查optionData是否存在，避免undefined错误
+        if (optionData) {
+          if (optionData.isCard) {
+            // 卡牌选项渲染
+            option.innerHTML = `
             <div class="${optionData.color} ${optionData.borderColor} border rounded-lg p-2 mb-1">
               <div class="flex justify-between items-center">
                 <h3 class="font-bold">${optionData.name}</h3>
@@ -3631,78 +4004,153 @@
             <p class="text-xs text-light/80">${optionData.description}</p>
             <div class="text-xs text-blue-400 mt-1">冷却时间: ${optionData.defaultCooldown}回合</div>
           `;
-        } else {
-          // 技能选项渲染
-          option.innerHTML = `
+          } else {
+            // 技能选项渲染
+            option.innerHTML = `
             <h3 class="font-bold mb-1 ${optionData.isRandom ? 'text-purple-400' : ''}">${optionData.name}</h3>
             <p class="text-xs text-light/80">${optionData.description}</p>
           `;
-        }
-        
-        // 添加选择事件
-        option.onclick = () => {
-          if (optionData.isCard) {
-            // 处理卡牌选择
-            // 添加新卡牌到玩家的完整卡牌池
-            gameState.player.fullCardPool.push({
-              ...optionData,
-              cooldown: 0 // 新卡牌初始冷却为0
-            });
-            
-            elements.battleMessage.textContent = `你获得了新卡牌：${optionData.name}！`;
-          } else {
-            // 应用技能效果
-            optionData.effect(gameState.player);
           }
-          
-          // 添加技能到玩家技能列表（如果不是临时技能且不是卡牌）
-          if (!optionData.isCard) {
-            if (!optionData.isRandom && !gameState.player.skills.some(s => s.id === optionData.id)) {
-              gameState.player.skills.push({
-                id: optionData.id,
-                name: optionData.name,
-                description: optionData.description
-              });
-            } else if (optionData.isRandom) {
-              gameState.player.skills.push({
-                id: optionData.id,
-                name: optionData.name,
-                description: optionData.description
-              });
+
+          // 添加选择事件
+          option.onclick = () => {
+            if (optionData.isCard) {
+              // 处理卡牌选择
+              // 检查是否已有相同卡牌
+              const existingCardIndex = gameState.player.fullCardPool.findIndex(card => card.id === optionData.id);
+
+              if (existingCardIndex !== -1) {
+                // 存在相同卡牌，执行合成操作
+                const existingCard = gameState.player.fullCardPool[existingCardIndex];
+
+                // 移除旧卡牌
+                gameState.player.fullCardPool.splice(existingCardIndex, 1);
+
+                // 添加升级后的卡牌并增加属性加成
+                const upgradeLevel = (existingCard.upgradeLevel || 0) + 1;
+                const upgradeMultiplier = 1 + (upgradeLevel * 0.2); // 每级升级增加20%效果
+
+                // 复制原始卡牌数据
+                const upgradedCard = {
+                  ...optionData,
+                  cooldown: 0,
+                  name: existingCard.name.includes('+') ?
+                    existingCard.name.replace(/\+\d+$/, m => `+${parseInt(m.slice(1)) + 1}`) :
+                    existingCard.name + '+1',
+                  isUpgraded: true,
+                  upgradeLevel: upgradeLevel
+                };
+
+                // 根据卡牌类型应用不同的属性加成
+                if (card.damage || card.damageMultiplier) {
+                  // 攻击类卡牌 - 增加伤害或伤害倍数
+                  if (upgradedCard.damage) {
+                    upgradedCard.damage = Math.round(upgradedCard.damage * upgradeMultiplier);
+                  } else if (upgradedCard.damageMultiplier) {
+                    upgradedCard.damageMultiplier = Math.round((upgradedCard.damageMultiplier * upgradeMultiplier) * 10) / 10;
+                  }
+                } else if (card.defend || card.blockAmount) {
+                  // 防御类卡牌 - 增加防御效果
+                  if (upgradedCard.defend) {
+                    upgradedCard.defend = Math.round((upgradedCard.defend / upgradeMultiplier) * 10) / 10; // defend是伤害减免系数，需要特殊处理
+                  } else if (upgradedCard.blockAmount) {
+                    upgradedCard.blockAmount = Math.round(upgradedCard.blockAmount * upgradeMultiplier);
+                  }
+                } else if (card.healAmount) {
+                  // 治疗类卡牌 - 增加治疗量
+                  upgradedCard.healAmount = Math.round(upgradedCard.healAmount * upgradeMultiplier);
+                } else if (card.ignoreDefense) {
+                  // 破甲类卡牌 - 增加破甲值
+                  upgradedCard.ignoreDefense = Math.round(upgradedCard.ignoreDefense * upgradeMultiplier);
+                } else if (card.hitCount) {
+                  // 多段攻击卡牌 - 增加攻击次数
+                  upgradedCard.hitCount = Math.floor(upgradedCard.hitCount * upgradeMultiplier);
+                } else if (card.parryChance || card.dodgeChance) {
+                  // 概率类卡牌 - 增加成功率
+                  if (upgradedCard.parryChance) {
+                    upgradedCard.parryChance = Math.min(95, Math.round(upgradedCard.parryChance * upgradeMultiplier));
+                  }
+                  if (upgradedCard.dodgeChance) {
+                    upgradedCard.dodgeChance = Math.min(95, Math.round(upgradedCard.dodgeChance * upgradeMultiplier));
+                  }
+                }
+
+                gameState.player.fullCardPool.push(upgradedCard);
+
+                elements.battleMessage.textContent = `卡牌合成！${optionData.name} 升级为 ${upgradedCard.name}！`;
+              } else {
+                // 添加新卡牌到玩家的完整卡牌池
+                gameState.player.fullCardPool.push({
+                  ...optionData,
+                  cooldown: 0 // 新卡牌初始冷却为0
+                });
+
+                elements.battleMessage.textContent = `你获得了新卡牌：${optionData.name}！`;
+              }
+            } else {
+              // 应用技能效果
+              optionData.effect(gameState.player);
             }
-          }
-          
-          // 隐藏模态框
-          elements.levelUpModal.classList.add('hidden');
-          
-          // 恢复游戏
-          gameState.isBattleActive = true;
-          
-          // 继续检查是否可以升级
-          checkLevelUp();
-          
-          // 如果没有更多升级，生成新敌人
-          if (gameState.player.exp < gameState.player.nextLevelExp) {
-            setTimeout(spawnNewEnemy, 1000);
-          }
-          
-          // 重新渲染
-          renderGame();
-        };
+
+            // 添加技能到玩家技能列表（如果不是临时技能且不是卡牌）
+            if (!optionData.isCard) {
+              if (!optionData.isRandom && !gameState.player.skills.some(s => s.id === optionData.id)) {
+                gameState.player.skills.push({
+                  id: optionData.id,
+                  name: optionData.name,
+                  description: optionData.description
+                });
+              } else if (optionData.isRandom) {
+                gameState.player.skills.push({
+                  id: optionData.id,
+                  name: optionData.name,
+                  description: optionData.description
+                });
+              }
+            }
+
+            // 隐藏模态框
+            elements.levelUpModal.classList.add('hidden');
+
+            // 恢复游戏
+            gameState.isBattleActive = true;
+
+            // 如果没有更多升级，生成新敌人
+            if (gameState.player.exp < gameState.player.nextLevelExp) {
+              setTimeout(spawnNewEnemy, 1000);
+            }
+
+            // 重新渲染
+            renderGame();
+          };
+        } else {
+          // 如果没有选项数据，清空选项内容
+          option.innerHTML = '';
+        }
       });
-      
-      // 显示模态框
+
+      // 调试信息：确保模态框被显示
+      console.log('即将显示升级模态框...');
+      console.log('模态框当前状态(has hidden class):', elements.levelUpModal.classList.contains('hidden'));
+
+      // 强制移除hidden类，确保模态框显示
       elements.levelUpModal.classList.remove('hidden');
+
+      // 确认移除成功
+      console.log('模态框移除hidden类后状态:', elements.levelUpModal.classList.contains('hidden'));
+      console.log('showLevelUpOptions函数执行完毕');
     }
-    
+
     // 生成新敌人
     function spawnNewEnemy() {
       // 检查是否应该生成头目（首次7级，之后每5级一次）
       let isBossFight = false;
       let suitableEnemies;
-      
-      if (gameState.player.level === 7 || (gameState.player.level > 7 && (gameState.player.level - 7) % 5 === 0)) {
+
+      // 7级之后，每10只怪必定有一个BOSS
+      if (gameState.player.level >= 7 && gameState.monsterCount > 0 && gameState.monsterCount % 10 === 0) {
         isBossFight = true;
+        console.log('触发BOSS战：第', gameState.monsterCount, '只怪物');
         // 头目战时只选择极高威胁敌人
         suitableEnemies = enemyTypes.filter(enemy => enemy.threat === '极高');
       } else {
@@ -3721,25 +4169,25 @@
           suitableEnemies = enemyTypes.filter(enemy => enemy.threat === '高' || enemy.threat === '极高');
         }
       }
-      
+
       // 随机选择一个敌人类型
       const randomIndex = Math.floor(Math.random() * suitableEnemies.length);
       const baseEnemy = suitableEnemies[randomIndex];
-      
+
       // 随难度增强敌人属性
       const difficultyMultiplier = 1 + (gameState.difficulty - 1) * 0.2;
-      
+
       // 添加等级乘数 - 怪物属性随玩家等级提升而增强
       const levelMultiplier = 1 + (gameState.player.level - 1) * 0.3;
-      
+
       // 加强BOSS属性
       const bossLevel = isBossFight ? Math.floor((gameState.player.level - 7) / 5) + 1 : 0;
-      const bossMultiplier = isBossFight ? 2 + bossLevel * 0.5 : 1;
-      
+      const bossMultiplier = isBossFight ? 1 + bossLevel * 0.25 : 1; // Boss难度降低一倍
+
       // 随机选择敌人名称
       const randomNameIndex = Math.floor(Math.random() * baseEnemy.names.length);
       const enemyName = baseEnemy.names[randomNameIndex];
-      
+
       // 创建敌人对象，包含特性
       gameState.enemy = {
         name: enemyName,
@@ -3752,6 +4200,7 @@
         threat: baseEnemy.threat,
         sprite: baseEnemy.sprite,
         lootChance: 100, // 确保每只怪都必定掉落装备
+        isSetGuaranteed: isBossFight, // BOSS必定掉落套装装备
         poison: null,
         burn: null,
         stunned: false,
@@ -3770,7 +4219,7 @@
         auraDamage: baseEnemy.auraDamage,
         shieldStrength: baseEnemy.shieldStrength ? Math.round(baseEnemy.shieldStrength * difficultyMultiplier * levelMultiplier) : null
       };
-      
+
       // 检查是否生成第二只小怪（30%概率，非头目战时）
       if (!isBossFight && Math.random() < 0.3) {
         // 随机选择第二个敌人类型（只能是低威胁或中威胁）
@@ -3779,7 +4228,7 @@
         const secondaryBaseEnemy = secondaryEnemyTypes[secondaryIndex];
         const secondaryNameIndex = Math.floor(Math.random() * secondaryBaseEnemy.names.length);
         const secondaryEnemyName = secondaryBaseEnemy.names[secondaryNameIndex];
-        
+
         gameState.secondEnemy = {
           name: secondaryEnemyName,
           displayName: secondaryEnemyName,
@@ -3811,14 +4260,14 @@
       } else {
         gameState.secondEnemy = null;
       }
-      
+
       // 抽新牌
       drawNewCards();
-      
+
       // 恢复战斗状态
       gameState.isBattleActive = true;
       gameState.isPlayerTurn = true;
-      
+
       // 添加敌人特性描述
       let enemyDescription = '';
       if (isBossFight) {
@@ -3826,7 +4275,7 @@
       } else {
         enemyDescription = `新的敌人 ${gameState.enemy.displayName} 出现了！`;
       }
-      
+
       // 如果有第二只敌人，添加到描述中
       if (gameState.secondEnemy) {
         enemyDescription += ` 同时，${gameState.secondEnemy.displayName} 也加入了战斗！`;
@@ -3842,7 +4291,7 @@
       } else if (gameState.enemy.ability === 'selfHeal') {
         enemyDescription += ' 它能自我治疗！';
       }
-      
+
       if (gameState.enemy.passive) {
         if (gameState.enemy.passive === 'damageReturn') {
           enemyDescription += ' 它会反弹伤害！';
@@ -3852,20 +4301,24 @@
           enemyDescription += ' 它拥有魔法护盾！';
         }
       }
-      
+
       elements.battleMessage.textContent = enemyDescription;
-      
+
       // 重新渲染
       renderEnemyStats();
+
+      // 增加怪物计数（BOSS也算一只怪）
+      gameState.monsterCount++;
+      console.log('当前怪物计数:', gameState.monsterCount);
     }
-    
+
     // 处理游戏结束
     function handleGameOver() {
       gameState.isBattleActive = false;
       elements.finalLevel.textContent = gameState.player.level;
       elements.gameOverModal.classList.remove('hidden');
     }
-    
+
     // 重新开始游戏
     function restartGame() {
       // 重置游戏状态
@@ -3893,10 +4346,10 @@
           ring: null
         }
       };
-      
+
       // 初始化第二敌人状态
       gameState.secondEnemy = null;
-      
+
       gameState.enemy = {
         name: '初级魔物',
         displayName: '初级魔物',
@@ -3912,30 +4365,176 @@
         burn: null,
         stunned: false
       };
-      
+
       // 重置卡牌合成配置
       gameState.cardFusion = {
         required: 3,
         shownHint: false
       };
-      
+
       gameState.isPlayerTurn = true;
       gameState.isBattleActive = true;
       gameState.difficulty = 1;
       gameState.currentLoot = null;
-      
+
       // 隐藏模态框
       elements.gameOverModal.classList.add('hidden');
       elements.levelUpModal.classList.add('hidden');
       elements.lootModal.classList.add('hidden');
       elements.cardUpgradeModal.classList.add('hidden');
-      
+
       // 重新初始化
       initGame();
+    }
+
+    // 显示玩家属性
+    function showPlayerAttributes() {
+      const player = gameState.player;
+      elements.attributesTitle.textContent = `${player.class ? getClassName(player.class) : '玩家'} 属性详情`;
+      
+      let content = `
+        <div class="grid grid-cols-2 gap-2 text-sm">
+          <div class="text-light/70">等级:</div>
+          <div>${player.level}</div>
+          <div class="text-light/70">生命值:</div>
+          <div>${player.hp} / ${player.maxHp}</div>
+          <div class="text-light/70">经验值:</div>
+          <div>${player.exp} / ${player.nextLevelExp}</div>
+          <div class="text-light/70">物理攻击:</div>
+          <div>${player.attack}</div>
+          <div class="text-light/70">魔法攻击:</div>
+          <div>${player.magicAttack}</div>
+          <div class="text-light/70">防御:</div>
+          <div>${player.defense}</div>
+          <div class="text-light/70">暴击几率:</div>
+          <div>${player.critChance}%</div>
+          <div class="text-light/70">暴击伤害:</div>
+          <div>${player.critDamage}x</div>
+        </div>
+      `;
+      
+      // 添加装备信息
+      content += '<div class="mt-3 pt-3 border-t border-primary/30">';
+      content += '<h3 class="font-bold mb-2 text-sm">装备:</h3>';
+      
+      const equipmentSlots = ['weapon', 'armor', 'trinket', 'ring'];
+      const slotNames = { weapon: '武器', armor: '护甲', trinket: '饰品', ring: '戒指' };
+      
+      equipmentSlots.forEach(slot => {
+        if (player.equipment[slot]) {
+          content += `<div class="text-xs mb-1">${slotNames[slot]}: ${player.equipment[slot].name}</div>`;
+          if (player.equipment[slot].bonus) {
+            for (const [key, value] of Object.entries(player.equipment[slot].bonus)) {
+              content += `<div class="text-xs text-green-400 pl-4">+${value} ${getStatName(key)}</div>`;
+            }
+          }
+        } else {
+          content += `<div class="text-xs mb-1 text-light/50">${slotNames[slot]}: 未装备</div>`;
+        }
+      });
+      
+      content += '</div>';
+      
+      elements.attributesContent.innerHTML = content;
+      elements.attributesModal.classList.remove('hidden');
+    }
+    
+    // 显示敌人属性
+    function showEnemyAttributes() {
+      const enemy = gameState.enemy;
+      elements.attributesTitle.textContent = `${enemy.displayName} 属性详情`;
+      
+      let content = `
+        <div class="grid grid-cols-2 gap-2 text-sm">
+          <div class="text-light/70">生命值:</div>
+          <div>${enemy.hp} / ${enemy.maxHp}</div>
+          <div class="text-light/70">攻击:</div>
+          <div>${enemy.attack}</div>
+          <div class="text-light/70">防御:</div>
+          <div>${enemy.defense || 0}</div>
+          <div class="text-light/70">威胁等级:</div>
+          <div>${enemy.threat}</div>
+          <div class="text-light/70">经验奖励:</div>
+          <div>${enemy.expReward}</div>
+        </div>
+      `;
+      
+      // 添加特性信息
+      content += '<div class="mt-3 pt-3 border-t border-primary/30">';
+      content += '<h3 class="font-bold mb-2 text-sm">特性:</h3>';
+      
+      if (enemy.ability) {
+        content += `<div class="text-xs mb-1">特殊能力: ${getAbilityName(enemy.ability)}</div>`;
+        if (enemy.ability === 'vampirism' && enemy.vampirismRate) {
+          content += `<div class="text-xs text-red-400 pl-4">吸血率: ${Math.round(enemy.vampirismRate * 100)}%</div>`;
+        } else if (enemy.ability === 'highCrit' && enemy.critChance) {
+          content += `<div class="text-xs text-red-400 pl-4">暴击几率: ${enemy.critChance}%</div>`;
+        } else if (enemy.ability === 'selfHeal' && enemy.healAmount) {
+          content += `<div class="text-xs text-red-400 pl-4">治疗量: ${enemy.healAmount}，频率: 每${enemy.healFrequency}回合</div>`;
+        }
+      } else {
+        content += `<div class="text-xs text-light/50">无特殊能力</div>`;
+      }
+      
+      if (enemy.passive) {
+        content += `<div class="text-xs mt-1">被动技能: ${getPassiveName(enemy.passive)}</div>`;
+      }
+      
+      content += '</div>';
+      
+      elements.attributesContent.innerHTML = content;
+      elements.attributesModal.classList.remove('hidden');
+    }
+    
+    // 辅助函数：获取属性名称
+    function getStatName(stat) {
+      const statMap = {
+        attack: '物理攻击',
+        magicAttack: '魔法攻击',
+        defense: '防御',
+        maxHp: '最大生命值',
+        critChance: '暴击几率',
+        critDamage: '暴击伤害'
+      };
+      return statMap[stat] || stat;
+    }
+    
+    // 辅助函数：获取职业名称
+    function getClassName(classType) {
+      const classMap = {
+        warrior: '战士',
+        assassin: '刺客',
+        mage: '法师'
+      };
+      return classMap[classType] || classType;
+    }
+    
+    // 辅助函数：获取能力名称
+    function getAbilityName(ability) {
+      const abilityMap = {
+        highDefense: '高防御',
+        vampirism: '吸血',
+        spellDamage: '魔法伤害',
+        highCrit: '高暴击',
+        selfHeal: '自我治疗'
+      };
+      return abilityMap[ability] || ability;
+    }
+    
+    // 辅助函数：获取被动技能名称
+    function getPassiveName(passive) {
+      const passiveMap = {
+        damageReturn: '伤害反弹',
+        lifeStealAura: '生命吸取光环',
+        manaShield: '魔法护盾',
+        thorns: '荆棘光环'
+      };
+      return passiveMap[passive] || passive;
     }
     
     // 启动游戏
     window.addEventListener('DOMContentLoaded', initGame);
   </script>
 </body>
+
 </html>
