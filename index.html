@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>深渊卡牌 - 肉鸽卡牌游戏</title>
+  <title>勇者历险记</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
 
@@ -4179,6 +4179,10 @@
 
       // 添加等级乘数 - 怪物属性随玩家等级提升而增强
       const levelMultiplier = 1 + (gameState.player.level - 1) * 0.3;
+      
+      // 12级后加强经验奖励
+      const expBonusMultiplier = gameState.player.level >= 12 ? 
+        1 + (gameState.player.level - 12) * 0.2 : 1;
 
       // 加强BOSS属性
       const bossLevel = isBossFight ? Math.floor((gameState.player.level - 7) / 5) + 1 : 0;
@@ -4196,7 +4200,7 @@
         maxHp: Math.round(baseEnemy.baseHp * difficultyMultiplier * levelMultiplier * bossMultiplier),
         attack: Math.round(baseEnemy.baseAttack * difficultyMultiplier * levelMultiplier * bossMultiplier),
         defense: baseEnemy.defense ? Math.round(baseEnemy.defense * difficultyMultiplier * levelMultiplier * bossMultiplier) : Math.floor(baseEnemy.baseAttack * difficultyMultiplier * levelMultiplier * bossMultiplier * 0.3),
-        expReward: Math.round(baseEnemy.exp * difficultyMultiplier * levelMultiplier * bossMultiplier * 2), // BOSS提供更多经验值
+        expReward: Math.round(baseEnemy.exp * difficultyMultiplier * levelMultiplier * bossMultiplier * 2 * expBonusMultiplier), // BOSS提供更多经验值，12级后额外加成
         threat: baseEnemy.threat,
         sprite: baseEnemy.sprite,
         lootChance: 100, // 确保每只怪都必定掉落装备
@@ -4236,7 +4240,7 @@
           maxHp: Math.round(secondaryBaseEnemy.baseHp * difficultyMultiplier * levelMultiplier * 0.7),
           attack: Math.round(secondaryBaseEnemy.baseAttack * difficultyMultiplier * levelMultiplier * 0.7), // 攻击减少30%
           defense: secondaryBaseEnemy.defense ? Math.round(secondaryBaseEnemy.defense * difficultyMultiplier * levelMultiplier * 0.7) : Math.floor(secondaryBaseEnemy.baseAttack * difficultyMultiplier * levelMultiplier * 0.3 * 0.7),
-          expReward: Math.round(secondaryBaseEnemy.exp * difficultyMultiplier * levelMultiplier * 1.5 * 0.7), // 经验减少30%
+          expReward: Math.round(secondaryBaseEnemy.exp * difficultyMultiplier * levelMultiplier * 1.5 * 0.7 * expBonusMultiplier), // 经验减少30%，12级后额外加成
           threat: secondaryBaseEnemy.threat,
           sprite: secondaryBaseEnemy.sprite,
           lootChance: 100, // 确保每只怪都必定掉落装备
